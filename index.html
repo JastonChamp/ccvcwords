@@ -2,18 +2,32 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css"> <!-- Corrected the stylesheet name -->
-    <title>Spinner</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="CVCC Word Spinner Game for phonemic awareness practice">
+    <meta name="keywords" content="CVCC words, phonics, learning, children, English">
+    <title>CVCC Word Spinner</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="spinner">
-        <div class="wheel">
-            <!-- Slots will be populated with JavaScript -->
-        </div>
+    <!-- Compliment Box to display encouragement after correct answers -->
+    <div id="complimentBox" aria-live="polite" role="status"></div>
+
+    <!-- Spinner Wheel Container -->
+    <div class="spinner" role="main">
+        <div class="wheel" aria-live="assertive" aria-atomic="true"></div> <!-- Word display area -->
     </div>
-    <button id="spinButton">Spin</button>
+
+    <!-- Spin Button -->
+    <button id="spinButton" aria-label="Spin the wheel">Spin</button> <!-- Spin button -->
+
+    <!-- Progress Bar -->
+    <progress id="progressBar" value="0" max="100" aria-label="Progress"></progress> <!-- Progress bar -->
+
+    <!-- Progress Text -->
+    <p id="progressText" aria-live="polite">0 / 99 Words Revealed</p> <!-- Progress text -->
+
+    <!-- Include Script for Spinner Logic -->
     <script src="script.js"></script>
 </body>
 </html>
