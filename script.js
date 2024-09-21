@@ -1,18 +1,31 @@
-const words = [
-    // Short 'A' sound
-    'trap', 'clap', 'snap', 'grab', 'flap', 'slap', 'crab', 'flag', 'plan', 'brag',
+const ccvcWords = [ 
+  // Words from your old CCVC spinner
+  'blip', 'chip', 'twig', 'blab', 'clod', 'flit', 'grit', 'plot', 'scam',
+  'trim', 'bran', 'chop', 'drag', 'flop', 'glim', 'prod', 'slam', 'twit',
+  'swan', 'sled', 'swig', 'slug', 'slab', 'swop', 'slop', 'swot', 'brat',
+  'clad', 'flog', 'grub', 'plum', 'spit', 'trot', 'plop', 'spin', 'scum', 
+  'grit', 'plug', 'skim', 'twin',
+  
+  // Words from the current CCVC list
+  'brag', 'clam', 'drop', 'flag', 'grip', 'plan', 'slip', 'trap', 'blot', 'clap',
+  'drum', 'flap', 'glum', 'plug', 'skim', 'twin', 'brim', 'clot', 'drip', 
+  'frog', 'swim',
+  
+  // Words from the current CCVC categorized list
+  // Short 'A' sound
+  'trap', 'clap', 'snap', 'grab', 'flap', 'slap', 'crab', 'flag', 'plan', 'brag',
+  
+  // Short 'E' sound
+  'sled', 'step', 'fled', 'bred', 'glend', 'bren',
 
-    // Short 'E' sound
-    'sled', 'step', 'tred', 'prep', 'fled', 'bred', 'dred', 'klem', 'glend', 'bren',
+  // Short 'I' sound
+  'slip', 'clip', 'drip', 'flip', 'grip', 'trip', 'skip', 'slim', 'slit', 'brim',
 
-    // Short 'I' sound
-    'slip', 'clip', 'drip', 'flip', 'grip', 'trip', 'skip', 'slim', 'slit', 'brim',
+  // Short 'O' sound
+  'drop', 'frog', 'crop', 'trot', 'plot', 'clop', 'clog', 'bloc', 'flop',
 
-    // Short 'O' sound
-    'drop', 'frog', 'crop', 'trot', 'plot', 'clop', 'clog', 'prod', 'bloc', 'flop',
-
-    // Short 'U' sound
-    'plug', 'drum', 'slug', 'crust', 'glum', 'brun', 'flut', 'smug', 'crum', 'drup'
+  // Short 'U' sound
+  'plug', 'drum', 'slug', 'glum', 'smug', 'crum', 'drup'
 ];
 
 // Set path to your audio files
