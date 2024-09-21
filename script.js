@@ -82,6 +82,7 @@ function spin() {
 
 function revealWord(word) {
     let index = 0;
+    wordBox.innerHTML = ''; // Clear word box before displaying new word
     let revealInterval = setInterval(() => {
         if (index < word.length) {
             let span = document.createElement('span');
