@@ -89,7 +89,7 @@ function spin() {
 
     wordBox.innerHTML = ''; // Clear previous word
     complimentBox.innerHTML = ''; // Clear previous compliment
-    const word = words[Math.floor(Math.random() * words.length)];
+    const word = ccvcWords[Math.floor(Math.random() * ccvcWords.length)];
     revealWord(word);
 }
 
@@ -167,8 +167,8 @@ function giveCompliment() {
 
 function updateProgress() {
     revealedWords++;
-    progressText.textContent = `${revealedWords} / ${words.length} Words Revealed`;
-    progressBar.value = (revealedWords / words.length) * 100;
+    progressText.textContent = `${revealedWords} / ${ccvcWords.length} Words Revealed`;
+    progressBar.value = (revealedWords / ccvcWords.length) * 100;
 }
 
 // Initialize progress bar width (if needed)
