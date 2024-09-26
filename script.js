@@ -44,11 +44,29 @@ const wordGroups = {
             'blub', 'drub', 'drum', 'drug', 'glum', 'plug', 'slug', 'slum', 'smug', 'snug',
         ],
     },
+    ccvcc: {
+        a: [
+            'plant', 'stand', 'brand', 'clamp', 'cramp', 'draft', 'glass', 'grand', 'grant', 'track', 'strap', 'blast', 'black', 'crash', 'flash', 'frank', 'graph',
+        ],
+        e: [
+            'trend', 'blend', 'bless', 'dress', 'flesh', 'fresh', 'press', 'smell', 'spend', 'swept', 'shelf', 'stretch',
+        ],
+        i: [
+            'blink', 'drink', 'drift', 'grind', 'print', 'shift', 'shrink', 'slick', 'stick', 'stink', 'swift', 'twist',
+        ],
+        o: [
+            'block', 'clock', 'cross', 'frost', 'front', 'gloss', 'shock', 'short', 'splash', 'strong', 'stomp', 'throb',
+        ],
+        u: [
+            'brush', 'clump', 'crush', 'drunk', 'grunt', 'pluck', 'slump', 'snuck', 'strut', 'trust', 'trunk', 'blunt',
+        ],
+    },
 };
 
 // Merge all words into one array for 'all' selection
 const allCvcWords = Object.values(wordGroups.cvc).flat();
 const allCcvcWords = Object.values(wordGroups.ccvc).flat();
+const allCcvccWords = Object.values(wordGroups.ccvcc).flat();
 
 const audioPath = './'; // Audio files are in the main directory
 
@@ -62,7 +80,7 @@ const progressText = document.getElementById('progressText');
 const progressFill = document.getElementById('progressFill');
 const complimentBox = document.getElementById('complimentBox');
 const vowelSelector = document.getElementById('vowelSelector');
-const vowelSelection = document.getElementById('vowelSelection'); // Reference to the vowel selection div
+const vowelSelection = document.getElementById('vowelSelection');
 const wordTypeSelector = document.getElementById('wordTypeSelector');
 const scoreText = document.getElementById('scoreText');
 
@@ -257,18 +275,16 @@ function getAvailableWords() {
     const selectedWordType = wordTypeSelector.value;
     const selectedVowel = vowelSelector.value;
 
-    if (selectedWordType === 'cvc') {
-        if (selectedVowel === 'all') {
-            return allCvcWords;
-        }
-        return wordGroups.cvc[selectedVowel] || [];
-    } else if (selectedWordType === 'ccvc') {
-        if (selectedVowel === 'all') {
-            return allCcvcWords;
-        }
-        return wordGroups.ccvc[selectedVowel] || [];
+    switch (selectedWordType) {
+        case 'cvc':
+            return selectedVowel === 'all' ? allCvcWords : wordGroups.cvc[selectedVowel] || [];
+        case 'ccvc':
+            return selectedVowel === 'all' ? allCcvcWords : wordGroups.ccvc[selectedVowel] || [];
+        case 'ccvcc':
+            return selectedVowel === 'all' ? allCcvccWords : wordGroups.ccvcc[selectedVowel] || [];
+        default:
+            return [];
     }
-    return [];
 }
 
 // Get a random word from available words
@@ -324,9 +340,8 @@ wordTypeSelector.addEventListener('change', () => {
     revealedWords = 0;
     updateProgress();
 
-    // Remove any code that hides the vowel selector
-    // Ensure the vowel selector is always visible
-    vowelSelection.style.visibility = 'visible';
+    // Always show the vowel selector
+    vowelSelection.style.display = 'block';
 });
 
 // Initialize
