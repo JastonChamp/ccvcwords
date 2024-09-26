@@ -38,6 +38,8 @@ body {
 #vowelSelection {
     margin: 20px auto;
     font-size: 18px;
+    /* Add min-height to maintain layout when hidden */
+    min-height: 50px;
 }
 
 #vowelSelector {
