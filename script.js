@@ -62,6 +62,7 @@ const progressText = document.getElementById('progressText');
 const progressFill = document.getElementById('progressFill');
 const complimentBox = document.getElementById('complimentBox');
 const vowelSelector = document.getElementById('vowelSelector');
+const vowelSelection = document.getElementById('vowelSelection'); // Added reference
 const wordTypeSelector = document.getElementById('wordTypeSelector');
 const scoreText = document.getElementById('scoreText');
 
@@ -323,11 +324,11 @@ wordTypeSelector.addEventListener('change', () => {
     revealedWords = 0;
     updateProgress();
 
-    // Show or hide vowel selector based on word type
+    // Show or hide vowel selection based on word type
     if (wordTypeSelector.value === 'ccvc') {
-        vowelSelector.style.display = 'block'; // Show vowel selector if needed
+        vowelSelection.style.visibility = 'hidden'; // Hide content but keep space
     } else {
-        vowelSelector.style.display = 'block';
+        vowelSelection.style.visibility = 'visible'; // Show content
     }
 });
 
