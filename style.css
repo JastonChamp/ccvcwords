@@ -7,6 +7,21 @@ body {
     padding: 20px;
 }
 
+/* Header */
+header {
+    margin-bottom: 20px;
+}
+
+header h1 {
+    font-size: 36px;
+    margin-bottom: 10px;
+}
+
+header p {
+    font-size: 18px;
+    color: #555;
+}
+
 /* Score Display */
 #scoreText {
     font-size: 24px;
@@ -126,38 +141,6 @@ select {
     opacity: 0;
     animation: revealLetter 0.5s forwards;
     animation-delay: var(--animation-delay, 0s);
-}
-
-/* Adding dynamic animation delays */
-.wheel span:nth-child(1) {
-    --animation-delay: 0.1s;
-}
-.wheel span:nth-child(2) {
-    --animation-delay: 0.2s;
-}
-.wheel span:nth-child(3) {
-    --animation-delay: 0.3s;
-}
-.wheel span:nth-child(4) {
-    --animation-delay: 0.4s;
-}
-.wheel span:nth-child(5) {
-    --animation-delay: 0.5s;
-}
-.wheel span:nth-child(6) {
-    --animation-delay: 0.6s;
-}
-.wheel span:nth-child(7) {
-    --animation-delay: 0.7s;
-}
-.wheel span:nth-child(8) {
-    --animation-delay: 0.8s;
-}
-.wheel span:nth-child(9) {
-    --animation-delay: 0.9s;
-}
-.wheel span:nth-child(10) {
-    --animation-delay: 1s;
 }
 
 /* Responsive Design */
