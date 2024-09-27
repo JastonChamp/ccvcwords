@@ -2,22 +2,18 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Word Spinner</title>
+    <title>CVC, CCVC, CVCC, CCVCC, and Digraph Word Spinner</title>
+    <!-- Link to the CSS file -->
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Header -->
-    <header>
-        <h1>Word Spinner</h1>
-        <p>Help children blend sounds and learn to read words effectively!</p>
-    </header>
-
     <!-- Score Display -->
-    <div id="scoreText">Score: 0</div>
+    <p id="scoreText">Score: 0</p>
 
     <!-- Word Type Selection -->
     <div id="wordTypeSelection">
-        <label for="wordTypeSelector">Choose Word Type:</label>
+        <label for="wordTypeSelector">Select Word Type:</label>
+        <!-- Added Digraphs option -->
         <select id="wordTypeSelector">
             <option value="cvc">CVC Words</option>
             <option value="ccvc">CCVC Words</option>
@@ -29,21 +25,21 @@
 
     <!-- Vowel Selection -->
     <div id="vowelSelection">
-        <label for="vowelSelector">Choose Vowel:</label>
+        <label for="vowelSelector">Select Vowel:</label>
         <select id="vowelSelector">
-            <option value="all">All</option>
-            <option value="a">A</option>
-            <option value="e">E</option>
-            <option value="i">I</option>
-            <option value="o">O</option>
-            <option value="u">U</option>
+            <option value="all">All Vowels</option>
+            <option value="a">Short A</option>
+            <option value="e">Short E</option>
+            <option value="i">Short I</option>
+            <option value="o">Short O</option>
+            <option value="u">Short U</option>
         </select>
     </div>
 
-    <!-- Spinner Display Area -->
+    <!-- Word Display Box -->
     <div class="spinner">
         <div class="wheel" id="wordBox">
-            <!-- Letters and Digraphs will be dynamically inserted here -->
+            <!-- Letters will be displayed here -->
         </div>
     </div>
 
@@ -57,9 +53,9 @@
     <div id="progressBar">
         <div id="progressFill"></div>
     </div>
-    <div id="progressText">0 / X words revealed</div>
+    <p id="progressText">0 / 0 Words Revealed</p>
 
-    <!-- JavaScript -->
+    <!-- Include the JavaScript file -->
     <script src="script.js"></script>
 </body>
 </html>
