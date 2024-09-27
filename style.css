@@ -1,10 +1,11 @@
 /* General Styles */
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f5f5f5;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f0f8ff; /* AliceBlue for a soft background */
     color: #333;
     text-align: center;
     padding: 20px;
+    margin: 0;
 }
 
 /* Header */
@@ -15,11 +16,12 @@ header {
 header h1 {
     font-size: 36px;
     margin-bottom: 10px;
+    color: #2c3e50; /* Dark blue-gray color */
 }
 
 header p {
     font-size: 18px;
-    color: #555;
+    color: #7f8c8d; /* Gray color for subtitle */
 }
 
 /* Score Display */
@@ -27,6 +29,7 @@ header p {
     font-size: 24px;
     margin-bottom: 20px;
     font-weight: bold;
+    color: #16a085; /* Green-teal color */
 }
 
 /* Word Type and Vowel Selection */
@@ -38,11 +41,16 @@ header p {
 label {
     font-size: 18px;
     margin-right: 10px;
+    color: #34495e; /* Darker gray-blue */
 }
 
 select {
     font-size: 16px;
     padding: 5px 10px;
+    border: 1px solid #bdc3c7;
+    border-radius: 4px;
+    background-color: #ecf0f1; /* Light gray */
+    color: #2c3e50;
 }
 
 /* Spinner and Wheel */
@@ -60,10 +68,10 @@ select {
     font-size: 48px;
     font-weight: bold;
     min-height: 60px;
-    border: 2px solid #ccc;
+    border: 2px solid #bdc3c7;
     border-radius: 10px;
     padding: 20px;
-    background-color: #fff;
+    background-color: #ffffff;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     transition: all 0.5s ease-in-out;
 }
@@ -85,18 +93,25 @@ select {
 
 /* Spin Button */
 #spinButton {
-    padding: 10px 20px;
+    padding: 12px 24px;
     font-size: 18px;
     background-color: #27ae60; /* Green background */
     color: #fff;
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 #spinButton:hover {
     background-color: #219150; /* Darker green on hover */
+    transform: translateY(-2px);
+}
+
+#spinButton:active {
+    background-color: #1e8449; /* Even darker green on click */
+    transform: translateY(0);
 }
 
 /* Compliment Box */
@@ -105,6 +120,7 @@ select {
     font-size: 20px;
     color: #2ecc71; /* Light green color for compliments */
     min-height: 24px;
+    transition: opacity 0.5s ease;
 }
 
 /* Progress Bar */
@@ -128,6 +144,7 @@ select {
 #progressText {
     font-size: 16px;
     margin-top: 5px;
+    color: #34495e; /* Darker gray-blue */
 }
 
 /* Animation for Letters */
