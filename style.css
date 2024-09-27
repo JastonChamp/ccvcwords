@@ -1,4 +1,7 @@
-/* General body styling */
+/* =====================
+   General Styles
+===================== */
+
 body {
     font-family: 'Comic Sans MS', sans-serif;
     /* Background gradient animation */
@@ -55,8 +58,7 @@ body {
 
 .wheel {
     width: 80%;
-    max-width: 400px; /* Increased max-width to accommodate longer words */
-    min-height: 150px;
+    max-width: 600px; /* Increased max-width to better accommodate longer words */
     margin: 20px auto;
     background-color: #ffffff;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -64,11 +66,12 @@ body {
     flex-wrap: wrap;
     justify-content: center;
     align-items: center;
-    font-size: 10vw; /* Responsive font size */
+    font-size: 5vw; /* Reduced font size for better fitting */
     border-radius: 15px;
     transition: transform 0.5s ease;
     position: relative;
     padding: 20px;
+    min-height: auto; /* Allow the container to expand based on content */
 }
 
 .wheel span {
@@ -76,9 +79,10 @@ body {
     opacity: 0;
     transform: translateY(20px);
     animation: reveal 0.5s forwards;
-    animation-delay: calc(0.5s * var(--animation-order));
+    animation-delay: calc(0.3s * var(--animation-order)); /* Reduced delay for quicker reveal */
 }
 
+/* Reveal animation for each letter/digraph */
 @keyframes reveal {
     to {
         opacity: 1;
@@ -96,6 +100,7 @@ body {
     text-decoration: underline; /* Underline for digraphs */
     color: #2980b9; /* Blue color for digraphs */
     font-weight: bold;
+    letter-spacing: 2px; /* Increased letter spacing for better readability */
 }
 
 /* Shake animation keyframes */
@@ -124,7 +129,7 @@ body {
     background-color: green;
     color: white;
     padding: 15px 30px;
-    font-size: 5vw; /* Responsive font size */
+    font-size: 4vw; /* Reduced font size for better fit */
     border: none;
     border-radius: 10px;
     cursor: pointer;
@@ -200,6 +205,10 @@ body {
     }
 
     .wheel {
-        font-size: 12vw; /* Adjust font size for longer words on small screens */
+        font-size: 8vw; /* Adjusted font size for better fitting on smaller screens */
+    }
+
+    .wheel span.digraph {
+        letter-spacing: 1px; /* Slightly reduced letter spacing for smaller screens */
     }
 }
