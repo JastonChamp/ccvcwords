@@ -51,6 +51,14 @@ select {
     border-radius: 4px;
     background-color: #ecf0f1; /* Light gray */
     color: #2c3e50;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    /* Adding an arrow for better UI */
+    background-image: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="7" viewBox="0 0 10 7"><path fill="%2334454E" d="M0 0l5 7 5-7z"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 10px 7px;
 }
 
 /* Spinner and Wheel */
