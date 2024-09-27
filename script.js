@@ -124,7 +124,7 @@ const wordGroups = {
     },
     digraphs: {
         sh: [
-            'ship', 'fish', 'shop', 'wish', 'bash', 'dash', 'gush', 'mash', 'push', 'rash'
+            'ship', 'fish', 'shop', 'wish', 'bash', 'dash', 'gush', 'mash', 'rash'
         ],
         th: [
             'this', 'that', 'math', 'with', 'then', 'both'
