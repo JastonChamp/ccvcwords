@@ -29,6 +29,8 @@ const wordGroups = {
             'nut', 'nun', 'pun', 'pug', 'rug', 'run', 'sun', 'tub', 'tug', 'yum',
         ],
     },
+    // Other word types (ccvc, cvcc, ccvcc) remain the same as before
+    // ...
     ccvc: {
         a: [
             'brag', 'clap', 'crab', 'drag', 'flag', 'flap', 'glad', 'grab', 'plan',
@@ -378,10 +380,12 @@ const compliments = ['Great job!', 'Fantastic!', 'Well done!', 'You did it!', 'A
 let voices = [];
 const synth = window.speechSynthesis;
 
+// Populate the voice list and select a female voice
 function populateVoiceList() {
     voices = synth.getVoices();
     if (voices.length !== 0) {
-        selectedVoice = voices.find(voice => voice.lang === 'en-US') || voices[0];
+        // Attempt to select a female voice; fallback to default if not found
+        selectedVoice = voices.find(voice => voice.name.toLowerCase().includes('female') || voice.gender === 'female') || voices.find(voice => voice.lang === 'en-US') || voices[0];
     }
 }
 
@@ -391,9 +395,12 @@ if (speechSynthesis.onvoiceschanged !== undefined) {
 }
 
 // Set selected voice
+let selectedVoice = null;
 function setVoice() {
-    // You can customize this function to allow voice selection if desired
-    selectedVoice = voices.find(voice => voice.lang === 'en-US') || voices[0];
+    if (!selectedVoice && voices.length > 0) {
+        // Select the first female voice available
+        selectedVoice = voices.find(voice => voice.name.toLowerCase().includes('female')) || voices.find(voice => voice.lang === 'en-US') || voices[0];
+    }
 }
 
 // Function to speak text
@@ -526,8 +533,8 @@ async function revealWord(word) {
         wordBox.appendChild(span);
         letterSpans.push({ span, isSilent, letter });
 
-        // Set animation order for CSS
-        span.style.setProperty('--animation-delay', `${i * 0.1}s`);
+        // Set animation delay for CSS
+        span.style.setProperty('--animation-delay', `${i * 0.3}s`);
     }
 
     revealedWords += 1;
@@ -536,8 +543,8 @@ async function revealWord(word) {
     // Play letter sounds with delays matching the CSS animation
     for (let i = 0; i < letterSpans.length; i++) {
         const { span, isSilent, letter } = letterSpans[i];
-        await new Promise((resolve) => setTimeout(resolve, 100));
-        
+        await new Promise((resolve) => setTimeout(resolve, 300));
+
         // Only play sound if the letter is not silent
         if (!isSilent) {
             await playLetterSound(letter);
