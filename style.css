@@ -1,7 +1,6 @@
 /* =====================
-   General Styles
+   General Body Styling
 ===================== */
-
 body {
     font-family: 'Comic Sans MS', sans-serif;
     /* Background gradient animation */
@@ -13,7 +12,7 @@ body {
     padding: 0;
 }
 
-/* Animated gradient background */
+/* Animated Gradient Background */
 @keyframes gradientBG {
     0% { background-position: 0% 50%; }
     50% { background-position: 100% 50%; }
@@ -48,30 +47,27 @@ body {
     font-size: 16px;
 }
 
-/* Styling for the word display box */
-.spinner {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 30px 0;
-}
-
+/* =====================
+   Styling for the Word Display Box (.wheel)
+===================== */
 .wheel {
     width: 80%;
-    max-width: 600px; /* Increased max-width to better accommodate longer words */
+    max-width: 500px; /* Increased max-width from 400px to 500px */
+    height: auto;
+    /* Removed min-height to allow dynamic height based on content */
     margin: 20px auto;
     background-color: #ffffff;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: wrap; /* Changed from nowrap to wrap */
     justify-content: center;
     align-items: center;
-    font-size: 5vw; /* Reduced font size for better fitting */
+    font-size: 8vw; /* Reduced font-size from 10vw to 8vw */
     border-radius: 15px;
     transition: transform 0.5s ease;
     position: relative;
     padding: 20px;
-    min-height: auto; /* Allow the container to expand based on content */
+    overflow: hidden; /* Ensures content doesn't spill out */
 }
 
 .wheel span {
@@ -79,10 +75,9 @@ body {
     opacity: 0;
     transform: translateY(20px);
     animation: reveal 0.5s forwards;
-    animation-delay: calc(0.3s * var(--animation-order)); /* Reduced delay for quicker reveal */
+    animation-delay: calc(0.5s * var(--animation-order));
 }
 
-/* Reveal animation for each letter/digraph */
 @keyframes reveal {
     to {
         opacity: 1;
@@ -90,20 +85,20 @@ body {
     }
 }
 
-/* Vowel styling */
+/* Vowel Styling */
 .wheel span.vowel {
     color: red;
 }
 
-/* Digraph styling */
+/* Digraph Styling */
 .wheel span.digraph {
     text-decoration: underline; /* Underline for digraphs */
     color: #2980b9; /* Blue color for digraphs */
     font-weight: bold;
-    letter-spacing: 2px; /* Increased letter spacing for better readability */
+    letter-spacing: 2px; /* Added letter-spacing for better readability */
 }
 
-/* Shake animation keyframes */
+/* Shake Animation Keyframes */
 @keyframes shake {
     0% { transform: translate(1px, 1px) rotate(0deg); }
     10% { transform: translate(-1px, -2px) rotate(-1deg); }
@@ -118,18 +113,20 @@ body {
     100% { transform: translate(1px, -2px) rotate(-1deg); }
 }
 
-/* Class to trigger shaking */
+/* Class to Trigger Shaking */
 .shake {
     animation: shake 0.5s;
     animation-iteration-count: 1;
 }
 
-/* Spin button styling */
+/* =====================
+   Spin Button Styling
+===================== */
 #spinButton {
     background-color: green;
     color: white;
     padding: 15px 30px;
-    font-size: 4vw; /* Reduced font size for better fit */
+    font-size: 5vw; /* Responsive font size */
     border: none;
     border-radius: 10px;
     cursor: pointer;
@@ -151,7 +148,9 @@ body {
     box-shadow: none;
 }
 
-/* Compliment styling */
+/* =====================
+   Compliment Styling
+===================== */
 #complimentBox {
     font-size: 30px;
     color: green;
@@ -160,7 +159,9 @@ body {
     transition: opacity 1s ease;
 }
 
-/* Progress bar styling */
+/* =====================
+   Progress Bar Styling
+===================== */
 #progressBar {
     width: 80%;
     max-width: 300px;
@@ -179,13 +180,15 @@ body {
     transition: width 0.5s ease;
 }
 
-/* Progress text styling */
+/* Progress Text Styling */
 #progressText {
     font-size: 20px;
     margin-top: 10px;
 }
 
-/* Responsive layout for mobile devices */
+/* =====================
+   Responsive Layout for Mobile Devices
+===================== */
 @media screen and (max-width: 600px) {
     #spinButton {
         padding: 10px 20px;
@@ -205,10 +208,11 @@ body {
     }
 
     .wheel {
-        font-size: 8vw; /* Adjusted font size for better fitting on smaller screens */
+        font-size: 8vw; /* Adjusted font size for better fitting on small screens */
+        max-width: 450px; /* Slightly increased max-width for better fitting */
     }
 
     .wheel span.digraph {
-        letter-spacing: 1px; /* Slightly reduced letter spacing for smaller screens */
+        letter-spacing: 1px; /* Slightly reduced letter-spacing for smaller screens */
     }
 }
