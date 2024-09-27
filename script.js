@@ -127,10 +127,10 @@ const wordGroups = {
             'ship', 'fish', 'shop', 'wish', 'bash', 'dash', 'gush', 'mash', 'push', 'rash'
         ],
         th: [
-            'this', 'that', 'math', 'bath', 'path', 'with', 'then', 'both', 'south', 'north'
+            'this', 'that', 'math', 'with', 'then', 'both'
         ],
         ch: [
-            'chip', 'chat', 'chalk', 'chair', 'church', 'charm', 'cheese', 'child', 'church', 'chop'
+            'chip', 'chat', 'chop'
         ],
         ng: [
             'sing', 'ring', 'king', 'long', 'song', 'hung', 'strong', 'bang', 'wing', 'swing'
