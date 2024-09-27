@@ -2,43 +2,48 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>CVC, CCVC, CVCC, and CCVCC Word Spinner</title>
-    <!-- Link to the CSS file -->
+    <title>Word Spinner</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <!-- Header -->
+    <header>
+        <h1>Word Spinner</h1>
+        <p>Help children blend sounds and learn to read words effectively!</p>
+    </header>
+
     <!-- Score Display -->
-    <p id="scoreText">Score: 0</p>
+    <div id="scoreText">Score: 0</div>
 
     <!-- Word Type Selection -->
     <div id="wordTypeSelection">
-        <label for="wordTypeSelector">Select Word Type:</label>
-        <!-- Ensure the CCVC and CVCC options are present -->
+        <label for="wordTypeSelector">Choose Word Type:</label>
         <select id="wordTypeSelector">
             <option value="cvc">CVC Words</option>
             <option value="ccvc">CCVC Words</option>
-            <option value="cvcc">CVCC Words</option> <!-- Added CVCC option -->
+            <option value="cvcc">CVCC Words</option>
             <option value="ccvcc">CCVCC Words</option>
+            <option value="digraphs">Digraphs</option> <!-- New Digraphs Option -->
         </select>
     </div>
 
     <!-- Vowel Selection -->
     <div id="vowelSelection">
-        <label for="vowelSelector">Select Vowel:</label>
+        <label for="vowelSelector">Choose Vowel:</label>
         <select id="vowelSelector">
-            <option value="all">All Vowels</option>
-            <option value="a">Short A</option>
-            <option value="e">Short E</option>
-            <option value="i">Short I</option>
-            <option value="o">Short O</option>
-            <option value="u">Short U</option>
+            <option value="all">All</option>
+            <option value="a">A</option>
+            <option value="e">E</option>
+            <option value="i">I</option>
+            <option value="o">O</option>
+            <option value="u">U</option>
         </select>
     </div>
 
-    <!-- Word Display Box -->
+    <!-- Spinner Display Area -->
     <div class="spinner">
         <div class="wheel" id="wordBox">
-            <!-- Letters will be displayed here -->
+            <!-- Letters and Digraphs will be dynamically inserted here -->
         </div>
     </div>
 
@@ -52,9 +57,9 @@
     <div id="progressBar">
         <div id="progressFill"></div>
     </div>
-    <p id="progressText">0 / 0 Words Revealed</p>
+    <div id="progressText">0 / X words revealed</div>
 
-    <!-- Include the JavaScript file -->
+    <!-- JavaScript -->
     <script src="script.js"></script>
 </body>
 </html>
