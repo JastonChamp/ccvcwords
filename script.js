@@ -93,35 +93,9 @@ const compliments = ['Great job!', 'Fantastic!', 'Well done!', 'You did it!', 'A
 // =====================
 let selectedVoice = null;
 
-// Function to load voices and select a female voice
-function loadVoices() {
-    return new Promise((resolve) => {
-        let voices = speechSynthesis.getVoices();
-        if (voices.length) {
-            resolve(voices);
-            return;
-        }
-        let voicesChanged = false;
-        speechSynthesis.onvoiceschanged = () => {
-            if (!voicesChanged) {
-                voicesChanged = true;
-                voices = speechSynthesis.getVoices();
-                resolve(voices);
-            }
-        };
-        // Fallback if onvoiceschanged doesn't fire
-        setTimeout(() => {
-            if (!voicesChanged) {
-                voices = speechSynthesis.getVoices();
-                resolve(voices);
-            }
-        }, 1000);
-    });
-}
-
 async function setVoice() {
     if ('speechSynthesis' in window) {
-        let voices = await loadVoices();
+        let voices = speechSynthesis.getVoices();
         if (voices.length === 0) {
             await new Promise(resolve => setTimeout(resolve, 1000));
             voices = speechSynthesis.getVoices();
@@ -351,7 +325,7 @@ wordTypeSelector.addEventListener('change', () => {
 // Function to toggle audio on or off
 function toggleAudio() {
     audioEnabled = !audioEnabled;
-    toggleAudioButton.textContent = audioEnabled ? '🔊 Enable Audio' : '🔇 Disable Audio';
+    toggleAudioButton.textContent = audioEnabled ? '🔇 Disable Audio' : '🔊 Enable Audio';
 }
 
 // Add event listener to the toggle audio button
