@@ -93,18 +93,21 @@ const compliments = ['Great job!', 'Fantastic!', 'Well done!', 'You did it!', 'A
 // =====================
 let selectedVoice = null;
 
-async function setVoice() {
+function setVoice() {
     if ('speechSynthesis' in window) {
-        let voices = speechSynthesis.getVoices();
-        if (voices.length === 0) {
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            voices = speechSynthesis.getVoices();
+        function loadVoices() {
+            const voices = speechSynthesis.getVoices();
+            if (voices.length > 0) {
+                selectedVoice =
+                    voices.find(voice => voice.lang.startsWith('en') && voice.name.toLowerCase().includes('female')) ||
+                    voices.find(voice => voice.lang.startsWith('en')) ||
+                    voices[0];
+            } else {
+                console.warn('No speech synthesis voices available.');
+            }
         }
-        if (voices.length > 0) {
-            selectedVoice = voices.find(voice => voice.lang.startsWith('en') && voice.name.toLowerCase().includes('female')) || voices.find(voice => voice.lang.startsWith('en')) || voices[0];
-        } else {
-            console.warn('No speech synthesis voices available.');
-        }
+        speechSynthesis.onvoiceschanged = loadVoices;
+        loadVoices();
     } else {
         console.warn('Speech Synthesis API is not supported on this browser.');
     }
@@ -133,9 +136,7 @@ function speak(text) {
 // =====================
 
 // Function to check if a letter is a vowel
-function isVowel(letter) {
-    return 'aeiou'.includes(letter.toLowerCase());
-}
+const isVowel = (letter) => 'aeiou'.includes(letter.toLowerCase());
 
 // Function to update the score
 function updateScore() {
@@ -176,9 +177,7 @@ function playLetterSound(unit) {
         const sound = letterSounds[unit.toLowerCase()];
         if (sound) {
             sound.currentTime = 0;
-            sound.play().then(() => {
-                sound.onended = resolve;
-            }).catch((error) => {
+            sound.play().then(resolve).catch((error) => {
                 console.error(`Error playing sound for "${unit}":`, error);
                 resolve();
             });
@@ -218,8 +217,7 @@ function parseWord(word) {
 async function revealWord(word) {
     wordBox.innerHTML = '';
     const units = parseWord(word);
-    for (let i = 0; i < units.length; i++) {
-        const unit = units[i];
+    units.forEach((unit, index) => {
         const span = document.createElement('span');
         span.textContent = unit.text;
         if (unit.isVowel && !unit.isDigraph) {
@@ -229,12 +227,14 @@ async function revealWord(word) {
             span.classList.add('digraph');
         }
         wordBox.appendChild(span);
-        span.style.setProperty('--animation-order', i + 1);
-    }
+        span.style.setProperty('--animation-order', index + 1);
+    });
+
     for (let i = 0; i < units.length; i++) {
         await new Promise(resolve => setTimeout(resolve, 500));
         await playLetterSound(units[i].text);
     }
+
     await new Promise(resolve => setTimeout(resolve, 1000));
     await speak(word);
     giveCompliment();
@@ -246,26 +246,24 @@ async function revealWord(word) {
 function getAvailableWords() {
     const selectedWordType = wordTypeSelector.value;
     const selectedVowel = vowelSelector.value;
-    switch (selectedWordType) {
-        case 'cvc':
-            return selectedVowel === 'all' ? wordGroups.cvc.a.concat(wordGroups.cvc.e, wordGroups.cvc.i, wordGroups.cvc.o, wordGroups.cvc.u) : wordGroups.cvc[selectedVowel] || [];
-        case 'ccvc':
-            return selectedVowel === 'all' ? wordGroups.ccvc.a.concat(wordGroups.ccvc.e, wordGroups.ccvc.i, wordGroups.ccvc.o, wordGroups.ccvc.u) : wordGroups.ccvc[selectedVowel] || [];
-        case 'cvcc':
-            return selectedVowel === 'all' ? wordGroups.cvcc.a.concat(wordGroups.cvcc.e, wordGroups.cvcc.i, wordGroups.cvcc.o, wordGroups.cvcc.u) : wordGroups.cvcc[selectedVowel] || [];
-        case 'ccvcc':
-            return selectedVowel === 'all' ? wordGroups.ccvcc.a.concat(wordGroups.ccvcc.e, wordGroups.ccvcc.i, wordGroups.ccvcc.o, wordGroups.ccvcc.u) : wordGroups.ccvcc[selectedVowel] || [];
-        case 'digraphs':
-            return allDigraphWords;
-        default:
-            return [];
+    let words = [];
+
+    if (selectedWordType === 'digraphs') {
+        words = allDigraphWords;
+    } else {
+        const group = wordGroups[selectedWordType];
+        if (selectedVowel === 'all') {
+            words = Object.values(group).flat();
+        } else {
+            words = group[selectedVowel] || [];
+        }
     }
+    return words;
 }
 
 // Function to get a random word from available words
 function getRandomWord() {
-    const selectedWordType = wordTypeSelector.value;
-    const availableWords = selectedWordType === 'digraphs' ? allDigraphWords : getAvailableWords();
+    const availableWords = getAvailableWords();
     const remainingWords = availableWords.filter(word => !usedWords.includes(word));
     if (remainingWords.length === 0) {
         alert('You have gone through all the words! The list will reset.');
@@ -299,28 +297,30 @@ async function spin() {
         await revealWord(word);
     } catch (error) {
         console.error('Error during word reveal:', error);
+    } finally {
+        spinButton.disabled = false;
     }
-    spinButton.disabled = false;
 }
 
 // Event listener for vowel selection change
 vowelSelector.addEventListener('change', () => {
-    usedWords = [];
-    revealedWords = 0;
-    score = 0;
-    scoreText.textContent = `Score: ${score}`;
-    updateProgress();
+    resetGame();
 });
 
 // Event listener for word type selection change
 wordTypeSelector.addEventListener('change', () => {
+    resetGame();
+    vowelSelection.style.display = wordTypeSelector.value === 'digraphs' ? 'none' : 'block';
+});
+
+// Function to reset the game state
+function resetGame() {
     usedWords = [];
     revealedWords = 0;
     score = 0;
     scoreText.textContent = `Score: ${score}`;
     updateProgress();
-    vowelSelection.style.display = wordTypeSelector.value === 'digraphs' ? 'none' : 'block';
-});
+}
 
 // Function to toggle audio on or off
 function toggleAudio() {
@@ -347,10 +347,10 @@ scoreText.textContent = `Score: ${score}`;
 
 // Preload all audio files
 function preloadAudio() {
-    for (let key in letterSounds) {
+    for (const key in letterSounds) {
         letterSounds[key].load();
     }
 }
 
 // Preload audio on window load
-window.onload = preloadAudio;
+window.addEventListener('load', preloadAudio);
