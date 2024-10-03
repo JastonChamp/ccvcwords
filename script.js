@@ -37,7 +37,7 @@ const wordGroups = {
         ],
         e: [
             'bled', 'bred', 'fled', 'fret', 'glen', 'sped', 'stem', 'step', 'trek', 'clef',
-            'sled', 'smell', 'spell', 'spend', 'swept', 'shelf', 'spend', 'swept', 'bless', 'blend'
+            'sled', 'smell', 'spell', 'spend', 'swept', 'shelf', 'bless', 'blend', 'spend', 'swept'
         ],
         i: [
             'brim', 'brig', 'clip', 'crib', 'drip', 'flip', 'grin', 'grid', 'grip', 'skip',
@@ -137,6 +137,10 @@ const letterSounds = {};
     letterSounds[digraph] = audio;
 });
 
+// Load UI sounds
+const clickSound = new Audio(`${audioPath}click.mp3`);
+const successSound = new Audio(`${audioPath}success.mp3`);
+
 // =====================
 // Application State Variables
 // =====================
@@ -144,6 +148,7 @@ let revealedWords = 0;
 let usedWords = [];
 let score = 0;
 let audioEnabled = true; // Audio enabled by default
+let blendingTime = 3000; // Default to 3000ms
 
 // =====================
 // DOM Elements
@@ -158,7 +163,9 @@ const vowelSelection = document.getElementById('vowelSelection');
 const wordTypeSelector = document.getElementById('wordTypeSelector');
 const scoreText = document.getElementById('scoreText');
 const toggleAudioButton = document.getElementById('toggleAudioButton');
-const blendingDelayInput = document.getElementById('blendingDelayInput'); // Added blending delay input
+const increaseBlendingTimeButton = document.getElementById('increaseBlendingTime');
+const decreaseBlendingTimeButton = document.getElementById('decreaseBlendingTime');
+const blendingTimeDisplay = document.getElementById('blendingTimeDisplay');
 
 // =====================
 // Predefined Compliments
@@ -236,9 +243,12 @@ function giveCompliment() {
     const compliment = compliments[Math.floor(Math.random() * compliments.length)];
     complimentBox.textContent = compliment;
     complimentBox.style.color = 'green';
-    complimentBox.style.fontSize = '30px';
+    complimentBox.style.fontSize = '36px';
     complimentBox.style.opacity = '1';
-    speak(compliment);
+    if (audioEnabled) {
+        speak(compliment);
+        successSound.play();
+    }
     setTimeout(() => {
         complimentBox.style.opacity = '0';
     }, 2000);
@@ -313,14 +323,8 @@ async function revealWord(word) {
         await playLetterSound(units[i].text);
     }
 
-    // Get blending delay from input
-    let blendingDelay = parseInt(blendingDelayInput.value, 10) * 1000; // Convert seconds to milliseconds
-    if (isNaN(blendingDelay) || blendingDelay < 1000) {
-        blendingDelay = 3000; // Default to 3 seconds if invalid input
-    }
-
     // Add delay before pronouncing the whole word
-    await new Promise(resolve => setTimeout(resolve, blendingDelay));
+    await new Promise(resolve => setTimeout(resolve, blendingTime));
 
     // Pronounce the whole word
     await speak(word);
@@ -374,6 +378,9 @@ function getRandomWord() {
 async function spin() {
     spinButton.disabled = true;
     wordBox.classList.add('shake');
+    if (audioEnabled) {
+        clickSound.play();
+    }
     setTimeout(() => {
         wordBox.classList.remove('shake');
     }, 500);
@@ -418,6 +425,28 @@ function toggleAudio() {
 // Add event listener to the toggle audio button
 toggleAudioButton.addEventListener('click', toggleAudio);
 
+// Blending Time Control Event Listeners
+increaseBlendingTimeButton.addEventListener('click', () => {
+    if (blendingTime < 7000) {
+        blendingTime += 1000;
+        updateBlendingTimeDisplay();
+    }
+});
+
+decreaseBlendingTimeButton.addEventListener('click', () => {
+    if (blendingTime > 1000) {
+        blendingTime -= 1000;
+        updateBlendingTimeDisplay();
+    }
+});
+
+function updateBlendingTimeDisplay() {
+    blendingTimeDisplay.textContent = blendingTime / 1000;
+}
+
+// Initialize blending time display on load
+updateBlendingTimeDisplay();
+
 // =====================
 // Initialization
 // =====================
@@ -437,6 +466,8 @@ function preloadAudio() {
     for (const key in letterSounds) {
         letterSounds[key].load();
     }
+    clickSound.load();
+    successSound.load();
 }
 
 // Preload audio on window load
