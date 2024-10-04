@@ -166,11 +166,13 @@ const toggleAudioButton = document.getElementById('toggleAudioButton');
 const increaseBlendingTimeButton = document.getElementById('increaseBlendingTime');
 const decreaseBlendingTimeButton = document.getElementById('decreaseBlendingTime');
 const blendingTimeDisplay = document.getElementById('blendingTimeDisplay');
+const blendingTimerContainer = document.getElementById('blendingTimerContainer');
+const blendingTimer = document.getElementById('blendingTimer');
 
 // =====================
 // Predefined Compliments
 // =====================
-const compliments = ['Great job!', 'Fantastic!', 'Well done!', 'You did it!', 'Awesome!'];
+const compliments = ['Great job!', 'Fantastic!', 'Well done!', 'You did it!', 'Awesome!', 'Keep it up!', 'Excellent!'];
 
 // =====================
 // Speech Synthesis Configuration
@@ -200,7 +202,7 @@ function setVoice() {
 // Function to speak text
 function speak(text) {
     return new Promise((resolve) => {
-        if (selectedVoice) {
+        if (selectedVoice && audioEnabled) {
             const utterance = new SpeechSynthesisUtterance(text);
             utterance.voice = selectedVoice;
             utterance.rate = 0.8;
@@ -209,7 +211,7 @@ function speak(text) {
             utterance.onend = resolve;
             speechSynthesis.speak(utterance);
         } else {
-            console.warn(`Speech synthesis not available. Text: ${text}`);
+            console.warn(`Speech synthesis not available or audio disabled. Text: ${text}`);
             resolve();
         }
     });
@@ -323,7 +325,10 @@ async function revealWord(word) {
         await playLetterSound(units[i].text);
     }
 
-    // Add delay before pronouncing the whole word
+    // Start blending timer
+    startBlendingTimer(blendingTime / 1000);
+
+    // Wait for blending time
     await new Promise(resolve => setTimeout(resolve, blendingTime));
 
     // Pronounce the whole word
@@ -377,10 +382,14 @@ function getRandomWord() {
 // Function to handle the Spin button click
 async function spin() {
     spinButton.disabled = true;
-    wordBox.classList.add('shake');
+    spinButton.classList.add('spinning');
     if (audioEnabled) {
         clickSound.play();
     }
+    setTimeout(() => {
+        spinButton.classList.remove('spinning');
+    }, 1000);
+    wordBox.classList.add('shake');
     setTimeout(() => {
         wordBox.classList.remove('shake');
     }, 500);
@@ -404,7 +413,7 @@ vowelSelector.addEventListener('change', () => {
 // Event listener for word type selection change
 wordTypeSelector.addEventListener('change', () => {
     resetGame();
-    vowelSelection.style.display = wordTypeSelector.value === 'digraphs' ? 'none' : 'block';
+    vowelSelection.style.display = wordTypeSelector.value === 'digraphs' ? 'none' : 'flex';
 });
 
 // Function to reset the game state
@@ -446,6 +455,21 @@ function updateBlendingTimeDisplay() {
 
 // Initialize blending time display on load
 updateBlendingTimeDisplay();
+
+// Function to start the blending timer
+function startBlendingTimer(seconds) {
+    blendingTimerContainer.style.display = 'block';
+    blendingTimer.style.width = '100%';
+    let timeLeft = seconds;
+    const interval = setInterval(() => {
+        timeLeft--;
+        blendingTimer.style.width = `${(timeLeft / seconds) * 100}%`;
+        if (timeLeft <= 0) {
+            clearInterval(interval);
+            blendingTimerContainer.style.display = 'none';
+        }
+    }, 1000);
+}
 
 // =====================
 // Initialization
