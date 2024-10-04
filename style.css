@@ -3,12 +3,12 @@
 ===================== */
 body {
     font-family: 'Poppins', sans-serif;
-    animation: gradientBG 10s infinite;
     background: linear-gradient(270deg, #e3f7fc, #a1d3f0, #e3f7fc);
     background-size: 600% 600%;
     text-align: center;
     margin: 0;
     padding: 0;
+    animation: gradientBG 10s infinite;
 }
 
 /* Animated Gradient Background */
@@ -30,7 +30,7 @@ body {
 #wordTypeSelection,
 #vowelSelection,
 #blendingControl {
-    margin: 30px auto;
+    margin: 20px auto;
     font-size: 24px;
     display: flex;
     justify-content: center;
@@ -45,7 +45,6 @@ body {
 }
 
 select,
-input[type="number"],
 #blendingControl button,
 #blendingTimeDisplay {
     padding: 12px 16px;
@@ -54,11 +53,11 @@ input[type="number"],
     border-radius: 10px;
     outline: none;
     transition: border-color 0.3s;
-    background-color: #ffffe0;
+    background-color: #ffeb99;
+    cursor: pointer;
 }
 
 select:focus,
-input[type="number"]:focus,
 #blendingControl button:focus {
     border-color: #1abc9c;
 }
@@ -72,17 +71,7 @@ select {
 }
 
 #blendingControl button {
-    padding: 12px 16px;
-    font-size: 24px;
     margin: 0 5px;
-    border: 2px solid #2980b9;
-    border-radius: 10px;
-    background-color: #ffffe0;
-    cursor: pointer;
-}
-
-#blendingControl button:hover {
-    background-color: #ffeb99; /* Lighter yellow on hover */
 }
 
 #blendingTimeDisplay {
@@ -96,7 +85,6 @@ select {
 .wheel {
     width: 80%;
     max-width: 500px;
-    height: auto;
     margin: 20px auto;
     background-color: #ffffff;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -160,13 +148,15 @@ select {
     padding: 20px 40px;
     font-size: 6vw;
     border: none;
-    border-radius: 20px;
+    border-radius: 50%;
     cursor: pointer;
     box-shadow: 0 5px 15px rgba(255, 87, 34, 0.4);
     transition: all 0.3s ease;
     margin: 20px auto;
     display: block;
     max-width: 250px;
+    min-width: 100px;
+    min-height: 100px;
 }
 
 #spinButton:hover {
@@ -178,6 +168,16 @@ select {
     background-color: gray;
     cursor: not-allowed;
     box-shadow: none;
+}
+
+/* Spinning Animation */
+.spinning {
+    animation: spin 1s ease-in-out;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
 /* =====================
@@ -248,11 +248,35 @@ select {
     font-style: italic;
 }
 
+/* =====================
+   Blending Timer Styling
+===================== */
+#blendingTimerContainer {
+    width: 80%;
+    max-width: 400px;
+    background-color: #ddd;
+    height: 20px;
+    margin: 20px auto;
+    border-radius: 10px;
+    overflow: hidden;
+    display: none; /* Initially hidden */
+}
+
+#blendingTimer {
+    height: 100%;
+    background-color: #4CAF50;
+    width: 100%;
+    transition: width linear;
+}
+
 /* Responsive Layout for Mobile Devices */
 @media screen and (max-width: 600px) {
     #spinButton {
         padding: 15px 30px;
         font-size: 18px;
+        max-width: 150px;
+        min-width: 80px;
+        min-height: 80px;
     }
 
     #complimentBox {
@@ -278,12 +302,9 @@ select {
 
     /* Blending Delay Control Responsive Styling */
     #blendingControl button,
-    #blendingTimeDisplay {
-        font-size: 18px;
-        padding: 8px 12px;
-    }
-
+    #blendingTimeDisplay,
     #blendingControl label {
         font-size: 18px;
+        padding: 8px 12px;
     }
 }
