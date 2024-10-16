@@ -2,47 +2,29 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Sight Word Sentences Game</title>
+  <title>Sight Word Sentences</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+  <h1>Sight Word Sentences</h1>
   <div class="game-container">
-    <header>
-      <h1>Sight Word Sentences</h1>
-      <div class="progress">
-        <p>Level: <span id="level-number">1</span></p>
-        <p>Stars Colored: <span id="stars-colored">0</span></p>
-      </div>
-    </header>
-    
-    <main>
+    <div class="sentence-card">
       <div class="instructions" id="instructions">
-        <p>Look for the highlighted sight words and read the sentence aloud!</p>
+        Decode each sentence on your own. <span style="color: red;">Color a star</span> when you are done.
       </div>
-
-      <div class="sentence-container">
-        <p id="sentence-text"></p>
-        <button id="read-aloud-button">Read Aloud</button>
+      <div class="sentence" id="sentence-text">
+        <!-- Sentence will be injected here -->
       </div>
-
+      <div class="image-container" id="image-container">
+        <!-- Images related to the sentence will be injected here -->
+      </div>
+      <button id="read-aloud-button">Read Aloud</button>
       <div class="feedback" id="feedback"></div>
-    </main>
-    
-    <div class="star-coloring-container" id="star-coloring-container">
-      <h2>Color Your Star!</h2>
-      <img src="star_outline.png" usemap="#star-map" id="star-image">
-      <map name="star-map">
-        <!-- Define clickable areas for coloring -->
-        <area shape="poly" coords="..." data-section="1">
-        <!-- Add more areas as needed -->
-      </map>
-      <div class="color-palette" id="color-palette">
-        <!-- Color options will be generated here -->
+      <div class="stars" id="stars-container">
+        <!-- Stars will be generated here -->
       </div>
-      <button id="continue-button">Continue</button>
     </div>
   </div>
-
   <script src="script.js"></script>
 </body>
 </html>
