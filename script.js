@@ -863,12 +863,17 @@ const readAloudButton = document.getElementById('readAloud');
 const starsContainer = document.getElementById('stars-container');
 const imageContainer = document.getElementById('image-container');
 const levelNumberElement = document.getElementById('level-number');
+const progressBar = document.getElementById('progress-bar');
+const themeSelect = document.getElementById('theme-select');
 
 // Initialize Game
 function initGame() {
+  loadProgress();
+  applySavedTheme();
   generateStars();
   updateLevelIndicator();
   loadSentence();
+  updateProgressBar();
 }
 
 // Generate Stars
@@ -896,10 +901,19 @@ function colorStar(index) {
     star.classList.add('star-colored');
     starsColored += 1;
 
-    // Play sound effect (optional)
-    // const audio = new Audio('sounds/star-click.mp3');
-    // audio.play();
+    // Play sound effect
+    const audio = new Audio('sounds/star-sound.mp3');
+    audio.play();
+
+    // Update progress bar
+    updateProgressBar();
   }
+}
+
+// Update Progress Bar
+function updateProgressBar() {
+  const progressPercentage = (starsColored / 6) * 100;
+  progressBar.style.width = `${progressPercentage}%`;
 }
 
 // Load Sentence
@@ -955,8 +969,6 @@ function displayImages(images) {
       };
       imageContainer.appendChild(img);
     });
-  } else {
-    console.warn('No images available for this sentence.');
   }
 }
 
@@ -1010,11 +1022,19 @@ function playSentenceAudio(sentence) {
 
 // Positive Feedback
 function showPositiveFeedback() {
-  feedbackElement.textContent = 'Great job!';
+  feedbackElement.textContent = 'Well done!';
+  feedbackElement.classList.add('fade-in');
+
+  setTimeout(() => {
+    feedbackElement.classList.remove('fade-in');
+    feedbackElement.classList.add('fade-out');
+  }, 1000);
+
   setTimeout(() => {
     feedbackElement.textContent = '';
+    feedbackElement.classList.remove('fade-out');
     moveToNextSentence();
-  }, 1000);
+  }, 1500);
 }
 
 // Move to Next Sentence or Level
@@ -1029,18 +1049,60 @@ function moveToNextSentence() {
       starsColored = 0;
       updateLevelIndicator();
       generateStars();
+      updateProgressBar(); // Reset progress bar
     } else {
       // Game completed
       alert('Congratulations! You have completed all levels.');
       return;
     }
   }
+  saveProgress();
   loadSentence();
 }
 
 // Update Level Indicator
 function updateLevelIndicator() {
   levelNumberElement.textContent = currentLevel;
+}
+
+// Theme Selector
+themeSelect.addEventListener('change', (e) => {
+  const selectedTheme = e.target.value;
+  document.body.className = ''; // Reset any existing theme classes
+  switch (selectedTheme) {
+    case 'forest':
+      document.body.classList.add('forest-theme');
+      break;
+    case 'ocean':
+      document.body.classList.add('ocean-theme');
+      break;
+    case 'space':
+      document.body.classList.add('space-theme');
+      break;
+    default:
+      document.body.classList.add('default-theme');
+  }
+  // Save theme preference
+  localStorage.setItem('selectedTheme', selectedTheme);
+});
+
+// Apply Saved Theme
+function applySavedTheme() {
+  const savedTheme = localStorage.getItem('selectedTheme') || 'default';
+  themeSelect.value = savedTheme;
+  document.body.classList.add(`${savedTheme}-theme`);
+}
+
+// Save Progress
+function saveProgress() {
+  localStorage.setItem('currentLevel', currentLevel);
+  localStorage.setItem('currentSentenceIndex', currentSentenceIndex);
+}
+
+// Load Progress
+function loadProgress() {
+  currentLevel = parseInt(localStorage.getItem('currentLevel')) || 1;
+  currentSentenceIndex = parseInt(localStorage.getItem('currentSentenceIndex')) || 0;
 }
 
 // Start Game
