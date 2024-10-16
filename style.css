@@ -6,47 +6,76 @@
   --background-color: #f8f9fa;
   --primary-color: #3498db;
   --accent-color: #e74c3c;
+  --decodable-color: #2980b9;
   --text-color: #2c3e50;
 }
 
 /* Default Theme */
-body.default-theme {
+body.theme-default {
   --background-color: #f8f9fa;
   --primary-color: #3498db;
   --accent-color: #e74c3c;
+  --decodable-color: #2980b9;
   --text-color: #2c3e50;
 }
 
 /* Forest Theme */
-body.forest-theme {
+body.theme-forest {
   --background-color: #e8f5e9;
   --primary-color: #2e7d32;
   --accent-color: #a1887f;
+  --decodable-color: #4caf50;
   --text-color: #1b5e20;
+  background-image: url('images/background-forest.png');
+  background-size: cover;
+  background-position: center;
 }
 
 /* Ocean Theme */
-body.ocean-theme {
+body.theme-ocean {
   --background-color: #e0f7fa;
   --primary-color: #00838f;
   --accent-color: #ffab91;
+  --decodable-color: #0097a7;
   --text-color: #006064;
+  background-image: url('images/background-ocean.png');
+  background-size: cover;
+  background-position: center;
 }
 
 /* Space Theme */
-body.space-theme {
+body.theme-space {
   --background-color: #eceff1;
   --primary-color: #455a64;
   --accent-color: #ffab40;
+  --decodable-color: #607d8b;
   --text-color: #263238;
+  background-image: url('images/background-space.png');
+  background-size: cover;
+  background-position: center;
 }
 
+/* Global Styles */
 body {
   font-family: 'Baloo 2', cursive, sans-serif;
   background-color: var(--background-color);
   text-align: center;
   margin: 0;
   padding: 20px;
+  position: relative;
+}
+
+#mascot-container {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  width: 100px;
+  height: 100px;
+}
+
+#mascot {
+  width: 100%;
+  height: auto;
 }
 
 h1 {
@@ -59,20 +88,27 @@ h1 {
   font-size: 22px;
   color: var(--text-color);
   margin-bottom: 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-.theme-selector {
-  margin-bottom: 20px;
-  font-size: 18px;
+.icon-button {
+  cursor: pointer;
+  margin-right: 10px;
+  font-size: 24px;
+  color: var(--primary-color);
 }
 
-.theme-selector select {
-  padding: 5px 10px;
-  font-size: 16px;
+.inline-icon {
+  width: 24px;
+  height: 24px;
+  vertical-align: middle;
+  margin: 0 5px;
 }
 
 .sentence-card {
-  background-color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.9);
   border-radius: 20px;
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
   padding: 40px;
@@ -109,12 +145,13 @@ h1 {
 }
 
 .sight-word {
-  color: var(--accent-color);
+  color: var(--accent-color); /* Sight words in red */
   font-weight: bold;
   cursor: pointer;
 }
 
 .decodable-word {
+  color: var(--decodable-color); /* Decodable words in blue */
   cursor: pointer;
 }
 
@@ -123,8 +160,8 @@ h1 {
   border: none;
   border-radius: 10px;
   color: #fff;
-  padding: 18px 35px;
-  font-size: 22px;
+  padding: 20px 40px;
+  font-size: 24px;
   cursor: pointer;
   margin-bottom: 25px;
   transition: background-color 0.3s;
@@ -132,6 +169,11 @@ h1 {
 
 #readAloud:hover {
   background-color: darken(var(--primary-color), 10%);
+}
+
+.button-animate {
+  transform: scale(1.1);
+  transition: transform 0.2s;
 }
 
 .feedback {
@@ -160,8 +202,8 @@ h1 {
 }
 
 .star {
-  width: 80px;
-  height: 80px;
+  width: 90px;
+  height: 90px;
   background-color: #f1c40f;
   clip-path: polygon(
     50% 0%,
@@ -177,6 +219,7 @@ h1 {
   );
   cursor: pointer;
   transition: transform 0.2s ease, background-color 0.3s;
+  position: relative; /* For sparkle effect */
 }
 
 .star:hover {
@@ -201,6 +244,24 @@ h1 {
 .star-colored {
   background-color: #f39c12;
   animation: starFill 0.5s ease-in-out;
+}
+
+@keyframes sparkle {
+  0%, 100% { opacity: 0; transform: scale(0); }
+  50% { opacity: 1; transform: scale(1); }
+}
+
+.star-colored::after {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  width: 110px;
+  height: 110px;
+  background: url('images/sparkle.png') no-repeat center center;
+  background-size: contain;
+  animation: sparkle 1s ease-in-out;
+  pointer-events: none;
 }
 
 .image-support {
@@ -236,8 +297,8 @@ h1 {
   }
 
   .star {
-    width: 60px;
-    height: 60px;
+    width: 70px;
+    height: 70px;
   }
 
   .image-support img {
