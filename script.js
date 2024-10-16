@@ -862,10 +862,12 @@ const feedbackElement = document.getElementById('feedback');
 const readAloudButton = document.getElementById('readAloud');
 const starsContainer = document.getElementById('stars-container');
 const imageContainer = document.getElementById('image-container');
+const levelNumberElement = document.getElementById('level-number');
 
 // Initialize Game
 function initGame() {
   generateStars();
+  updateLevelIndicator();
   loadSentence();
 }
 
@@ -876,7 +878,13 @@ function generateStars() {
     const star = document.createElement('div');
     star.classList.add('star');
     star.dataset.index = i;
+    star.tabIndex = 0; // Make focusable
     star.addEventListener('click', () => colorStar(i));
+    star.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        colorStar(i);
+      }
+    });
     starsContainer.appendChild(star);
   }
 }
@@ -884,23 +892,36 @@ function generateStars() {
 // Color Star
 function colorStar(index) {
   const star = starsContainer.querySelectorAll('.star')[index];
-  if (!star.classList.contains('star-colored')) {
+  if (!star.classList.contains('star-colored') && starsColored < 6) {
     star.classList.add('star-colored');
     starsColored += 1;
+
+    // Play sound effect (optional)
+    // const audio = new Audio('sounds/star-click.mp3');
+    // audio.play();
   }
 }
 
 // Load Sentence
 function loadSentence() {
   const level = levels[currentLevel - 1];
+  if (!level) {
+    console.error(`Level ${currentLevel} not found.`);
+    return;
+  }
+
   const sentenceObj = level.sentences[currentSentenceIndex];
+  if (!sentenceObj) {
+    console.error(`Sentence index ${currentSentenceIndex} not found in level ${currentLevel}.`);
+    return;
+  }
 
   // Highlight sight words in the sentence
   const sentenceWithHighlights = highlightSightWords(sentenceObj.text, sentenceObj.sightWords);
   sentenceTextElement.innerHTML = sentenceWithHighlights;
   feedbackElement.textContent = '';
 
-  // Display images related to the sentence (will be empty until images are uploaded)
+  // Display images related to the sentence
   displayImages(sentenceObj.images);
 
   // Set up word audio playback
@@ -929,8 +950,13 @@ function displayImages(images) {
       const img = document.createElement('img');
       img.src = src;
       img.alt = 'Related Image';
+      img.onerror = function() {
+        this.src = 'images/default-image.jpg'; // Provide a default image
+      };
       imageContainer.appendChild(img);
     });
+  } else {
+    console.warn('No images available for this sentence.');
   }
 }
 
@@ -938,9 +964,16 @@ function displayImages(images) {
 function setupWordAudio() {
   const words = document.querySelectorAll('.sentence span');
   words.forEach(wordSpan => {
+    wordSpan.tabIndex = 0; // Make focusable
     wordSpan.addEventListener('click', () => {
       const word = wordSpan.textContent.replace(/[^a-zA-Z]/g, '');
       playWordAudio(word);
+    });
+    wordSpan.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        const word = wordSpan.textContent.replace(/[^a-zA-Z]/g, '');
+        playWordAudio(word);
+      }
     });
   });
 }
@@ -993,6 +1026,9 @@ function moveToNextSentence() {
     if (currentLevel < levels.length) {
       currentLevel += 1;
       currentSentenceIndex = 0;
+      starsColored = 0;
+      updateLevelIndicator();
+      generateStars();
     } else {
       // Game completed
       alert('Congratulations! You have completed all levels.');
@@ -1000,6 +1036,11 @@ function moveToNextSentence() {
     }
   }
   loadSentence();
+}
+
+// Update Level Indicator
+function updateLevelIndicator() {
+  levelNumberElement.textContent = currentLevel;
 }
 
 // Start Game
