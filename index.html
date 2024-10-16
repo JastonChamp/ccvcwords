@@ -16,21 +16,26 @@
     </header>
     
     <main>
+      <div class="instructions" id="instructions">
+        <p>Look for the highlighted sight words and read the sentence aloud!</p>
+      </div>
+
       <div class="sentence-container">
         <p id="sentence-text"></p>
-        <button id="audio-button" class="audio-button" title="Play Sentence Audio"></button>
+        <button id="read-aloud-button">Read Aloud</button>
       </div>
-      
-      <div class="options-container" id="options-container">
-        <!-- Options will be generated here -->
-      </div>
-      
+
       <div class="feedback" id="feedback"></div>
     </main>
     
     <div class="star-coloring-container" id="star-coloring-container">
       <h2>Color Your Star!</h2>
-      <canvas id="star-canvas" width="200" height="200"></canvas>
+      <img src="star_outline.png" usemap="#star-map" id="star-image">
+      <map name="star-map">
+        <!-- Define clickable areas for coloring -->
+        <area shape="poly" coords="..." data-section="1">
+        <!-- Add more areas as needed -->
+      </map>
       <div class="color-palette" id="color-palette">
         <!-- Color options will be generated here -->
       </div>
