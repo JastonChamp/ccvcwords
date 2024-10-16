@@ -858,19 +858,39 @@ let currentSentenceIndex = 0;
 let starsColored = 0;
 
 // Elements
-const levelNumberElement = document.getElementById('level-number');
-const starsColoredElement = document.getElementById('stars-colored');
 const sentenceTextElement = document.getElementById('sentence-text');
 const feedbackElement = document.getElementById('feedback');
 const readAloudButton = document.getElementById('read-aloud-button');
-const starColoringContainer = document.getElementById('star-coloring-container');
-const starImage = document.getElementById('star-image');
-const colorPalette = document.getElementById('color-palette');
-const continueButton = document.getElementById('continue-button');
+const starsContainer = document.getElementById('stars-container');
+const imageContainer = document.getElementById('image-container');
 
 // Initialize Game
 function initGame() {
+  generateStars();
   loadSentence();
+}
+
+// Generate Stars
+function generateStars() {
+  starsContainer.innerHTML = '';
+  for (let i = 0; i < 6; i++) {
+    const star = document.createElement('img');
+    star.src = 'images/star-outline.png';
+    star.alt = 'Star';
+    star.dataset.index = i;
+    star.addEventListener('click', () => colorStar(i));
+    starsContainer.appendChild(star);
+  }
+}
+
+// Color Star
+function colorStar(index) {
+  const star = starsContainer.querySelectorAll('img')[index];
+  if (!star.classList.contains('star-colored')) {
+    star.src = 'images/star-colored.png';
+    star.classList.add('star-colored');
+    starsColored += 1;
+  }
 }
 
 // Load Sentence
@@ -878,11 +898,15 @@ function loadSentence() {
   const level = levels[currentLevel - 1];
   const sentenceObj = level.sentences[currentSentenceIndex];
 
-  levelNumberElement.textContent = currentLevel;
+  // Highlight sight words in the sentence
   const sentenceWithHighlights = highlightSightWords(sentenceObj.text, sentenceObj.sightWords);
   sentenceTextElement.innerHTML = sentenceWithHighlights;
   feedbackElement.textContent = '';
 
+  // Display images related to the sentence
+  displayImages(sentenceObj.images);
+
+  // Set up word audio playback
   setupWordAudio();
 }
 
@@ -900,9 +924,20 @@ function highlightSightWords(sentence, sightWords) {
   return words.join(' ');
 }
 
+// Display Images
+function displayImages(images) {
+  imageContainer.innerHTML = '';
+  images.forEach(src => {
+    const img = document.createElement('img');
+    img.src = src;
+    img.alt = 'Related Image';
+    imageContainer.appendChild(img);
+  });
+}
+
 // Setup Word Audio
 function setupWordAudio() {
-  const words = document.querySelectorAll('.sentence-container span');
+  const words = document.querySelectorAll('.sentence span');
   words.forEach(wordSpan => {
     wordSpan.addEventListener('click', () => {
       const word = wordSpan.textContent.replace(/[^a-zA-Z]/g, '');
@@ -935,68 +970,13 @@ function playSentenceAudio(sentence) {
 function showPositiveFeedback() {
   feedbackElement.textContent = 'Great job!';
   setTimeout(() => {
-    initiateStarColoring();
+    feedbackElement.textContent = '';
+    moveToNextSentence();
   }, 1000);
 }
 
-// Initiate Star Coloring
-function initiateStarColoring() {
-  // Hide game elements
-  feedbackElement.textContent = '';
-  readAloudButton.style.display = 'none';
-
-  // Show star coloring container
-  starColoringContainer.style.display = 'block';
-  setupStarColoring();
-  setupColorPalette();
-}
-
-// Setup Star Coloring
-function setupStarColoring() {
-  const areas = document.querySelectorAll('area');
-  let currentColor = '#ff0000';
-
-  areas.forEach(area => {
-    area.addEventListener('click', (e) => {
-      const section = e.target.dataset.section;
-      colorStarSection(section, currentColor);
-    });
-  });
-
-  colorPalette.addEventListener('click', (e) => {
-    if (e.target.classList.contains('color-swatch')) {
-      currentColor = e.target.dataset.color;
-    }
-  });
-}
-
-// Color Star Section
-function colorStarSection(section, color) {
-  // Implement logic to change the color of the specific section
-  // This could involve changing the CSS or manipulating the image
-}
-
-// Setup Color Palette
-function setupColorPalette() {
-  const colors = ['#FF0000', '#FFA500', '#FFFF00', '#008000', '#0000FF', '#4B0082', '#EE82EE', '#000000'];
-  colorPalette.innerHTML = '';
-
-  colors.forEach((color) => {
-    const swatch = document.createElement('div');
-    swatch.classList.add('color-swatch');
-    swatch.style.backgroundColor = color;
-    swatch.dataset.color = color;
-    colorPalette.appendChild(swatch);
-  });
-}
-
-// Continue Button Functionality
-continueButton.addEventListener('click', () => {
-  // Hide star coloring container
-  starColoringContainer.style.display = 'none';
-  readAloudButton.style.display = 'inline-block';
-
-  // Move to next sentence or level
+// Move to Next Sentence or Level
+function moveToNextSentence() {
   const level = levels[currentLevel - 1];
   if (currentSentenceIndex < level.sentences.length - 1) {
     currentSentenceIndex += 1;
@@ -1011,7 +991,7 @@ continueButton.addEventListener('click', () => {
     }
   }
   loadSentence();
-});
+}
 
 // Start Game
 initGame();
