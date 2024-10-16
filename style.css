@@ -1,24 +1,74 @@
 /* Import a playful, child-friendly font */
 @import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@600&display=swap');
 
+/* Theme Variables */
+:root {
+  --background-color: #f8f9fa;
+  --primary-color: #3498db;
+  --accent-color: #e74c3c;
+  --text-color: #2c3e50;
+}
+
+/* Default Theme */
+body.default-theme {
+  --background-color: #f8f9fa;
+  --primary-color: #3498db;
+  --accent-color: #e74c3c;
+  --text-color: #2c3e50;
+}
+
+/* Forest Theme */
+body.forest-theme {
+  --background-color: #e8f5e9;
+  --primary-color: #2e7d32;
+  --accent-color: #a1887f;
+  --text-color: #1b5e20;
+}
+
+/* Ocean Theme */
+body.ocean-theme {
+  --background-color: #e0f7fa;
+  --primary-color: #00838f;
+  --accent-color: #ffab91;
+  --text-color: #006064;
+}
+
+/* Space Theme */
+body.space-theme {
+  --background-color: #eceff1;
+  --primary-color: #455a64;
+  --accent-color: #ffab40;
+  --text-color: #263238;
+}
+
 body {
   font-family: 'Baloo 2', cursive, sans-serif;
-  background-color: #f8f9fa;
+  background-color: var(--background-color);
   text-align: center;
   margin: 0;
   padding: 20px;
 }
 
 h1 {
-  color: #2c3e50;
+  color: var(--text-color);
   margin-bottom: 10px;
   font-size: 42px;
 }
 
 .instructions {
   font-size: 22px;
-  color: #34495e;
+  color: var(--text-color);
   margin-bottom: 25px;
+}
+
+.theme-selector {
+  margin-bottom: 20px;
+  font-size: 18px;
+}
+
+.theme-selector select {
+  padding: 5px 10px;
+  font-size: 16px;
 }
 
 .sentence-card {
@@ -36,14 +86,30 @@ h1 {
   margin-bottom: 15px;
 }
 
+.progress-container {
+  background-color: #ddd;
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 20px auto;
+  width: 80%;
+  height: 20px;
+}
+
+.progress-bar {
+  background-color: #27ae60;
+  height: 100%;
+  width: 0%;
+  transition: width 0.5s;
+}
+
 .sentence {
   font-size: 36px;
   margin: 30px 0;
-  color: #2c3e50;
+  color: var(--text-color);
 }
 
 .sight-word {
-  color: #e74c3c;
+  color: var(--accent-color);
   font-weight: bold;
   cursor: pointer;
 }
@@ -53,7 +119,7 @@ h1 {
 }
 
 #readAloud {
-  background-color: #3498db;
+  background-color: var(--primary-color);
   border: none;
   border-radius: 10px;
   color: #fff;
@@ -65,7 +131,7 @@ h1 {
 }
 
 #readAloud:hover {
-  background-color: #2980b9;
+  background-color: darken(var(--primary-color), 10%);
 }
 
 .feedback {
@@ -73,6 +139,16 @@ h1 {
   color: #27ae60;
   margin-top: 20px;
   min-height: 28px;
+  opacity: 0;
+  transition: opacity 0.5s;
+}
+
+.feedback.fade-in {
+  opacity: 1;
+}
+
+.feedback.fade-out {
+  opacity: 0;
 }
 
 .stars {
@@ -107,17 +183,24 @@ h1 {
   transform: scale(1.15);
 }
 
-.star-colored {
-  background-color: #f39c12;
-  animation: bounce 0.5s;
+@keyframes starFill {
+  0% {
+    transform: scale(0);
+    background-color: #f1c40f;
+  }
+  50% {
+    transform: scale(1.2);
+    background-color: #f39c12;
+  }
+  100% {
+    transform: scale(1);
+    background-color: #f39c12;
+  }
 }
 
-@keyframes bounce {
-  0%   { transform: scale(1); }
-  30%  { transform: scale(1.3); }
-  50%  { transform: scale(0.9); }
-  70%  { transform: scale(1.1); }
-  100% { transform: scale(1); }
+.star-colored {
+  background-color: #f39c12;
+  animation: starFill 0.5s ease-in-out;
 }
 
 .image-support {
