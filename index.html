@@ -7,24 +7,27 @@
 </head>
 <body>
   <h1>Sight Word Sentences</h1>
-  <div class="game-container">
-    <div class="sentence-card">
-      <div class="instructions" id="instructions">
-        Decode each sentence on your own. <span style="color: red;">Color a star</span> when you are done.
-      </div>
-      <div class="sentence" id="sentence-text">
-        <!-- Sentence will be injected here -->
-      </div>
-      <div class="image-container" id="image-container">
-        <!-- Images related to the sentence will be injected here -->
-      </div>
-      <button id="read-aloud-button">Read Aloud</button>
-      <div class="feedback" id="feedback"></div>
-      <div class="stars" id="stars-container">
-        <!-- Stars will be generated here -->
-      </div>
+  <div class="instructions">
+    Decode each sentence on your own. <span style="color: red;">Color a star</span> when you are done.
+  </div>
+  
+  <div class="sentence-card">
+    <div class="sentence" id="sentence-text">
+      <!-- Sentence will be injected here -->
+    </div>
+
+    <div class="image-support" id="image-container">
+      <!-- Images related to the sentence will be injected here -->
+    </div>
+
+    <button id="readAloud">Read Aloud</button>
+    <div class="feedback" id="feedback"></div>
+
+    <div class="stars" id="stars-container">
+      <!-- Stars will be generated here -->
     </div>
   </div>
+
   <script src="script.js"></script>
 </body>
 </html>
