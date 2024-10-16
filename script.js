@@ -860,7 +860,7 @@ let starsColored = 0;
 // Elements
 const sentenceTextElement = document.getElementById('sentence-text');
 const feedbackElement = document.getElementById('feedback');
-const readAloudButton = document.getElementById('read-aloud-button');
+const readAloudButton = document.getElementById('readAloud');
 const starsContainer = document.getElementById('stars-container');
 const imageContainer = document.getElementById('image-container');
 
@@ -874,9 +874,8 @@ function initGame() {
 function generateStars() {
   starsContainer.innerHTML = '';
   for (let i = 0; i < 6; i++) {
-    const star = document.createElement('img');
-    star.src = 'images/star-outline.png';
-    star.alt = 'Star';
+    const star = document.createElement('div');
+    star.classList.add('star');
     star.dataset.index = i;
     star.addEventListener('click', () => colorStar(i));
     starsContainer.appendChild(star);
@@ -885,9 +884,8 @@ function generateStars() {
 
 // Color Star
 function colorStar(index) {
-  const star = starsContainer.querySelectorAll('img')[index];
+  const star = starsContainer.querySelectorAll('.star')[index];
   if (!star.classList.contains('star-colored')) {
-    star.src = 'images/star-colored.png';
     star.classList.add('star-colored');
     starsColored += 1;
   }
