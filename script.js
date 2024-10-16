@@ -864,12 +864,12 @@ const starsContainer = document.getElementById('stars-container');
 const imageContainer = document.getElementById('image-container');
 const levelNumberElement = document.getElementById('level-number');
 const progressBar = document.getElementById('progress-bar');
-const themeSelect = document.getElementById('theme-select');
+const playInstructionsButton = document.getElementById('play-instructions');
+const mascot = document.getElementById('mascot');
 
 // Initialize Game
 function initGame() {
   loadProgress();
-  applySavedTheme();
   generateStars();
   updateLevelIndicator();
   loadSentence();
@@ -907,6 +907,12 @@ function colorStar(index) {
 
     // Update progress bar
     updateProgressBar();
+
+    // Mascot animation or reaction
+    mascot.classList.add('mascot-happy');
+    setTimeout(() => {
+      mascot.classList.remove('mascot-happy');
+    }, 1000);
   }
 }
 
@@ -1007,6 +1013,16 @@ readAloudButton.addEventListener('click', () => {
   if (sentenceObj && sentenceObj.text) {
     playSentenceAudio(sentenceObj.text);
     showPositiveFeedback();
+
+    // Play button click sound
+    const audio = new Audio('sounds/button-click.mp3');
+    audio.play();
+
+    // Animate button
+    readAloudButton.classList.add('button-animate');
+    setTimeout(() => {
+      readAloudButton.classList.remove('button-animate');
+    }, 300);
   }
 });
 
@@ -1021,13 +1037,26 @@ function playSentenceAudio(sentence) {
 }
 
 // Positive Feedback
+const motivationalMessages = [
+  "Great job!",
+  "Well done!",
+  "You're amazing!",
+  "Keep it up!",
+  "Fantastic!",
+  "You're a star!",
+];
+
 function showPositiveFeedback() {
-  feedbackElement.textContent = 'Well done!';
+  const randomMessage = motivationalMessages[Math.floor(Math.random() * motivationalMessages.length)];
+  feedbackElement.textContent = randomMessage;
   feedbackElement.classList.add('fade-in');
 
+  // Mascot reaction
+  mascot.classList.add('mascot-happy');
   setTimeout(() => {
     feedbackElement.classList.remove('fade-in');
     feedbackElement.classList.add('fade-out');
+    mascot.classList.remove('mascot-happy');
   }, 1000);
 
   setTimeout(() => {
@@ -1060,38 +1089,30 @@ function moveToNextSentence() {
   loadSentence();
 }
 
-// Update Level Indicator
+// Update Level Indicator and Theme
 function updateLevelIndicator() {
   levelNumberElement.textContent = currentLevel;
+  updateTheme();
 }
 
-// Theme Selector
-themeSelect.addEventListener('change', (e) => {
-  const selectedTheme = e.target.value;
-  document.body.className = ''; // Reset any existing theme classes
-  switch (selectedTheme) {
-    case 'forest':
-      document.body.classList.add('forest-theme');
-      break;
-    case 'ocean':
-      document.body.classList.add('ocean-theme');
-      break;
-    case 'space':
-      document.body.classList.add('space-theme');
-      break;
-    default:
-      document.body.classList.add('default-theme');
-  }
-  // Save theme preference
-  localStorage.setItem('selectedTheme', selectedTheme);
+// Update Theme Based on Level
+function updateTheme() {
+  const themes = ['forest', 'ocean', 'space'];
+  const themeIndex = Math.floor((currentLevel - 1) / 10) % themes.length;
+  const selectedTheme = themes[themeIndex];
+
+  document.body.className = ''; // Reset existing classes
+  document.body.classList.add(`theme-${selectedTheme}`);
+
+  // Update mascot image
+  mascot.src = `images/mascot-${selectedTheme}.png`;
+}
+
+// Play Instructions Audio
+playInstructionsButton.addEventListener('click', () => {
+  const instructionsText = "Decode each sentence on your own. Color a star when you are done.";
+  playSentenceAudio(instructionsText);
 });
-
-// Apply Saved Theme
-function applySavedTheme() {
-  const savedTheme = localStorage.getItem('selectedTheme') || 'default';
-  themeSelect.value = savedTheme;
-  document.body.classList.add(`${savedTheme}-theme`);
-}
 
 // Save Progress
 function saveProgress() {
