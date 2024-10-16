@@ -851,7 +851,6 @@ const levels = [
     ],
   },
 ];
-
 // Game State Variables
 let currentLevel = 1;
 let currentSentenceIndex = 0;
@@ -901,7 +900,7 @@ function loadSentence() {
   sentenceTextElement.innerHTML = sentenceWithHighlights;
   feedbackElement.textContent = '';
 
-  // Display images related to the sentence
+  // Display images related to the sentence (will be empty until images are uploaded)
   displayImages(sentenceObj.images);
 
   // Set up word audio playback
@@ -925,12 +924,14 @@ function highlightSightWords(sentence, sightWords) {
 // Display Images
 function displayImages(images) {
   imageContainer.innerHTML = '';
-  images.forEach(src => {
-    const img = document.createElement('img');
-    img.src = src;
-    img.alt = 'Related Image';
-    imageContainer.appendChild(img);
-  });
+  if (Array.isArray(images) && images.length > 0) {
+    images.forEach(src => {
+      const img = document.createElement('img');
+      img.src = src;
+      img.alt = 'Related Image';
+      imageContainer.appendChild(img);
+    });
+  }
 }
 
 // Setup Word Audio
@@ -946,22 +947,32 @@ function setupWordAudio() {
 
 // Play Word Audio
 function playWordAudio(word) {
-  const utterance = new SpeechSynthesisUtterance(word);
-  window.speechSynthesis.speak(utterance);
+  if ('speechSynthesis' in window) {
+    const utterance = new SpeechSynthesisUtterance(word);
+    window.speechSynthesis.speak(utterance);
+  } else {
+    alert('Sorry, your browser does not support text-to-speech.');
+  }
 }
 
 // Read Aloud Sentence
 readAloudButton.addEventListener('click', () => {
   const level = levels[currentLevel - 1];
   const sentenceObj = level.sentences[currentSentenceIndex];
-  playSentenceAudio(sentenceObj.text);
-  showPositiveFeedback();
+  if (sentenceObj && sentenceObj.text) {
+    playSentenceAudio(sentenceObj.text);
+    showPositiveFeedback();
+  }
 });
 
 // Play Sentence Audio
 function playSentenceAudio(sentence) {
-  const utterance = new SpeechSynthesisUtterance(sentence);
-  window.speechSynthesis.speak(utterance);
+  if ('speechSynthesis' in window) {
+    const utterance = new SpeechSynthesisUtterance(sentence);
+    window.speechSynthesis.speak(utterance);
+  } else {
+    alert('Sorry, your browser does not support text-to-speech.');
+  }
 }
 
 // Positive Feedback
