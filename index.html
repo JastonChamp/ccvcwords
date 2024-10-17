@@ -4,28 +4,27 @@
   <meta charset="UTF-8">
   <title>Sight Word Sentences</title>
   <link rel="stylesheet" href="style.css">
-  <link rel="icon" href="favicon.ico" type="image/x-icon">
   <!-- Font Awesome for icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
 </head>
 <body>
+  <!-- Mascot Container -->
+  <div id="mascot-container">
+    <img id="mascot" src="images/mascot-default.png" alt="Mascot">
+  </div>
+
   <h1>Sight Word Sentences</h1>
-  
-  <!-- Theme Selector -->
-  <div class="theme-selector">
-    <label for="theme-select">Choose a Theme:</label>
-    <select id="theme-select">
-      <option value="default">Default</option>
-      <option value="forest">Forest</option>
-      <option value="ocean">Ocean</option>
-      <option value="space">Space</option>
-    </select>
-  </div>
-  
+
+  <!-- Instructions with audio and icons -->
   <div class="instructions">
-    Decode each sentence on your own. <span style="color: red;">Color a star</span> when you are done.
+    <span id="play-instructions" class="icon-button">
+      <i class="fas fa-volume-up"></i>
+    </span>
+    Decode each sentence on your own.
+    <img src="images/icon-star.png" alt="Star Icon" class="inline-icon">
+    Color a star when you are done.
   </div>
-  
+
   <div class="sentence-card">
     <div class="level-indicator">
       Level <span id="level-number">1</span> of 50
@@ -36,15 +35,20 @@
       <div class="progress-bar" id="progress-bar"></div>
     </div>
 
-    <div class="sentence" id="sentence-text"></div>
-    <div class="image-support" id="image-container"></div>
+    <div class="sentence" id="sentence-text">
+      <!-- Sentence will be injected here -->
+    </div>
 
-    <button id="readAloud" aria-label="Read Aloud the Sentence">
-      <i class="fas fa-volume-up"></i> Read Aloud
-    </button>
+    <div class="image-support" id="image-container">
+      <!-- Images related to the sentence will be injected here -->
+    </div>
+
+    <button id="readAloud"><i class="fas fa-volume-up"></i> Read Aloud</button>
     <div class="feedback" id="feedback"></div>
 
-    <div class="stars" id="stars-container"></div>
+    <div class="stars" id="stars-container">
+      <!-- Stars will be generated here -->
+    </div>
   </div>
 
   <script src="script.js"></script>
