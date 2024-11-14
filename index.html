@@ -1,56 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Sight Word Sentences</title>
-  <link rel="stylesheet" href="style.css">
-  <!-- Font Awesome for icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+    <meta charset="UTF-8">
+    <title>Word Blending Game for Preschoolers</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <!-- Mascot Container -->
-  <div id="mascot-container">
-    <img id="mascot" src="images/mascot-default.png" alt="Mascot">
-  </div>
+    <div class="main-container">
+        <!-- Top Controls -->
+        <div class="top-controls">
+            <!-- Word Type Selector (hidden or simplified for preschoolers) -->
+            <!-- Vowel Selector (hidden or simplified for preschoolers) -->
+            <!-- Blending Time Control -->
+            <div class="control-group">
+                <button id="decreaseBlendingTime" class="icon-button">➖</button>
+                <span id="blendingTimeDisplay" class="control-label">3</span>
+                <button id="increaseBlendingTime" class="icon-button">➕</button>
+            </div>
+            <!-- Toggle Letter Sounds -->
+            <button id="toggleAudioButton" class="icon-button">🔊</button>
+            <!-- Fullscreen Toggle -->
+            <button id="fullscreenButton" class="icon-button">⛶</button>
+        </div>
 
-  <h1>Sight Word Sentences</h1>
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Word Display Box -->
+            <div id="wordBox" class="word-box"></div>
+            <!-- Blending Timer -->
+            <div id="blendingTimerContainer" class="blending-timer-container">
+                <div id="blendingTimer" class="blending-timer"></div>
+            </div>
+            <!-- Compliment Box -->
+            <div id="complimentBox" class="compliment-box"></div>
+        </div>
 
-  <!-- Instructions with audio and icons -->
-  <div class="instructions">
-    <span id="play-instructions" class="icon-button">
-      <i class="fas fa-volume-up"></i>
-    </span>
-    Decode each sentence on your own.
-    <img src="images/icon-star.png" alt="Star Icon" class="inline-icon">
-    Color a star when you are done.
-  </div>
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <button id="spinButton" class="primary-button icon-button">🎡</button>
+            <button id="repeatButton" class="primary-button icon-button" disabled>🔁</button>
+        </div>
 
-  <div class="sentence-card">
-    <div class="level-indicator">
-      Level <span id="level-number">1</span> of 50
+        <!-- Progress and Score -->
+        <div class="progress-score">
+            <!-- Visual Progress Tracker -->
+            <div class="progress-tracker">
+                <span id="progressStars"></span>
+            </div>
+            <!-- Score Display -->
+            <div id="scoreText" class="score-text">0</div>
+            <!-- Score Increment Animation -->
+            <div id="scoreIncrement" class="score-increment"></div>
+        </div>
     </div>
 
-    <!-- Progress Bar -->
-    <div class="progress-container">
-      <div class="progress-bar" id="progress-bar"></div>
-    </div>
-
-    <div class="sentence" id="sentence-text">
-      <!-- Sentence will be injected here -->
-    </div>
-
-    <div class="image-support" id="image-container">
-      <!-- Images related to the sentence will be injected here -->
-    </div>
-
-    <button id="readAloud"><i class="fas fa-volume-up"></i> Read Aloud</button>
-    <div class="feedback" id="feedback"></div>
-
-    <div class="stars" id="stars-container">
-      <!-- Stars will be generated here -->
-    </div>
-  </div>
-
-  <script src="script.js"></script>
+    <!-- Include the script -->
+    <script src="script.js"></script>
 </body>
 </html>
