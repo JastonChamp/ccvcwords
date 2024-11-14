@@ -50,7 +50,7 @@ const wordGroups = {
             'plot', 'prod', 'prop', 'slot', 'smog', 'snob', 'spot', 'stop', 'swop', 'trod'
         ],
         u: [
-            'drum', 'grub', 'plug', 'slug', 'slum', 'spun', 'stub', 'stud', 'stun',
+            'drum', 'grub', 'plug', 'slug', 'slum', 'spun', 'stub', 'stud', 'stun'
         ]
     },
     cvcc: {
@@ -81,8 +81,7 @@ const wordGroups = {
     ccvcc: {
         a: [
             'brand', 'blank', 'clamp', 'cramp', 'crank', 'drank', 'flank', 'frank', 'plank',
-            'prank', 'stamp', 'stand', 'strand', 'tract', 'scrap',
-            'swank'
+            'prank', 'stamp', 'stand', 'strand', 'tract', 'scrap', 'swank'
         ],
         e: [
             'blend', 'blent', 'strep', 'trend', 'swept', 'stent'
@@ -136,6 +135,12 @@ const letterSounds = {};
 'abcdefghijklmnopqrstuvwxyz'.split('').forEach(letter => {
     const audio = new Audio(`${audioPath}${letter}.mp3`);
     letterSounds[letter] = audio;
+});
+
+// Load digraph sounds
+['sh', 'th', 'ch', 'ng'].forEach(digraph => {
+    const audio = new Audio(`${audioPath}${digraph}.mp3`);
+    letterSounds[digraph] = audio;
 });
 
 // Load UI sounds
@@ -231,6 +236,9 @@ function speak(text) {
 // Utility Functions
 // =====================
 
+// Function to check if a letter is a vowel
+const isVowel = (letter) => 'aeiou'.includes(letter.toLowerCase());
+
 // Function to update the score
 function updateScore() {
     score += 10; // Add points per word
@@ -265,25 +273,46 @@ function giveCompliment() {
     }, 2000);
 }
 
-// Function to play audio for a letter
-function playLetterSound(letter) {
+// Function to play audio for a letter or digraph
+function playLetterSound(unit) {
     return new Promise((resolve) => {
         if (!letterSoundsEnabled) {
             resolve(); // Skip playing sound if letter sounds are disabled
             return;
         }
-        const sound = letterSounds[letter.toLowerCase()];
+        const sound = letterSounds[unit.toLowerCase()];
         if (sound) {
             sound.currentTime = 0;
             sound.play().then(resolve).catch((error) => {
-                console.error(`Error playing sound for "${letter}":`, error);
+                console.error(`Error playing sound for "${unit}":`, error);
                 resolve();
             });
         } else {
-            console.warn(`No sound found for "${letter}"`);
+            console.warn(`No sound found for "${unit}"`);
             resolve();
         }
     });
+}
+
+// Function to parse word into units (letters or digraphs)
+function parseWord(word) {
+    const digraphs = ['sh', 'th', 'ch', 'ng'];
+    const units = [];
+    let i = 0;
+    while (i < word.length) {
+        if (i < word.length - 1) {
+            const twoLetters = word.substring(i, i + 2).toLowerCase();
+            if (digraphs.includes(twoLetters)) {
+                units.push({ text: twoLetters, isVowel: false, isDigraph: true });
+                i += 2;
+                continue;
+            }
+        }
+        const singleLetter = word[i].toLowerCase();
+        units.push({ text: singleLetter, isVowel: isVowel(singleLetter), isDigraph: false });
+        i += 1;
+    }
+    return units;
 }
 
 // =====================
@@ -293,24 +322,27 @@ function playLetterSound(letter) {
 // Function to reveal the word with animations and audio
 async function revealWord(word, isRepeat = false) {
     wordBox.innerHTML = '';
-    const letters = word.split('');
+    const units = parseWord(word);
 
-    letters.forEach((letter, index) => {
+    units.forEach((unit, index) => {
         const span = document.createElement('span');
-        span.textContent = letter;
+        span.textContent = unit.text;
         span.classList.add('letter');
-        if ('aeiou'.includes(letter.toLowerCase())) {
+        if (unit.isVowel && !unit.isDigraph) {
             span.classList.add('vowel');
+        }
+        if (unit.isDigraph) {
+            span.classList.add('digraph');
         }
         wordBox.appendChild(span);
         // Set animation delay
         span.style.animationDelay = `${(index + 1) * 0.3}s`;
     });
 
-    // Play each letter sound
-    for (let i = 0; i < letters.length; i++) {
+    // Play each letter or digraph sound
+    for (let i = 0; i < units.length; i++) {
         await new Promise(resolve => setTimeout(resolve, 300));
-        await playLetterSound(letters[i]);
+        await playLetterSound(units[i].text);
     }
 
     // Start blending timer
@@ -335,8 +367,12 @@ async function revealWord(word, isRepeat = false) {
 
 // Function to get available words
 function getAvailableWords() {
-    const group = wordGroups['cvc']; // Using 'cvc' for simplicity
-    const words = Object.values(group).flat();
+    // Combine all words from all word groups
+    let words = [];
+    for (const groupKey in wordGroups) {
+        const group = wordGroups[groupKey];
+        words = words.concat(...Object.values(group));
+    }
     return words;
 }
 
