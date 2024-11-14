@@ -1,1130 +1,499 @@
-// Updated Game Data with All Levels and Sentences
-const levels = [
-  {
-    levelNumber: 1,
-    sentences: [
-      {
-        text: "Sam has a cat.",
-        sightWords: ["Sam", "has", "a", "cat"],
-      },
-      {
-        text: "Dan has a mat.",
-        sightWords: ["Dan", "has", "a", "mat"],
-      },
-      {
-        text: "Max has a rat.",
-        sightWords: ["Max", "has", "a", "rat"],
-      },
-    ],
-  },
-  {
-    levelNumber: 2,
-    sentences: [
-      {
-        text: "Dan runs about.",
-        sightWords: ["Dan", "runs", "about"],
-      },
-      {
-        text: "Max digs about.",
-        sightWords: ["Max", "digs", "about"],
-      },
-      {
-        text: "Jill hops about.",
-        sightWords: ["Jill", "hops", "about"],
-      },
-    ],
-  },
-  {
-    levelNumber: 3,
-    sentences: [
-      {
-        text: "A cat sits above.",
-        sightWords: ["A", "cat", "sits", "above"],
-      },
-      {
-        text: "A dog sits above.",
-        sightWords: ["A", "dog", "sits", "above"],
-      },
-      {
-        text: "A bug sits above.",
-        sightWords: ["A", "bug", "sits", "above"],
-      },
-    ],
-  },
-  {
-    levelNumber: 4,
-    sentences: [
-      {
-        text: "Pat runs again.",
-        sightWords: ["Pat", "runs", "again"],
-      },
-      {
-        text: "A pup digs again.",
-        sightWords: ["A", "pup", "digs", "again"],
-      },
-      {
-        text: "A cat sits again.",
-        sightWords: ["A", "cat", "sits", "again"],
-      },
-    ],
-  },
-  {
-    levelNumber: 5,
-    sentences: [
-      {
-        text: "All the dogs ran.",
-        sightWords: ["All", "the", "dogs", "ran"],
-      },
-      {
-        text: "All the rats hid.",
-        sightWords: ["All", "the", "rats", "hid"],
-      },
-      {
-        text: "All the kids ran.",
-        sightWords: ["All", "the", "kids", "ran"],
-      },
-    ],
-  },
-  {
-    levelNumber: 6,
-    sentences: [
-      {
-        text: "She also has a pet cat.",
-        sightWords: ["She", "also", "has", "a", "pet", "cat"],
-      },
-      {
-        text: "The dog dug all day.",
-        sightWords: ["The", "dog", "dug", "all", "day"],
-      },
-      {
-        text: "He also got a new hat.",
-        sightWords: ["He", "also", "got", "a", "new", "hat"],
-      },
-    ],
-  },
-  {
-    levelNumber: 7,
-    sentences: [
-      {
-        text: "The dogs are big.",
-        sightWords: ["The", "dogs", "are", "big"],
-      },
-      {
-        text: "The hats are red.",
-        sightWords: ["The", "hats", "are", "red"],
-      },
-      {
-        text: "The bats are black.",
-        sightWords: ["The", "bats", "are", "black"],
-      },
-    ],
-  },
-  {
-    levelNumber: 8,
-    sentences: [
-      {
-        text: "It will be hot.",
-        sightWords: ["It", "will", "be", "hot"],
-      },
-      {
-        text: "It will be fun.",
-        sightWords: ["It", "will", "be", "fun"],
-      },
-      {
-        text: "It will be big.",
-        sightWords: ["It", "will", "be", "big"],
-      },
-    ],
-  },
-  {
-    levelNumber: 9,
-    sentences: [
-      {
-        text: "A fox came by.",
-        sightWords: ["A", "fox", "came", "by"],
-      },
-      {
-        text: "A frog came by.",
-        sightWords: ["A", "frog", "came", "by"],
-      },
-      {
-        text: "A pig came by.",
-        sightWords: ["A", "pig", "came", "by"],
-      },
-    ],
-  },
-  {
-    levelNumber: 10,
-    sentences: [
-      {
-        text: "We run one day.",
-        sightWords: ["We", "run", "one", "day"],
-      },
-      {
-        text: "We sit one day.",
-        sightWords: ["We", "sit", "one", "day"],
-      },
-      {
-        text: "We jump one day.",
-        sightWords: ["We", "jump", "one", "day"],
-      },
-    ],
-  },
-  {
-    levelNumber: 11,
-    sentences: [
-      {
-        text: "Can it do tricks?",
-        sightWords: ["Can", "it", "do", "tricks"],
-      },
-      {
-        text: "Can she do jumps?",
-        sightWords: ["Can", "she", "do", "jumps"],
-      },
-      {
-        text: "Can he do flips?",
-        sightWords: ["Can", "he", "do", "flips"],
-      },
-    ],
-  },
-  {
-    levelNumber: 12,
-    sentences: [
-      {
-        text: "It does get hot.",
-        sightWords: ["It", "does", "get", "hot"],
-      },
-      {
-        text: "It does get wet.",
-        sightWords: ["It", "does", "get", "wet"],
-      },
-      {
-        text: "It does fit well.",
-        sightWords: ["It", "does", "fit", "well"],
-      },
-    ],
-  },
-  {
-    levelNumber: 13,
-    sentences: [
-      {
-        text: "A mat for the cat.",
-        sightWords: ["A", "mat", "for", "the", "cat"],
-      },
-      {
-        text: "A pen for the hen.",
-        sightWords: ["A", "pen", "for", "the", "hen"],
-      },
-      {
-        text: "A log for the dog.",
-        sightWords: ["A", "log", "for", "the", "dog"],
-      },
-    ],
-  },
-  {
-    levelNumber: 14,
-    sentences: [
-      {
-        text: "I go in the hut.",
-        sightWords: ["I", "go", "in", "the", "hut"],
-      },
-      {
-        text: "I go in the zoo.",
-        sightWords: ["I", "go", "in", "the", "zoo"],
-      },
-      {
-        text: "I go on the mat.",
-        sightWords: ["I", "go", "on", "the", "mat"],
-      },
-    ],
-  },
-  {
-    levelNumber: 15,
-    sentences: [
-      {
-        text: "He sits.",
-        sightWords: ["He", "sits"],
-      },
-      {
-        text: "He hops.",
-        sightWords: ["He", "hops"],
-      },
-      {
-        text: "He jogs.",
-        sightWords: ["He", "jogs"],
-      },
-    ],
-  },
-  {
-    levelNumber: 16,
-    sentences: [
-      {
-        text: "Her cat naps.",
-        sightWords: ["Her", "cat", "naps"],
-      },
-      {
-        text: "Her bat hid.",
-        sightWords: ["Her", "bat", "hid"],
-      },
-      {
-        text: "Her fox runs.",
-        sightWords: ["Her", "fox", "runs"],
-      },
-    ],
-  },
-  {
-    levelNumber: 17,
-    sentences: [
-      {
-        text: "His dog naps.",
-        sightWords: ["His", "dog", "naps"],
-      },
-      {
-        text: "His fox hid.",
-        sightWords: ["His", "fox", "hid"],
-      },
-      {
-        text: "His cat runs.",
-        sightWords: ["His", "cat", "runs"],
-      },
-    ],
-  },
-  {
-    levelNumber: 18,
-    sentences: [
-      {
-        text: "I ran.",
-        sightWords: ["I", "ran"],
-      },
-      {
-        text: "I cut.",
-        sightWords: ["I", "cut"],
-      },
-      {
-        text: "I hit.",
-        sightWords: ["I", "hit"],
-      },
-    ],
-  },
-  {
-    levelNumber: 19,
-    sentences: [
-      {
-        text: "How did it nap?",
-        sightWords: ["How", "did", "it", "nap"],
-      },
-      {
-        text: "How did it hop?",
-        sightWords: ["How", "did", "it", "hop"],
-      },
-      {
-        text: "How did it run?",
-        sightWords: ["How", "did", "it", "run"],
-      },
-    ],
-  },
-  {
-    levelNumber: 20,
-    sentences: [
-      {
-        text: "A cat sat in a hat.",
-        sightWords: ["A", "cat", "sat", "in", "a", "hat"],
-      },
-      {
-        text: "A fox hid in a box.",
-        sightWords: ["A", "fox", "hid", "in", "a", "box"],
-      },
-      {
-        text: "A pig dug in a wig.",
-        sightWords: ["A", "pig", "dug", "in", "a", "wig"],
-      },
-    ],
-  },
-  {
-    levelNumber: 21,
-    sentences: [
-      {
-        text: "It digs into the mud.",
-        sightWords: ["It", "digs", "into", "the", "mud"],
-      },
-      {
-        text: "It went into a net.",
-        sightWords: ["It", "went", "into", "a", "net"],
-      },
-      {
-        text: "It hops into a box.",
-        sightWords: ["It", "hops", "into", "a", "box"],
-      },
-    ],
-  },
-  {
-    levelNumber: 22,
-    sentences: [
-      {
-        text: "It is hot.",
-        sightWords: ["It", "is", "hot"],
-      },
-      {
-        text: "It is fun.",
-        sightWords: ["It", "is", "fun"],
-      },
-      {
-        text: "It is wet.",
-        sightWords: ["It", "is", "wet"],
-      },
-    ],
-  },
-  {
-    levelNumber: 23,
-    sentences: [
-      {
-        text: "It is a dot.",
-        sightWords: ["It", "is", "a", "dot"],
-      },
-      {
-        text: "It is a bog.",
-        sightWords: ["It", "is", "a", "bog"],
-      },
-      {
-        text: "It is a log.",
-        sightWords: ["It", "is", "a", "log"],
-      },
-    ],
-  },
-  {
-    levelNumber: 24,
-    sentences: [
-      {
-        text: "I know that cat.",
-        sightWords: ["I", "know", "that", "cat"],
-      },
-      {
-        text: "I know that jet.",
-        sightWords: ["I", "know", "that", "jet"],
-      },
-      {
-        text: "I know that bat.",
-        sightWords: ["I", "know", "that", "bat"],
-      },
-    ],
-  },
-  {
-    levelNumber: 25,
-    sentences: [
-      {
-        text: "Many kids jump.",
-        sightWords: ["Many", "kids", "jump"],
-      },
-      {
-        text: "Many cats nap.",
-        sightWords: ["Many", "cats", "nap"],
-      },
-      {
-        text: "Many dogs run.",
-        sightWords: ["Many", "dogs", "run"],
-      },
-    ],
-  },
-  {
-    levelNumber: 26,
-    sentences: [
-      {
-        text: "My name is Tim.",
-        sightWords: ["My", "name", "is", "Tim"],
-      },
-      {
-        text: "My name is Jim.",
-        sightWords: ["My", "name", "is", "Jim"],
-      },
-      {
-        text: "My name is Kim.",
-        sightWords: ["My", "name", "is", "Kim"],
-      },
-    ],
-  },
-  {
-    levelNumber: 27,
-    sentences: [
-      {
-        text: "I did not run.",
-        sightWords: ["I", "did", "not", "run"],
-      },
-      {
-        text: "I did not cut.",
-        sightWords: ["I", "did", "not", "cut"],
-      },
-      {
-        text: "I did not hit.",
-        sightWords: ["I", "did", "not", "hit"],
-      },
-    ],
-  },
-  {
-    levelNumber: 28,
-    sentences: [
-      {
-        text: "Now it will run.",
-        sightWords: ["Now", "it", "will", "run"],
-      },
-      {
-        text: "Now it will jump.",
-        sightWords: ["Now", "it", "will", "jump"],
-      },
-      {
-        text: "Now it will nap.",
-        sightWords: ["Now", "it", "will", "nap"],
-      },
-    ],
-  },
-  {
-    levelNumber: 29,
-    sentences: [
-      {
-        text: "A cup of tea.",
-        sightWords: ["A", "cup", "of", "tea"],
-      },
-      {
-        text: "A cup of wax.",
-        sightWords: ["A", "cup", "of", "wax"],
-      },
-      {
-        text: "A cup of jam.",
-        sightWords: ["A", "cup", "of", "jam"],
-      },
-    ],
-  },
-  {
-    levelNumber: 30,
-    sentences: [
-      {
-        text: "It is on the mat.",
-        sightWords: ["It", "is", "on", "the", "mat"],
-      },
-      {
-        text: "It is on the rug.",
-        sightWords: ["It", "is", "on", "the", "rug"],
-      },
-      {
-        text: "It is on the log.",
-        sightWords: ["It", "is", "on", "the", "log"],
-      },
-    ],
-  },
-  {
-    levelNumber: 31,
-    sentences: [
-      {
-        text: "One cat on the mat.",
-        sightWords: ["One", "cat", "on", "the", "mat"],
-      },
-      {
-        text: "One kid in the hut.",
-        sightWords: ["One", "kid", "in", "the", "hut"],
-      },
-      {
-        text: "One dog in the sun.",
-        sightWords: ["One", "dog", "in", "the", "sun"],
-      },
-    ],
-  },
-  {
-    levelNumber: 32,
-    sentences: [
-      {
-        text: "She runs.",
-        sightWords: ["She", "runs"],
-      },
-      {
-        text: "She sits.",
-        sightWords: ["She", "sits"],
-      },
-      {
-        text: "She jumps.",
-        sightWords: ["She", "jumps"],
-      },
-    ],
-  },
-  {
-    levelNumber: 33,
-    sentences: [
-      {
-        text: "Over the lake.",
-        sightWords: ["Over", "the", "lake"],
-      },
-      {
-        text: "Over the hills.",
-        sightWords: ["Over", "the", "hills"],
-      },
-      {
-        text: "Over the rope.",
-        sightWords: ["Over", "the", "rope"],
-      },
-    ],
-  },
-  {
-    levelNumber: 34,
-    sentences: [
-      {
-        text: "He said it was big.",
-        sightWords: ["He", "said", "it", "was", "big"],
-      },
-      {
-        text: "Mum said to eat up.",
-        sightWords: ["Mum", "said", "to", "eat", "up"],
-      },
-      {
-        text: "She said to sit down.",
-        sightWords: ["She", "said", "to", "sit", "down"],
-      },
-    ],
-  },
-  {
-    levelNumber: 35,
-    sentences: [
-      {
-        text: "It is so big.",
-        sightWords: ["It", "is", "so", "big"],
-      },
-      {
-        text: "It is so hot.",
-        sightWords: ["It", "is", "so", "hot"],
-      },
-      {
-        text: "It is so fat.",
-        sightWords: ["It", "is", "so", "fat"],
-      },
-    ],
-  },
-  {
-    levelNumber: 36,
-    sentences: [
-      {
-        text: "I have some jam.",
-        sightWords: ["I", "have", "some", "jam"],
-      },
-      {
-        text: "She has some pets.",
-        sightWords: ["She", "has", "some", "pets"],
-      },
-      {
-        text: "He has some pens.",
-        sightWords: ["He", "has", "some", "pens"],
-      },
-    ],
-  },
-  {
-    levelNumber: 37,
-    sentences: [
-      {
-        text: "Their dogs run.",
-        sightWords: ["Their", "dogs", "run"],
-      },
-      {
-        text: "Their rats nip.",
-        sightWords: ["Their", "rats", "nip"],
-      },
-      {
-        text: "Their cats nap.",
-        sightWords: ["Their", "cats", "nap"],
-      },
-    ],
-  },
-  {
-    levelNumber: 38,
-    sentences: [
-      {
-        text: "The story was sad.",
-        sightWords: ["The", "story", "was", "sad"],
-      },
-      {
-        text: "The story was good.",
-        sightWords: ["The", "story", "was", "good"],
-      },
-      {
-        text: "The story was fun.",
-        sightWords: ["The", "story", "was", "fun"],
-      },
-    ],
-  },
-  {
-    levelNumber: 39,
-    sentences: [
-      {
-        text: "The book.",
-        sightWords: ["The", "book"],
-      },
-      {
-        text: "The hoop.",
-        sightWords: ["The", "hoop"],
-      },
-      {
-        text: "The cook.",
-        sightWords: ["The", "cook"],
-      },
-    ],
-  },
-  {
-    levelNumber: 40,
-    sentences: [
-      {
-        text: "Then she ran.",
-        sightWords: ["Then", "she", "ran"],
-      },
-      {
-        text: "Then he put.",
-        sightWords: ["Then", "he", "put"],
-      },
-      {
-        text: "Then he cut.",
-        sightWords: ["Then", "he", "cut"],
-      },
-    ],
-  },
-  {
-    levelNumber: 41,
-    sentences: [
-      {
-        text: "There is a cat.",
-        sightWords: ["There", "is", "a", "cat"],
-      },
-      {
-        text: "There is a vat.",
-        sightWords: ["There", "is", "a", "vat"],
-      },
-      {
-        text: "There is a bat.",
-        sightWords: ["There", "is", "a", "bat"],
-      },
-    ],
-  },
-  {
-    levelNumber: 42,
-    sentences: [
-      {
-        text: "This is a bag.",
-        sightWords: ["This", "is", "a", "bag"],
-      },
-      {
-        text: "This is a bot.",
-        sightWords: ["This", "is", "a", "bot"],
-      },
-      {
-        text: "This is a pen.",
-        sightWords: ["This", "is", "a", "pen"],
-      },
-    ],
-  },
-  {
-    levelNumber: 43,
-    sentences: [
-      {
-        text: "Go to the van.",
-        sightWords: ["Go", "to", "the", "van"],
-      },
-      {
-        text: "Go to the bot.",
-        sightWords: ["Go", "to", "the", "bot"],
-      },
-      {
-        text: "Go to the cot.",
-        sightWords: ["Go", "to", "the", "cot"],
-      },
-    ],
-  },
-  {
-    levelNumber: 44,
-    sentences: [
-      {
-        text: "It is too big.",
-        sightWords: ["It", "is", "too", "big"],
-      },
-      {
-        text: "It is too ill.",
-        sightWords: ["It", "is", "too", "ill"],
-      },
-      {
-        text: "It is too hot.",
-        sightWords: ["It", "is", "too", "hot"],
-      },
-    ],
-  },
-  {
-    levelNumber: 45,
-    sentences: [
-      {
-        text: "I want a bag.",
-        sightWords: ["I", "want", "a", "bag"],
-      },
-      {
-        text: "I want a box.",
-        sightWords: ["I", "want", "a", "box"],
-      },
-      {
-        text: "I want a bot.",
-        sightWords: ["I", "want", "a", "bot"],
-      },
-    ],
-  },
-  {
-    levelNumber: 46,
-    sentences: [
-      {
-        text: "The frog was big.",
-        sightWords: ["The", "frog", "was", "big"],
-      },
-      {
-        text: "The dog was hot.",
-        sightWords: ["The", "dog", "was", "hot"],
-      },
-      {
-        text: "The bat was wet.",
-        sightWords: ["The", "bat", "was", "wet"],
-      },
-    ],
-  },
-  {
-    levelNumber: 47,
-    sentences: [
-      {
-        text: "They were hot.",
-        sightWords: ["They", "were", "hot"],
-      },
-      {
-        text: "They were fun.",
-        sightWords: ["They", "were", "fun"],
-      },
-      {
-        text: "They were ill.",
-        sightWords: ["They", "were", "ill"],
-      },
-    ],
-  },
-  {
-    levelNumber: 48,
-    sentences: [
-      {
-        text: "When the sun sets.",
-        sightWords: ["When", "the", "sun", "sets"],
-      },
-      {
-        text: "When the bat naps.",
-        sightWords: ["When", "the", "bat", "naps"],
-      },
-      {
-        text: "When the dog ran.",
-        sightWords: ["When", "the", "dog", "ran"],
-      },
-    ],
-  },
-  {
-    levelNumber: 49,
-    sentences: [
-      {
-        text: "What is in the bag?",
-        sightWords: ["What", "is", "in", "the", "bag"],
-      },
-      {
-        text: "What is in the bug?",
-        sightWords: ["What", "is", "in", "the", "bug"],
-      },
-      {
-        text: "What is in the bog?",
-        sightWords: ["What", "is", "in", "the", "bog"],
-      },
-    ],
-  },
-  {
-    levelNumber: 50,
-    sentences: [
-      {
-        text: "A white dog.",
-        sightWords: ["A", "white", "dog"],
-      },
-      {
-        text: "A white rat.",
-        sightWords: ["A", "white", "rat"],
-      },
-      {
-        text: "A white cat.",
-        sightWords: ["A", "white", "cat"],
-      },
-    ],
-  },
-];
-// Game State Variables
-let currentLevel = 1;
-let currentSentenceIndex = 0;
-let starsColored = 0;
+// script.js
 
-// Elements
-const sentenceTextElement = document.getElementById('sentence-text');
-const feedbackElement = document.getElementById('feedback');
-const readAloudButton = document.getElementById('readAloud');
-const starsContainer = document.getElementById('stars-container');
-const imageContainer = document.getElementById('image-container');
-const levelNumberElement = document.getElementById('level-number');
-const progressBar = document.getElementById('progress-bar');
-const playInstructionsButton = document.getElementById('play-instructions');
-const mascot = document.getElementById('mascot');
-
-// Initialize Game
-function initGame() {
-  loadProgress();
-  generateStars();
-  updateLevelIndicator();
-  loadSentence();
-  updateProgressBar();
-}
-
-// Generate Stars
-function generateStars() {
-  starsContainer.innerHTML = '';
-  for (let i = 0; i < 6; i++) {
-    const star = document.createElement('div');
-    star.classList.add('star');
-    star.dataset.index = i;
-    star.tabIndex = 0; // Make focusable
-    star.addEventListener('click', () => colorStar(i));
-    star.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        colorStar(i);
-      }
-    });
-    starsContainer.appendChild(star);
-  }
-}
-
-// Color Star
-function colorStar(index) {
-  const star = starsContainer.querySelectorAll('.star')[index];
-  if (!star.classList.contains('star-colored') && starsColored < 6) {
-    star.classList.add('star-colored');
-    starsColored += 1;
-
-    // Play sound effect
-    const audio = new Audio('sounds/star-sound.mp3');
-    audio.play();
-
-    // Update progress bar
-    updateProgressBar();
-
-    // Mascot animation or reaction
-    mascot.classList.add('mascot-happy');
-    setTimeout(() => {
-      mascot.classList.remove('mascot-happy');
-    }, 1000);
-  }
-}
-
-// Update Progress Bar
-function updateProgressBar() {
-  const progressPercentage = (starsColored / 6) * 100;
-  progressBar.style.width = `${progressPercentage}%`;
-}
-
-// Load Sentence
-function loadSentence() {
-  const level = levels[currentLevel - 1];
-  if (!level) {
-    console.error(`Level ${currentLevel} not found.`);
-    return;
-  }
-
-  const sentenceObj = level.sentences[currentSentenceIndex];
-  if (!sentenceObj) {
-    console.error(`Sentence index ${currentSentenceIndex} not found in level ${currentLevel}.`);
-    return;
-  }
-
-  // Highlight sight words in the sentence
-  const sentenceWithHighlights = highlightSightWords(sentenceObj.text, sentenceObj.sightWords);
-  sentenceTextElement.innerHTML = sentenceWithHighlights;
-  feedbackElement.textContent = '';
-
-  // Display images related to the sentence
-  displayImages(sentenceObj.images);
-
-  // Set up word audio playback
-  setupWordAudio();
-}
-
-// Highlight Sight Words
-function highlightSightWords(sentence, sightWords) {
-  let words = sentence.split(' ');
-  words = words.map(word => {
-    const cleanWord = word.replace(/[^a-zA-Z]/g, '');
-    if (sightWords.includes(cleanWord)) {
-      return `<span class="sight-word">${word}</span>`;
-    } else {
-      return `<span class="decodable-word">${word}</span>`;
+// =====================
+// Word Groups Configuration
+// =====================
+const wordGroups = {
+    cvc: {
+        a: [
+            'bat', 'bag', 'bad', 'cab', 'cap', 'cat', 'dad', 'dam', 'fad', 'fan',
+            'mad', 'jam', 'van', 'rag', 'tan', 'man', 'lap', 'mat', 'rat', 'can',
+            'gas', 'wag', 'had', 'lad', 'yam', 'wax', 'pad', 'ram', 'ham', 'pan'
+        ],
+        e: [
+            'bed', 'beg', 'ben', 'bet', 'den', 'fed', 'get', 'hen', 'jet', 'leg',
+            'met', 'net', 'pet', 'men', 'pen', 'red', 'set', 'ten', 'wet', 'web',
+            'yet', 'vet', 'hem', 'peg', 'let', 'keg', 'pep', 'ned', 'ted', 'ken'
+        ],
+        i: [
+            'bib', 'bid', 'big', 'bin', 'bit', 'dig', 'dip', 'fig', 'fin', 'fit',
+            'him', 'hit', 'kid', 'lid', 'lip', 'mid', 'pin', 'pig', 'pit', 'rid',
+            'rim', 'sip', 'sit', 'tin', 'tip', 'wig', 'win', 'zip', 'fix', 'mix'
+        ],
+        o: [
+            'bob', 'bog', 'cod', 'cob', 'cop', 'cot', 'dog', 'dot', 'fog', 'god',
+            'box', 'fox', 'got', 'hop', 'hot', 'jog', 'job', 'log', 'lot', 'mob',
+            'mop', 'nod', 'not', 'pod', 'pop', 'pot', 'rod', 'rot', 'sod', 'top'
+        ],
+        u: [
+            'bun', 'bud', 'bug', 'bus', 'but', 'cub', 'cud', 'cup', 'cut', 'dug',
+            'fun', 'gun', 'gum', 'hut', 'hum', 'hug', 'jug', 'mud', 'mug', 'nut',
+            'nun', 'pug', 'pun', 'pup', 'rub', 'rug', 'run', 'sum', 'sun', 'tug'
+        ]
+    },
+    ccvc: {
+        a: [
+            'brag', 'clap', 'crab', 'drag', 'flag', 'flap', 'glad', 'grab', 'plan', 'slam',
+            'snap', 'snag', 'span', 'stab', 'trap', 'scab', 'scam', 'scan', 'scat', 'swam',
+            'chap', 'that', 'drab', 'gran', 'plat', 'pram', 'slap', 'clan', 'slab'
+        ],
+        e: [
+            'bled', 'bred', 'fled', 'fret', 'glen', 'sped', 'stem', 'step', 'trek', 'clef',
+            'sled'
+        ],
+        i: [
+            'brim', 'brig', 'clip', 'crib', 'drip', 'flip', 'grin', 'grid', 'grip', 'skip',
+            'slim', 'slip', 'spin', 'spit', 'swim', 'twin', 'trip', 'trim', 'twig', 'skid'
+        ],
+        o: [
+            'blot', 'blog', 'clog', 'crop', 'drop', 'frog', 'flop', 'glob', 'glop', 'plod',
+            'plot', 'prod', 'prop', 'slot', 'smog', 'snob', 'spot', 'stop', 'swop', 'trod'
+        ],
+        u: [
+            'drum', 'grub', 'plug', 'slug', 'slum', 'spun', 'stub', 'stud', 'stun',
+        ]
+    },
+    cvcc: {
+        a: [
+            'band', 'bank', 'damp', 'hand', 'land', 'lamp', 'ramp', 'sand',
+            'pant', 'tank', 'camp'
+        ],
+        e: [
+            'bent', 'dent', 'felt', 'fend', 'help', 'kept', 'lend', 'mend', 'nest', 'rest',
+            'sent', 'tent', 'vest', 'vent', 'wept', 'weld', 'text', 'next', 'heft', 'jest',
+            'best', 'pest', 'test', 'west', 'zest', 'desk', 'self', 'meld', 'held', 'belt'
+        ],
+        i: [
+            'dink', 'find', 'film', 'gild', 'gimp', 'hind', 'hilt', 'hint', 'jilt', 'mint',
+            'milk', 'silk', 'fist', 'list', 'risk', 'sink', 'link', 'pink', 'kink',
+            'rink', 'tint', 'tilt', 'skimp', 'wilt'
+        ],
+        o: [
+            'bond', 'colt', 'comb', 'fond', 'cost', 'lost', 'loft', 'soft', 'post',
+            'pond'
+        ],
+        u: [
+            'bunk', 'bump', 'bust', 'dump', 'dunk', 'fund', 'funk', 'gust', 'gunk', 'hunt',
+            'junk', 'just', 'lump', 'must', 'pump', 'rust', 'runt', 'sunk', 'tuft',
+            'tusk', 'husk', 'dust', 'dusk'
+        ]
+    },
+    ccvcc: {
+        a: [
+            'brand', 'blank', 'clamp', 'cramp', 'crank', 'drank', 'flank', 'frank', 'plank',
+            'prank', 'stamp', 'stand', 'strand', 'tract', 'scrap',
+            'swank'
+        ],
+        e: [
+            'blend', 'blent', 'strep', 'trend', 'swept', 'stent'
+        ],
+        i: [
+            'blink', 'brink', 'clink', 'clint', 'crimp', 'drink', 'drift', 'print', 'sprint',
+            'strip', 'strict', 'shrink', 'script', 'twist', 'flint',
+            'shrimp', 'splint', 'swift'
+        ],
+        o: [
+            'frost', 'stomp', 'strong', 'throb', 'throng', 'swamp', 'prong', 'prompt',
+            'clomp', 'chomp', 'clonk'
+        ],
+        u: [
+            'blunt', 'brunt', 'clump', 'clunk', 'crust', 'drunk', 'flung', 'frump', 'grunt', 'plump',
+            'plunk', 'skunk', 'stump', 'strut', 'trunk', 'trust', 'strum', 'stunt',
+            'skulk', 'spunk', 'slump'
+        ]
+    },
+    digraphs: {
+        a: [
+            'chat', 'chap', 'than', 'that', 'math', 'hang', 'bang', 'rang', 'cash',
+            'dash', 'stash', 'trash', 'patch', 'catch', 'match', 'batch', 'rash', 'sash'
+        ],
+        e: [
+            'shed', 'them', 'then', 'fetch', 'bench', 'retch', 'ketch',
+            'stretch', 'sketch', 'drench', 'flesh', 'fresh'
+        ],
+        i: [
+            'chip', 'chin', 'thin', 'thing', 'king', 'ring', 'sing', 'wing', 'sting', 'bring',
+            'cling', 'string', 'swing', 'ditch', 'pitch', 'switch', 'twitch'
+        ],
+        o: [
+            'shop', 'shot', 'chop',
+            'strong', 'throb', 'cloth', 'crotch', 'notch', 'botch'
+        ],
+        u: [
+            'shut', 'thud', 'chug', 'chunk', 'thump', 'shrug', 'brush', 'crush',
+            'blush', 'flush', 'crutch', 'clutch'
+        ]
     }
-  });
-  return words.join(' ');
-}
+};
 
-// Display Images
-function displayImages(images) {
-  imageContainer.innerHTML = '';
-  if (Array.isArray(images) && images.length > 0) {
-    images.forEach(src => {
-      const img = document.createElement('img');
-      img.src = src;
-      img.alt = 'Related Image';
-      img.onerror = function() {
-        this.src = 'images/default-image.jpg'; // Provide a default image
-      };
-      imageContainer.appendChild(img);
-    });
-  }
-}
+// =====================
+// Audio Configuration
+// =====================
+const audioPath = './'; // Path to audio files
+const letterSounds = {};
 
-// Setup Word Audio
-function setupWordAudio() {
-  const words = document.querySelectorAll('.sentence span');
-  words.forEach(wordSpan => {
-    wordSpan.tabIndex = 0; // Make focusable
-    wordSpan.addEventListener('click', () => {
-      const word = wordSpan.textContent.replace(/[^a-zA-Z]/g, '');
-      playWordAudio(word);
-    });
-    wordSpan.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        const word = wordSpan.textContent.replace(/[^a-zA-Z]/g, '');
-        playWordAudio(word);
-      }
-    });
-  });
-}
-
-// Play Word Audio
-function playWordAudio(word) {
-  if ('speechSynthesis' in window) {
-    const utterance = new SpeechSynthesisUtterance(word);
-    window.speechSynthesis.speak(utterance);
-  } else {
-    alert('Sorry, your browser does not support text-to-speech.');
-  }
-}
-
-// Read Aloud Sentence
-readAloudButton.addEventListener('click', () => {
-  const level = levels[currentLevel - 1];
-  const sentenceObj = level.sentences[currentSentenceIndex];
-  if (sentenceObj && sentenceObj.text) {
-    playSentenceAudio(sentenceObj.text);
-    showPositiveFeedback();
-
-    // Play button click sound
-    const audio = new Audio('sounds/button-click.mp3');
-    audio.play();
-
-    // Animate button
-    readAloudButton.classList.add('button-animate');
-    setTimeout(() => {
-      readAloudButton.classList.remove('button-animate');
-    }, 300);
-  }
+// Load individual letter sounds
+'abcdefghijklmnopqrstuvwxyz'.split('').forEach(letter => {
+    const audio = new Audio(`${audioPath}${letter}.mp3`);
+    letterSounds[letter] = audio;
 });
 
-// Play Sentence Audio
-function playSentenceAudio(sentence) {
-  if ('speechSynthesis' in window) {
-    const utterance = new SpeechSynthesisUtterance(sentence);
-    window.speechSynthesis.speak(utterance);
-  } else {
-    alert('Sorry, your browser does not support text-to-speech.');
-  }
-}
+// Load UI sounds
+const clickSound = new Audio(`${audioPath}click.mp3`);
+const successSound = new Audio(`${audioPath}success.mp3`);
 
-// Positive Feedback
-const motivationalMessages = [
-  "Great job!",
-  "Well done!",
-  "You're amazing!",
-  "Keep it up!",
-  "Fantastic!",
-  "You're a star!",
+// =====================
+// Application State Variables
+// =====================
+let usedWords = [];
+let score = 0;
+let letterSoundsEnabled = true; // Letter sounds enabled by default
+let blendingTime = 3000; // Default to 3000ms
+let totalWords = 0; // Total words initialized
+let currentWord = ''; // Store the current word for repeat functionality
+
+// =====================
+// DOM Elements
+// =====================
+const spinButton = document.getElementById('spinButton');
+const repeatButton = document.getElementById('repeatButton');
+const wordBox = document.getElementById('wordBox');
+const complimentBox = document.getElementById('complimentBox');
+const scoreText = document.getElementById('scoreText');
+const scoreIncrement = document.getElementById('scoreIncrement');
+const toggleAudioButton = document.getElementById('toggleAudioButton');
+const increaseBlendingTimeButton = document.getElementById('increaseBlendingTime');
+const decreaseBlendingTimeButton = document.getElementById('decreaseBlendingTime');
+const blendingTimeDisplay = document.getElementById('blendingTimeDisplay');
+const blendingTimerContainer = document.getElementById('blendingTimerContainer');
+const blendingTimer = document.getElementById('blendingTimer');
+const fullscreenButton = document.getElementById('fullscreenButton');
+const progressStars = document.getElementById('progressStars');
+
+// =====================
+// Predefined Compliments
+// =====================
+const compliments = [
+    'Great job!', 'Fantastic!', 'Well done!', 'Awesome!', 'Excellent!'
 ];
 
-function showPositiveFeedback() {
-  const randomMessage = motivationalMessages[Math.floor(Math.random() * motivationalMessages.length)];
-  feedbackElement.textContent = randomMessage;
-  feedbackElement.classList.add('fade-in');
+// =====================
+// Speech Synthesis Configuration
+// =====================
+let selectedVoice = null;
 
-  // Mascot reaction
-  mascot.classList.add('mascot-happy');
-  setTimeout(() => {
-    feedbackElement.classList.remove('fade-in');
-    feedbackElement.classList.add('fade-out');
-    mascot.classList.remove('mascot-happy');
-  }, 1000);
+function setVoice() {
+    if ('speechSynthesis' in window) {
+        function loadVoices() {
+            const voices = speechSynthesis.getVoices();
+            if (voices.length > 0) {
+                selectedVoice =
+                    voices.find(voice => voice.lang.startsWith('en') && voice.name.toLowerCase().includes('female')) ||
+                    voices.find(voice => voice.lang.startsWith('en')) ||
+                    voices[0];
+            } else {
+                console.warn('No speech synthesis voices available.');
+            }
+        }
+        loadVoices();
 
-  setTimeout(() => {
-    feedbackElement.textContent = '';
-    feedbackElement.classList.remove('fade-out');
-    moveToNextSentence();
-  }, 1500);
-}
-
-// Move to Next Sentence or Level
-function moveToNextSentence() {
-  const level = levels[currentLevel - 1];
-  if (currentSentenceIndex < level.sentences.length - 1) {
-    currentSentenceIndex += 1;
-  } else {
-    if (currentLevel < levels.length) {
-      currentLevel += 1;
-      currentSentenceIndex = 0;
-      starsColored = 0;
-      updateLevelIndicator();
-      generateStars();
-      updateProgressBar(); // Reset progress bar
+        if (speechSynthesis.onvoiceschanged !== undefined) {
+            speechSynthesis.onvoiceschanged = loadVoices;
+        }
     } else {
-      // Game completed
-      alert('Congratulations! You have completed all levels.');
-      return;
+        console.warn('Speech Synthesis API is not supported on this browser.');
     }
-  }
-  saveProgress();
-  loadSentence();
 }
 
-// Update Level Indicator and Theme
-function updateLevelIndicator() {
-  levelNumberElement.textContent = currentLevel;
-  updateTheme();
+// Function to speak text
+function speak(text) {
+    return new Promise((resolve) => {
+        if ('speechSynthesis' in window && selectedVoice) {
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.voice = selectedVoice;
+            utterance.rate = 0.8;
+            utterance.pitch = 1.1;
+            utterance.volume = 0.9;
+            utterance.onend = resolve;
+            utterance.onerror = (event) => {
+                console.error('Speech synthesis error:', event.error);
+                resolve(); // Resolve the promise to prevent freezing
+            };
+            speechSynthesis.speak(utterance);
+        } else {
+            console.warn(`Speech synthesis not available. Text: ${text}`);
+            resolve(); // Resolve the promise to prevent freezing
+        }
+    });
 }
 
-// Update Theme Based on Level
-function updateTheme() {
-  const themes = ['forest', 'ocean', 'space'];
-  const themeIndex = Math.floor((currentLevel - 1) / 10) % themes.length;
-  const selectedTheme = themes[themeIndex];
+// =====================
+// Utility Functions
+// =====================
 
-  document.body.className = ''; // Reset existing classes
-  document.body.classList.add(`theme-${selectedTheme}`);
+// Function to update the score
+function updateScore() {
+    score += 10; // Add points per word
+    scoreText.textContent = score;
 
-  // Update mascot image
-  mascot.src = `images/mascot-${selectedTheme}.png`;
+    // Show score increment animation
+    scoreIncrement.textContent = '+10';
+    scoreIncrement.style.opacity = '1';
+
+    // Remove the animation after it's done
+    setTimeout(() => {
+        scoreIncrement.style.opacity = '0';
+    }, 1000); // Duration matches the CSS animation
 }
 
-// Play Instructions Audio
-playInstructionsButton.addEventListener('click', () => {
-  const instructionsText = "Decode each sentence on your own. Color a star when you are done.";
-  playSentenceAudio(instructionsText);
+// Function to update progress stars
+function updateProgress() {
+    const totalStars = 5;
+    const progress = Math.min(Math.floor((usedWords.length / totalWords) * totalStars), totalStars);
+    progressStars.innerHTML = '⭐'.repeat(progress) + '☆'.repeat(totalStars - progress);
+}
+
+// Function to give a random compliment
+function giveCompliment() {
+    const compliment = compliments[Math.floor(Math.random() * compliments.length)];
+    complimentBox.textContent = compliment;
+    complimentBox.style.opacity = '1';
+    speak(compliment);
+    successSound.play();
+    setTimeout(() => {
+        complimentBox.style.opacity = '0';
+    }, 2000);
+}
+
+// Function to play audio for a letter
+function playLetterSound(letter) {
+    return new Promise((resolve) => {
+        if (!letterSoundsEnabled) {
+            resolve(); // Skip playing sound if letter sounds are disabled
+            return;
+        }
+        const sound = letterSounds[letter.toLowerCase()];
+        if (sound) {
+            sound.currentTime = 0;
+            sound.play().then(resolve).catch((error) => {
+                console.error(`Error playing sound for "${letter}":`, error);
+                resolve();
+            });
+        } else {
+            console.warn(`No sound found for "${letter}"`);
+            resolve();
+        }
+    });
+}
+
+// =====================
+// Core Functions
+// =====================
+
+// Function to reveal the word with animations and audio
+async function revealWord(word, isRepeat = false) {
+    wordBox.innerHTML = '';
+    const letters = word.split('');
+
+    letters.forEach((letter, index) => {
+        const span = document.createElement('span');
+        span.textContent = letter;
+        span.classList.add('letter');
+        if ('aeiou'.includes(letter.toLowerCase())) {
+            span.classList.add('vowel');
+        }
+        wordBox.appendChild(span);
+        // Set animation delay
+        span.style.animationDelay = `${(index + 1) * 0.3}s`;
+    });
+
+    // Play each letter sound
+    for (let i = 0; i < letters.length; i++) {
+        await new Promise(resolve => setTimeout(resolve, 300));
+        await playLetterSound(letters[i]);
+    }
+
+    // Start blending timer
+    startBlendingTimer(blendingTime / 1000);
+
+    // Wait for blending time
+    await new Promise(resolve => setTimeout(resolve, blendingTime));
+
+    // Pronounce the whole word
+    try {
+        await speak(word);
+    } catch (error) {
+        console.error('Error during speech synthesis:', error);
+    }
+
+    if (!isRepeat) {
+        giveCompliment();
+        updateScore();
+        updateProgress();
+    }
+}
+
+// Function to get available words
+function getAvailableWords() {
+    const group = wordGroups['cvc']; // Using 'cvc' for simplicity
+    const words = Object.values(group).flat();
+    return words;
+}
+
+// Function to get a random word from available words
+function getRandomWord() {
+    const availableWords = getAvailableWords();
+    const remainingWords = availableWords.filter(word => !usedWords.includes(word));
+    if (remainingWords.length === 0) {
+        alert('You have gone through all the words! The list will reset.');
+        resetGame(false); // Reset without resetting totalWords
+        return getRandomWord();
+    }
+    const word = remainingWords[Math.floor(Math.random() * remainingWords.length)];
+    usedWords.push(word);
+    return word;
+}
+
+// =====================
+// Event Handlers
+// =====================
+
+// Function to handle the Spin button click
+async function spin() {
+    spinButton.disabled = true;
+    repeatButton.disabled = true; // Disable repeat button during spin
+
+    // Play click sound
+    clickSound.play();
+
+    complimentBox.textContent = '';
+    complimentBox.style.opacity = '0';
+    const word = getRandomWord();
+    currentWord = word; // Store the current word
+
+    try {
+        await revealWord(word);
+    } catch (error) {
+        console.error('Error during word reveal:', error);
+    } finally {
+        spinButton.disabled = false;
+        repeatButton.disabled = false; // Enable repeat button after spin
+    }
+}
+
+// Function to handle the Repeat button click
+async function repeat() {
+    if (currentWord) {
+        repeatButton.disabled = true; // Prevent multiple clicks
+        try {
+            await revealWord(currentWord, true);
+        } catch (error) {
+            console.error('Error during word repeat:', error);
+        } finally {
+            repeatButton.disabled = false;
+        }
+    } else {
+        alert('No word to repeat. Please spin first.');
+    }
+}
+
+// Function to reset the game state
+function resetGame(resetTotalWords = true) {
+    usedWords = [];
+    score = 0;
+    scoreText.textContent = score;
+    currentWord = ''; // Reset current word
+    repeatButton.disabled = true; // Disable repeat button
+
+    if (resetTotalWords) {
+        totalWords = getAvailableWords().length;
+    }
+    updateProgress();
+}
+
+// Function to toggle letter sounds on or off
+function toggleLetterSounds() {
+    letterSoundsEnabled = !letterSoundsEnabled;
+    toggleAudioButton.textContent = letterSoundsEnabled ? '🔊' : '🔇';
+}
+
+// Add event listener to the toggle audio button
+toggleAudioButton.addEventListener('click', toggleLetterSounds);
+
+// Blending Time Control Event Listeners
+increaseBlendingTimeButton.addEventListener('click', () => {
+    if (blendingTime < 7000) {
+        blendingTime += 1000;
+        updateBlendingTimeDisplay();
+    }
 });
 
-// Save Progress
-function saveProgress() {
-  localStorage.setItem('currentLevel', currentLevel);
-  localStorage.setItem('currentSentenceIndex', currentSentenceIndex);
+decreaseBlendingTimeButton.addEventListener('click', () => {
+    if (blendingTime > 1000) {
+        blendingTime -= 1000;
+        updateBlendingTimeDisplay();
+    }
+});
+
+function updateBlendingTimeDisplay() {
+    blendingTimeDisplay.textContent = blendingTime / 1000;
 }
 
-// Load Progress
-function loadProgress() {
-  currentLevel = parseInt(localStorage.getItem('currentLevel')) || 1;
-  currentSentenceIndex = parseInt(localStorage.getItem('currentSentenceIndex')) || 0;
+// Initialize blending time display on load
+updateBlendingTimeDisplay();
+
+// Function to start the blending timer
+function startBlendingTimer(seconds) {
+    blendingTimerContainer.style.display = 'block';
+    blendingTimer.style.width = '100%';
+    blendingTimer.style.transition = `width ${seconds}s linear`;
+    setTimeout(() => {
+        blendingTimer.style.width = '0%';
+    }, 50); // Slight delay to ensure transition works
+    // Hide blending timer after it's done
+    setTimeout(() => {
+        blendingTimerContainer.style.display = 'none';
+    }, seconds * 1000);
 }
 
-// Start Game
-initGame();
+// Fullscreen Functionality
+function toggleFullscreen() {
+    if (!document.fullscreenElement) {
+        // Enter fullscreen
+        document.documentElement.requestFullscreen().catch(err => {
+            alert(`Error attempting to enable fullscreen mode: ${err.message} (${err.name})`);
+        });
+    } else {
+        // Exit fullscreen
+        document.exitFullscreen();
+    }
+}
+
+// Event listener for the fullscreen button
+fullscreenButton.addEventListener('click', toggleFullscreen);
+
+// =====================
+// Initialization
+// =====================
+
+// Add event listeners to buttons
+spinButton.addEventListener('click', spin);
+repeatButton.addEventListener('click', repeat);
+
+// Initialize speech synthesis voice
+setVoice();
+
+// Update totalWords and progress on initial load
+resetGame(true);
+
+// Preload all audio files
+function preloadAudio() {
+    for (const key in letterSounds) {
+        letterSounds[key].load();
+    }
+    clickSound.load();
+    successSound.load();
+}
+
+// Preload audio on window load
+window.addEventListener('load', preloadAudio);
