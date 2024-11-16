@@ -2,55 +2,54 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Word Blending Game for Preschoolers</title>
     <!-- Include Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Link to CSS -->
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="main-container">
+        <!-- Header -->
+        <div class="header">
+            <h1>Score: <span id="scoreText">0</span></h1>
+        </div>
+
         <!-- Top Controls -->
         <div class="top-controls">
-            <!-- Blending Time Control -->
             <div class="control-group">
                 <button id="decreaseBlendingTime" class="icon-button">➖</button>
                 <span id="blendingTimeDisplay" class="control-label">3</span>
                 <button id="increaseBlendingTime" class="icon-button">➕</button>
             </div>
-            <!-- Toggle Letter Sounds -->
             <button id="toggleAudioButton" class="icon-button">🔊</button>
-            <!-- Fullscreen Toggle -->
             <button id="fullscreenButton" class="icon-button">⛶</button>
         </div>
 
         <!-- Main Content -->
         <div class="main-content">
-            <!-- Word Display Box -->
             <div id="wordBox" class="word-box"></div>
-            <!-- Blending Timer -->
             <div id="blendingTimerContainer" class="blending-timer-container">
                 <div id="blendingTimer" class="blending-timer"></div>
             </div>
-            <!-- Compliment Box -->
             <div id="complimentBox" class="compliment-box"></div>
         </div>
 
         <!-- Action Buttons -->
         <div class="action-buttons">
-            <button id="spinButton" class="primary-button icon-button">🎡</button>
-            <button id="repeatButton" class="primary-button icon-button" disabled>🔁</button>
+            <button id="spinButton" class="primary-button icon-button">Spin</button>
+            <button id="repeatButton" class="primary-button icon-button" disabled>Repeat</button>
         </div>
 
         <!-- Progress and Score -->
         <div class="progress-score">
-            <!-- Visual Progress Tracker -->
             <div class="progress-tracker">
                 <span id="progressStars"></span>
             </div>
-            <!-- Score Display -->
-            <div id="scoreText" class="score-text">0</div>
-            <!-- Score Increment Animation -->
-            <div id="scoreIncrement" class="score-increment"></div>
+            <div class="progress-text">
+                <span id="progressCount">0</span> / 150 Words Revealed
+            </div>
         </div>
     </div>
 
