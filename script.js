@@ -74,8 +74,14 @@ const letters = 'abcdefghijklmnopqrstuvwxyz'.split('');
 
 // UI Sounds
 const audioPath = './';
-const clickSound = new Audio(`${audioPath}click.mp3`);
-const successSound = new Audio(`${audioPath}success.mp3`);
+let clickSound = null;
+let successSound = null;
+try {
+    clickSound = new Audio(`${audioPath}click.mp3`);
+    successSound = new Audio(`${audioPath}success.mp3`);
+} catch (err) {
+    console.warn('Audio files not available or failed to load.', err);
+}
 
 // State Variables
 let revealedWords = 0;
@@ -92,10 +98,18 @@ let speechSynthesisAlertShown = false;
 // Preload Letter Sounds
 const letterSounds = {};
 letters.forEach(letter => {
-    letterSounds[letter] = new Audio(`${audioPath}${letter}.mp3`);
+    try {
+        letterSounds[letter] = new Audio(`${audioPath}${letter}.mp3`);
+    } catch (err) {
+        console.warn(`Could not load audio for letter: ${letter}`, err);
+    }
 });
 digraphList.forEach(digraph => {
-    letterSounds[digraph] = new Audio(`${audioPath}${digraph}.mp3`);
+    try {
+        letterSounds[digraph] = new Audio(`${audioPath}${digraph}.mp3`);
+    } catch (err) {
+        console.warn(`Could not load audio for digraph: ${digraph}`, err);
+    }
 });
 
 // DOM Elements
@@ -127,11 +141,19 @@ const compliments = [
 // =====================
 // Speech Synthesis Setup
 // =====================
+function fallbackNoSpeechSynthesis() {
+    if (!speechSynthesisAlertShown) {
+        console.warn('Speech synthesis not available. Will continue without voice.');
+        speechSynthesisAlertShown = true;
+    }
+    selectedVoice = null;
+    speechSynthesisAvailable = false;
+}
+
 function setVoice() {
     return new Promise(resolve => {
         if (!('speechSynthesis' in window)) {
             console.warn('Speech Synthesis API not supported.');
-            speechSynthesisAvailable = false;
             fallbackNoSpeechSynthesis();
             return resolve();
         }
@@ -145,7 +167,6 @@ function setVoice() {
                     voices[0];
                 resolve();
             } else {
-                speechSynthesisAvailable = false;
                 fallbackNoSpeechSynthesis();
                 resolve();
             }
@@ -158,7 +179,6 @@ function setVoice() {
             };
             setTimeout(() => {
                 if (!selectedVoice) {
-                    speechSynthesisAvailable = false;
                     fallbackNoSpeechSynthesis();
                     resolve();
                 }
@@ -169,15 +189,7 @@ function setVoice() {
     });
 }
 
-function fallbackNoSpeechSynthesis() {
-    if (!speechSynthesisAlertShown) {
-        alert('Speech synthesis voices are not available. Word pronunciation will be disabled.');
-        speechSynthesisAlertShown = true;
-    }
-    selectedVoice = null;
-}
-
-// Speak a given text using speech synthesis
+// Speak a given text using speech synthesis, if available
 function speak(text) {
     return new Promise(resolve => {
         if (!speechSynthesisAvailable || !selectedVoice) return resolve();
@@ -240,8 +252,15 @@ function giveCompliment() {
     complimentBox.textContent = compliment;
     complimentBox.style.color = 'green';
     complimentBox.style.opacity = '1';
-    speak(compliment);
-    successSound.play();
+    speak(compliment); // If speech not available, this just resolves silently.
+    if (successSound) {
+        try {
+            successSound.currentTime = 0;
+            successSound.play().catch(err => console.warn('Success sound failed:', err));
+        } catch (err) {
+            console.warn('Could not play success sound:', err);
+        }
+    }
     setTimeout(() => {
         complimentBox.style.opacity = '0';
     }, 2000);
@@ -254,7 +273,10 @@ function playLetterSound(unit) {
         if (!sound) return resolve();
 
         sound.currentTime = 0;
-        sound.play().then(resolve).catch(() => resolve());
+        sound.play().then(resolve).catch((error) => {
+            console.warn(`Error playing sound for "${unit}":`, error);
+            resolve();
+        });
     });
 }
 
@@ -294,7 +316,7 @@ async function revealWord(word, isRepeat = false) {
         wordBox.appendChild(span);
     });
 
-    // Play each sound with slight delay
+    // Play each letter/digraph sound with slight delay
     for (let i = 0; i < units.length; i++) {
         await new Promise(r => setTimeout(r, 500));
         await playLetterSound(units[i].text);
@@ -303,7 +325,7 @@ async function revealWord(word, isRepeat = false) {
     startBlendingTimer(blendingTime / 1000);
     await new Promise(r => setTimeout(r, blendingTime));
 
-    // Pronounce whole word
+    // Pronounce whole word (if speech available)
     await speak(word);
 
     if (!isRepeat) {
@@ -344,7 +366,14 @@ async function spin() {
     spinButton.disabled = true;
     repeatButton.disabled = true;
     spinButton.innerHTML = '<span class="spin-icon-animate">🎡</span>';
-    clickSound.play();
+    if (clickSound) {
+        try {
+            clickSound.currentTime = 0;
+            await clickSound.play();
+        } catch (err) {
+            console.warn('Click sound failed:', err);
+        }
+    }
 
     setTimeout(() => {
         spinButton.innerHTML = '🎡 Spin';
@@ -469,11 +498,15 @@ setVoice().then(() => {
     resetGame(true);
 });
 
-// Preload audio
+// Preload audio if available
 function preloadAudio() {
-    Object.values(letterSounds).forEach(audio => audio.load());
-    clickSound.load();
-    successSound.load();
+    Object.values(letterSounds).forEach(audio => {
+        if (audio && typeof audio.load === 'function') {
+            audio.load();
+        }
+    });
+    if (clickSound && typeof clickSound.load === 'function') clickSound.load();
+    if (successSound && typeof successSound.load === 'function') successSound.load();
 }
 
 window.addEventListener('load', preloadAudio);
