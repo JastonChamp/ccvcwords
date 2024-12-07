@@ -252,7 +252,7 @@ function giveCompliment() {
     complimentBox.textContent = compliment;
     complimentBox.style.color = 'green';
     complimentBox.style.opacity = '1';
-    speak(compliment); // If speech not available, this just resolves silently.
+    speak(compliment); // If speech not available, resolves silently.
     if (successSound) {
         try {
             successSound.currentTime = 0;
