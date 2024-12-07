@@ -2,7 +2,6 @@
 // Configuration & Globals
 // =====================
 
-// Word lists grouped by pattern and vowel
 const wordGroups = {
     cvc: {
         a: ['bat', 'bag', 'bad', 'cab', 'cap', 'cat', 'dad', 'dam', 'fad', 'fan',
@@ -72,7 +71,6 @@ const wordGroups = {
 const digraphList = ['sh', 'th', 'ch', 'ng'];
 const letters = 'abcdefghijklmnopqrstuvwxyz'.split('');
 
-// UI Sounds
 const audioPath = './';
 let clickSound = null;
 let successSound = null;
@@ -83,7 +81,6 @@ try {
     console.warn('Audio files not available or failed to load.', err);
 }
 
-// State Variables
 let revealedWords = 0;
 let usedWords = [];
 let score = 0;
@@ -133,14 +130,11 @@ const blendingTimerContainer = document.getElementById('blendingTimerContainer')
 const blendingTimer = document.getElementById('blendingTimer');
 const fullscreenButton = document.getElementById('fullscreenButton');
 
-// Compliments
 const compliments = [
     'Great job!', 'Fantastic!', 'Well done!', 'You did it!', 'Awesome!', 'Keep it up!', 'Excellent!'
 ];
 
-// =====================
 // Speech Synthesis Setup
-// =====================
 function fallbackNoSpeechSynthesis() {
     if (!speechSynthesisAlertShown) {
         console.warn('Speech synthesis not available. Will continue without voice.');
@@ -189,7 +183,6 @@ function setVoice() {
     });
 }
 
-// Speak a given text using speech synthesis, if available
 function speak(text) {
     return new Promise(resolve => {
         if (!speechSynthesisAvailable || !selectedVoice) return resolve();
@@ -218,9 +211,6 @@ function speak(text) {
     });
 }
 
-// =====================
-// Utility Functions
-// =====================
 function isVowel(letter) {
     return 'aeiou'.includes(letter.toLowerCase());
 }
@@ -252,14 +242,10 @@ function giveCompliment() {
     complimentBox.textContent = compliment;
     complimentBox.style.color = 'green';
     complimentBox.style.opacity = '1';
-    speak(compliment); // If speech not available, resolves silently.
+    speak(compliment);
     if (successSound) {
-        try {
-            successSound.currentTime = 0;
-            successSound.play().catch(err => console.warn('Success sound failed:', err));
-        } catch (err) {
-            console.warn('Could not play success sound:', err);
-        }
+        successSound.currentTime = 0;
+        successSound.play().catch(err => console.warn('Success sound failed:', err));
     }
     setTimeout(() => {
         complimentBox.style.opacity = '0';
@@ -299,9 +285,6 @@ function parseWord(word) {
     return units;
 }
 
-// =====================
-// Core Functions
-// =====================
 async function revealWord(word, isRepeat = false) {
     wordBox.innerHTML = '';
     const units = parseWord(word);
@@ -316,7 +299,6 @@ async function revealWord(word, isRepeat = false) {
         wordBox.appendChild(span);
     });
 
-    // Play each letter/digraph sound with slight delay
     for (let i = 0; i < units.length; i++) {
         await new Promise(r => setTimeout(r, 500));
         await playLetterSound(units[i].text);
@@ -325,7 +307,6 @@ async function revealWord(word, isRepeat = false) {
     startBlendingTimer(blendingTime / 1000);
     await new Promise(r => setTimeout(r, blendingTime));
 
-    // Pronounce whole word (if speech available)
     await speak(word);
 
     if (!isRepeat) {
@@ -359,20 +340,15 @@ function getRandomWord() {
     return word;
 }
 
-// =====================
-// Event Handlers
-// =====================
 async function spin() {
+    console.log("Spin button clicked");
     spinButton.disabled = true;
     repeatButton.disabled = true;
     spinButton.innerHTML = '<span class="spin-icon-animate">🎡</span>';
+
     if (clickSound) {
-        try {
-            clickSound.currentTime = 0;
-            await clickSound.play();
-        } catch (err) {
-            console.warn('Click sound failed:', err);
-        }
+        clickSound.currentTime = 0;
+        clickSound.play().catch(err => console.warn('Click sound failed:', err));
     }
 
     setTimeout(() => {
@@ -386,7 +362,7 @@ async function spin() {
     currentWord = word;
 
     try {
-        await setVoice();
+        // Removed await setVoice(); here
         await revealWord(word);
     } catch (error) {
         console.error('Error during word reveal:', error);
@@ -403,7 +379,7 @@ async function repeat() {
     }
     repeatButton.disabled = true;
     try {
-        await setVoice();
+        // Removed await setVoice(); here
         await revealWord(currentWord, true);
     } catch (error) {
         console.error('Error during word repeat:', error);
