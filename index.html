@@ -13,14 +13,21 @@
     </header>
     <main>
         <div class="container">
-            <!-- Draggable bus using the SVG file -->
-            <img id="bus" src="bus.svg" alt="Yellow School Bus" draggable="true" aria-label="Drag the bus to hear the letters blend">
+            <!-- Draggable Bus Image -->
+            <img
+                id="bus"
+                src="bus.png"
+                alt="Yellow School Bus"
+                draggable="true"
+                aria-label="Drag the bus to hear the letters blend"
+            >
 
+            <!-- Road Strip for Letter Blocks -->
             <div class="road-strip" aria-label="Letter blocks on the road">
-                <!-- Letter blocks will be inserted here by script.js -->
+                <!-- Letter blocks will be dynamically inserted here by script.js -->
             </div>
 
-            <!-- A button to get the next word after blending -->
+            <!-- Controls: Next Word Button -->
             <div class="controls">
                 <button id="nextWordBtn">Next Word</button>
             </div>
