@@ -45,7 +45,7 @@ roadStrip.addEventListener('drop', (e) => {
 function blendSounds() {
     let word = '';
 
-    // First, play each letter's sound sequentially
+    // Play each letter's sound sequentially with a delay
     letterBlocks.forEach((block, index) => {
         const letterSound = block.getAttribute('data-sound');
         word += block.textContent;
@@ -54,10 +54,10 @@ function blendSounds() {
             // Highlight the current letter being played
             block.classList.add('highlight');
 
-            // Play the letter sound from .mp3 file (e.g., "a.mp3")
+            // Play the letter sound (e.g., "a.mp3", "c.mp3")
             playLetterAudio(letterSound);
 
-            // After a short delay, remove highlight
+            // Remove highlight after a short delay
             setTimeout(() => {
                 block.classList.remove('highlight');
             }, 800);
@@ -65,7 +65,7 @@ function blendSounds() {
         }, index * 1200);
     });
 
-    // After all letters have been played, use Web Speech API to speak the full word
+    // After all letters have been played, speak the full word
     setTimeout(() => {
         speak(word.toLowerCase());
     }, letterBlocks.length * 1200);
