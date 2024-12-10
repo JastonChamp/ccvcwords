@@ -13,12 +13,16 @@
     </header>
     <main>
         <div class="container">
-            <!-- Draggable bus -->
-            <div id="bus" draggable="true" aria-label="Drag the bus to hear the letters blend">Bus</div>
-            
-            <!-- Road strip where letters will be placed -->
+            <!-- Draggable bus replaced with an img -->
+            <img id="bus" src="bus.png" alt="Yellow School Bus" draggable="true" aria-label="Drag the bus to hear the letters blend">
+
             <div class="road-strip" aria-label="Letter blocks on the road">
                 <!-- Letter blocks will be inserted here by script.js -->
+            </div>
+
+            <!-- A button to get the next word after blending -->
+            <div class="controls">
+                <button id="nextWordBtn">Next Word</button>
             </div>
         </div>
     </main>
