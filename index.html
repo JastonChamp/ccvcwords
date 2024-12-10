@@ -2,108 +2,98 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Word Spinner for Early Readers</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue&display=swap" rel="stylesheet">
-
-    <!-- Styles -->
-    <link rel="stylesheet" href="style.css">
-
-    <!-- Meta Description -->
-    <meta name="description" content="An interactive spinner game for early readers to practice phonics and blending sounds.">
+    <title>Blending Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        .container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin: 20px auto;
+        }
+        .road-strip {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        .road-strip div {
+            border: 1px solid #ccc;
+            width: 100px;
+            height: 100px;
+            line-height: 100px;
+            font-size: 24px;
+            background: #f0f0f0;
+            text-transform: uppercase;
+        }
+        #bus {
+            position: absolute;
+            width: 120px;
+            height: 70px;
+            background-color: yellow;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 20px;
+            cursor: grab;
+        }
+    </style>
 </head>
 <body>
-    <header>
-        <div class="score-container">
-            <p id="scoreText" aria-live="polite">Score: 0</p>
-            <div id="scoreIncrement" class="score-increment" aria-hidden="true"></div>
+    <h1>Blending Game</h1>
+    <p>Drag the bus along the road and blend the sounds!</p>
+    <div class="container">
+        <div id="bus" draggable="true">Bus</div>
+        <div class="road-strip">
+            <div data-sound="c">c</div>
+            <div data-sound="a">a</div>
+            <div data-sound="t">t</div>
         </div>
+    </div>
+    <script>
+        const bus = document.getElementById('bus');
+        const roadStrip = document.querySelector('.road-strip');
+        const letterSounds = Array.from(roadStrip.children);
 
-        <div class="top-controls" role="region" aria-label="Game Controls">
-            <!-- Word Type Selection -->
-            <div id="wordTypeSelection">
-                <label for="wordTypeSelector">Select Word Type:</label>
-                <select id="wordTypeSelector" aria-label="Select word type">
-                    <option value="cvc">CVC Words</option>
-                    <option value="ccvc">CCVC Words</option>
-                    <option value="cvcc">CVCC Words</option>
-                    <option value="ccvcc">CCVCC Words</option>
-                    <option value="digraphs">Digraphs</option>
-                </select>
-            </div>
+        // Web Speech API - Text-to-Speech
+        function speak(text) {
+            const synth = window.speechSynthesis;
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'en-GB'; // Set to UK English
+            synth.speak(utterance);
+        }
 
-            <!-- Vowel Selection -->
-            <div id="vowelSelection">
-                <label for="vowelSelector">Select Vowel:</label>
-                <select id="vowelSelector" aria-label="Select vowel sound category">
-                    <option value="all">All Vowels</option>
-                    <option value="a">🅰️ Short A</option>
-                    <option value="e">📧 Short E</option>
-                    <option value="i">ℹ️ Short I</option>
-                    <option value="o">🅾️ Short O</option>
-                    <option value="u">⛎ Short U</option>
-                </select>
-            </div>
+        // Dragging and blending functionality
+        bus.addEventListener('dragstart', (e) => {
+            e.dataTransfer.setData('text', 'bus');
+        });
 
-            <!-- Blending Delay Control -->
-            <div id="blendingControl">
-                <label for="blendingTimeDisplay">Blending Time (seconds):</label>
-                <button id="decreaseBlendingTime" aria-label="Decrease blending time" title="Decrease blending time">➖</button>
-                <span id="blendingTimeDisplay" aria-live="polite">3</span>
-                <button id="increaseBlendingTime" aria-label="Increase blending time" title="Increase blending time">➕</button>
-            </div>
+        roadStrip.addEventListener('dragover', (e) => {
+            e.preventDefault();
+        });
 
-            <!-- Settings Buttons -->
-            <div class="settings-buttons">
-                <button id="toggleAudioButton" aria-label="Toggle letter sounds" title="Toggle letter sounds">🔇 Disable Letter Sounds</button>
-                <button id="fullscreenButton" aria-label="Toggle fullscreen mode" title="Enter or exit fullscreen">⛶ Fullscreen</button>
-            </div>
-        </div>
-    </header>
+        roadStrip.addEventListener('drop', (e) => {
+            e.preventDefault();
+            const dragged = e.dataTransfer.getData('text');
+            if (dragged === 'bus') {
+                let word = '';
+                letterSounds.forEach((box, index) => {
+                    setTimeout(() => {
+                        speak(box.getAttribute('data-sound')); // Speak each letter sound
+                    }, index * 1000); // Delay between each letter
+                    word += box.textContent;
+                });
 
-    <main>
-        <section class="main-content" aria-labelledby="wordDisplaySection">
-            <h1 id="wordDisplaySection" class="visually-hidden">Word Display and Controls</h1>
-            
-            <!-- Word Display Container -->
-            <div class="word-display-container" aria-live="polite">
-                <div class="word-display" id="wordBox">
-                    <!-- Letters will be displayed here -->
-                </div>
-            </div>
-
-            <!-- Action Buttons -->
-            <div class="action-buttons">
-                <button id="spinButton" aria-label="Spin for a new word">🎡 Spin</button>
-                <button id="repeatButton" aria-label="Repeat the last word" disabled>🔁 Repeat</button>
-            </div>
-
-            <!-- Blending Timer Progress Bar -->
-            <div id="blendingTimerContainer">
-                <div id="blendingTimer"></div>
-            </div>
-
-            <!-- Compliment Box -->
-            <div id="complimentBox" aria-live="assertive"></div>
-
-            <!-- Progress Container -->
-            <div class="progress-container">
-                <div class="progress-icon" id="progressIcon">⭐</div>
-                <div id="progressBar">
-                    <div id="progressFill"></div>
-                </div>
-                <p id="progressText">0 / 0 Words Revealed</p>
-            </div>
-        </section>
-    </main>
-
-    <footer>
-        <p class="note">Disabling the letter sounds allows children to practice sounding out the words on their own.</p>
-    </footer>
-
-    <!-- Include the JavaScript file -->
-    <script src="script.js"></script>
+                // Speak the full word after sounding off all letters
+                setTimeout(() => {
+                    speak(word);
+                }, letterSounds.length * 1000);
+            }
+        });
+    </script>
 </body>
 </html>
