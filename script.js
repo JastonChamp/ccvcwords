@@ -1,4 +1,4 @@
-// Word list object from your provided data
+// Word list object
 const words = {
     cvc: {
         a: ['bat', 'bag', 'bad', 'cab', 'cap', 'cat', 'dad', 'dam', 'fad', 'fan',
@@ -16,27 +16,26 @@ const words = {
         u: ['bun', 'bud', 'bug', 'bus', 'but', 'cub', 'cud', 'cup', 'cut', 'dug',
             'fun', 'gun', 'gum', 'hut', 'hum', 'hug', 'jug', 'mud', 'mug', 'nut',
             'nun', 'pug', 'pun', 'pup', 'rub', 'rug', 'run', 'sum', 'sun', 'tug']
-    },
-    // Additional categories omitted for brevity. Add them as needed.
-    // ccvc: {...}, cvcc: {...}, ccvcc: {...}, digraphs: {...}
+    }
+    // Add other categories (ccvc, cvcc, etc.) if needed
 };
 
-// Selectors
+// Get references
 const bus = document.getElementById('bus');
 const roadStrip = document.querySelector('.road-strip');
 
-// Check for Web Speech API support for speaking the final word
+// Check for Web Speech API support
 if (!('speechSynthesis' in window)) {
     alert("Your browser does not support speech synthesis. The final word will not be spoken.");
 }
 
-// Function to play individual letter/digraph audio from a .mp3 file
+// Play individual letter audio
 function playLetterAudio(letter) {
     const audio = new Audio(`${letter}.mp3`);
     audio.play();
 }
 
-// Use Text-to-Speech for the final word
+// Speak the final word
 function speak(text) {
     if (!('speechSynthesis' in window)) return;
     const synth = window.speechSynthesis;
@@ -45,11 +44,9 @@ function speak(text) {
     synth.speak(utterance);
 }
 
-// Function to display a chosen word on the road strip as individual blocks
+// Display a chosen word on the road strip
 function displayWord(word) {
     roadStrip.innerHTML = '';
-    // For simplicity, each character in the word is treated as a block.
-    // If you need digraphs (e.g., 'sh'), you can adapt this logic to chunk the word.
     for (const char of word) {
         const block = document.createElement('div');
         block.textContent = char;
@@ -60,12 +57,12 @@ function displayWord(word) {
 
 // Pick a random word from cvc.a for demonstration
 function getRandomWord() {
-    const wordList = words.cvc.a; // You can modify this to choose different categories
+    const wordList = words.cvc.a;
     const randomIndex = Math.floor(Math.random() * wordList.length);
     return wordList[randomIndex];
 }
 
-// Function to blend sounds when bus is dropped
+// Blend sounds when bus is dropped
 function blendSounds() {
     const letterBlocks = Array.from(roadStrip.children);
     let word = '';
@@ -75,26 +72,20 @@ function blendSounds() {
         word += block.textContent;
 
         setTimeout(() => {
-            // Highlight the current letter block
             block.classList.add('highlight');
-
-            // Play the letter sound
             playLetterAudio(letterSound);
-
-            // Remove highlight after a short delay
             setTimeout(() => {
                 block.classList.remove('highlight');
             }, 800);
         }, index * 1200);
     });
 
-    // After all letters, speak the full word
     setTimeout(() => {
         speak(word.toLowerCase());
     }, letterBlocks.length * 1200);
 }
 
-// Drag events for the bus
+// Drag events
 bus.addEventListener('dragstart', (e) => {
     e.dataTransfer.setData('text', 'bus');
 });
