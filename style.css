@@ -32,7 +32,7 @@ header p {
 .road-strip {
     display: flex;
     justify-content: space-around;
-    background: #a5c9ea url('https://i.imgur.com/VwQY1jJ.png') center/cover no-repeat;
+    background: #a5c9ea;
     border-radius: 20px;
     padding: 20px;
     margin-top: 80px;
