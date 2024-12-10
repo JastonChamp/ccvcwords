@@ -1,29 +1,29 @@
-// Get references to elements
+// Get references
 const bus = document.getElementById('bus');
 const roadStrip = document.querySelector('.road-strip');
 const letterBlocks = Array.from(roadStrip.children);
 
-// Check for Web Speech API support for the final word
+// Check for Web Speech API support (for the final word)
 if (!('speechSynthesis' in window)) {
-    alert("Your browser does not support speech synthesis. The blending of the final word will not be available.");
+    alert("Your browser does not support speech synthesis. The final word won't be spoken.");
 }
 
-// Function to play individual letter audio
+// Play individual letter sound from .mp3 file
 function playLetterAudio(letter) {
     const audio = new Audio(`${letter}.mp3`);
     audio.play();
 }
 
-// Text-to-Speech Function for the final word
+// Text-to-Speech for the final word
 function speak(text) {
     if (!('speechSynthesis' in window)) return;
     const synth = window.speechSynthesis;
     const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'en-GB'; // British English
+    utterance.lang = 'en-GB';
     synth.speak(utterance);
 }
 
-// Drag and Drop Events for the bus
+// Drag events
 bus.addEventListener('dragstart', (e) => {
     e.dataTransfer.setData('text', 'bus');
 });
@@ -36,36 +36,28 @@ roadStrip.addEventListener('drop', (e) => {
     e.preventDefault();
     const dragged = e.dataTransfer.getData('text');
     if (dragged === 'bus') {
-        // If bus is dropped on the road, start blending the sounds
         blendSounds();
     }
 });
 
-// Function to blend sounds
 function blendSounds() {
     let word = '';
 
-    // Play each letter's sound sequentially with a delay
     letterBlocks.forEach((block, index) => {
         const letterSound = block.getAttribute('data-sound');
-        word += block.textContent;
+        word += block.textContent; // Collecting letters for final word
 
         setTimeout(() => {
-            // Highlight the current letter being played
             block.classList.add('highlight');
-
-            // Play the letter sound (e.g., "a.mp3", "c.mp3")
             playLetterAudio(letterSound);
 
-            // Remove highlight after a short delay
             setTimeout(() => {
                 block.classList.remove('highlight');
             }, 800);
-
         }, index * 1200);
     });
 
-    // After all letters have been played, speak the full word
+    // Speak the full word after all letter sounds
     setTimeout(() => {
         speak(word.toLowerCase());
     }, letterBlocks.length * 1200);
