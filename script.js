@@ -20,9 +20,10 @@ const words = {
     // Add other categories (ccvc, cvcc, etc.) if needed
 };
 
-// Get references
+
 const bus = document.getElementById('bus');
 const roadStrip = document.querySelector('.road-strip');
+const nextWordBtn = document.getElementById('nextWordBtn');
 
 // Check for Web Speech API support
 if (!('speechSynthesis' in window)) {
@@ -55,7 +56,7 @@ function displayWord(word) {
     }
 }
 
-// Pick a random word from cvc.a for demonstration
+// Pick a random word from cvc.a
 function getRandomWord() {
     const wordList = words.cvc.a;
     const randomIndex = Math.floor(Math.random() * wordList.length);
@@ -80,8 +81,13 @@ function blendSounds() {
         }, index * 1200);
     });
 
+    // After all letters have been played, speak the full word and highlight all blocks
     setTimeout(() => {
         speak(word.toLowerCase());
+        letterBlocks.forEach(b => b.classList.add('complete'));
+        // After the blending is done, load a new word automatically after a delay,
+        // or let the user click 'Next Word'
+        // Here, we'll just leave the 'Next Word' button so the user can control when to proceed.
     }, letterBlocks.length * 1200);
 }
 
@@ -100,6 +106,12 @@ roadStrip.addEventListener('drop', (e) => {
     if (dragged === 'bus') {
         blendSounds();
     }
+});
+
+// Next Word button functionality
+nextWordBtn.addEventListener('click', () => {
+    const chosenWord = getRandomWord();
+    displayWord(chosenWord);
 });
 
 // Initialize the game on page load
