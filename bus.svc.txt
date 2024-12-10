@@ -1,0 +1,22 @@
+<svg width="200" height="100" viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg">
+  <!-- Bus body -->
+  <rect x="10" y="30" width="180" height="40" rx="8" ry="8" fill="#fcd116" stroke="#000" stroke-width="2"/>
+  
+  <!-- Windows -->
+  <rect x="30" y="35" width="25" height="20" fill="#fff" stroke="#000" stroke-width="1" rx="3" ry="3"/>
+  <rect x="60" y="35" width="25" height="20" fill="#fff" stroke="#000" stroke-width="1" rx="3" ry="3"/>
+  <rect x="90" y="35" width="25" height="20" fill="#fff" stroke="#000" stroke-width="1" rx="3" ry="3"/>
+  <rect x="120" y="35" width="25" height="20" fill="#fff" stroke="#000" stroke-width="1" rx="3" ry="3"/>
+  <rect x="150" y="35" width="25" height="20" fill="#fff" stroke="#000" stroke-width="1" rx="3" ry="3"/>
+
+  <!-- Front hood -->
+  <rect x="10" y="30" width="20" height="40" fill="#fcd116" stroke="#000" stroke-width="2" rx="8" ry="8"/>
+  
+  <!-- Wheels -->
+  <circle cx="50" cy="80" r="10" fill="#333" stroke="#000" stroke-width="2"/>
+  <circle cx="150" cy="80" r="10" fill="#333" stroke="#000" stroke-width="2"/>
+  
+  <!-- Wheel centers -->
+  <circle cx="50" cy="80" r="5" fill="#999"/>
+  <circle cx="150" cy="80" r="5" fill="#999"/>
+</svg>
