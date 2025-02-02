@@ -1,4 +1,6 @@
-/* General Styles */
+/* ------------------------------
+   General Styles & Background
+------------------------------- */
 html, body {
   margin: 0;
   padding: 0;
@@ -24,27 +26,32 @@ header h1 {
 
 header p {
   font-size: 1.2em;
-  margin: 5px 0 0;
+  margin-top: 5px;
   color: #555;
 }
 
-/* Animated Gradient Background */
 @keyframes gradientBG {
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
 }
 
-/* Container & Sections */
+/* ------------------------------
+   Container & Core Controls
+------------------------------- */
 .container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
 }
 
-.score-section {
+.core-controls {
   margin-top: 20px;
+}
+
+.score-section {
   position: relative;
+  margin-bottom: 20px;
 }
 
 #scoreText {
@@ -68,101 +75,8 @@ header p {
   top: -60px;
 }
 
-/* Controls Section */
-.controls-section {
-  background-color: #cce0f5;
-  padding: 15px;
-  border-bottom: 3px solid #2980b9;
-  margin-top: 20px;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-}
-
-.select-controls, .timer-controls {
-  display: flex;
-  gap: 15px;
-  align-items: center;
-  margin: 5px;
-}
-
-.controls-section label {
-  font-size: 1.2em;
-  margin-right: 5px;
-}
-
-select,
-#blendingControl button,
-#blendingTimeDisplay {
-  padding: 10px 15px;
-  font-size: 1.2em;
-  border: 2px solid #2980b9;
-  border-radius: 10px;
-  background-color: #ffeb99;
-  cursor: pointer;
-  margin: 5px;
-  outline: none;
-  transition: border-color 0.3s, background-color 0.3s;
-  color: #333;
-}
-
-select:focus,
-#blendingControl button:focus {
-  border-color: #1abc9c;
-}
-
-select {
-  appearance: none;
-  background-image: url('data:image/svg+xml;charset=UTF-8,<svg width="14" height="10" xmlns="http://www.w3.org/2000/svg"><polyline points="1 1 7 7 13 1" stroke="%232980b9" stroke-width="2" fill="none" stroke-linecap="round"/></svg>');
-  background-repeat: no-repeat;
-  background-position: right 10px center;
-  background-size: 10px 10px;
-}
-
-.settings-buttons {
-  margin-left: auto;
-  display: flex;
-  gap: 10px;
-  margin: 5px;
-}
-
-.settings-buttons button {
-  padding: 10px 15px;
-  font-size: 1.2em;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  background-color: #fff;
-  color: #333;
-  transition: background-color 0.3s;
-}
-
-.settings-buttons button:hover {
-  background-color: rgba(255, 255, 255, 0.5);
-}
-
-/* Tooltip for settings buttons */
-.settings-buttons button[title]:hover::after,
-#blendingControl button[title]:hover::after {
-  content: attr(title);
-  position: absolute;
-  bottom: -35px;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: #333;
-  color: #fff;
-  padding: 5px 8px;
-  border-radius: 5px;
-  font-size: 1em;
-  opacity: 0.9;
-  pointer-events: none;
-  z-index: 10;
-}
-
-/* Game Area */
 .game-area {
-  margin-top: 30px;
+  margin-top: 20px;
 }
 
 .word-display-container {
@@ -198,7 +112,6 @@ select {
   }
 }
 
-/* Differentiate vowels and digraphs */
 .word-display .vowel {
   color: #cc0000;
 }
@@ -207,7 +120,6 @@ select {
   color: #006400;
 }
 
-/* Action Buttons */
 .action-buttons {
   display: flex;
   justify-content: center;
@@ -260,7 +172,109 @@ select {
   cursor: not-allowed;
 }
 
-/* Blending Timer */
+/* ------------------------------
+   Settings Toggle Button
+------------------------------- */
+.settings-toggle {
+  margin-top: 20px;
+}
+
+#toggleSettingsButton {
+  padding: 10px 15px;
+  font-size: 1.2em;
+  border: 2px solid #2980b9;
+  border-radius: 10px;
+  background-color: #ffeb99;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+#toggleSettingsButton:hover {
+  background-color: rgba(255, 235, 153, 0.8);
+}
+
+/* ------------------------------
+   Advanced Settings Panel
+------------------------------- */
+.advanced-settings {
+  display: none;
+  margin-top: 20px;
+  background-color: #cce0f5;
+  padding: 15px;
+  border-radius: 10px;
+}
+
+.controls-section {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+}
+
+.select-controls, .timer-controls {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  margin: 5px;
+}
+
+.controls-section label {
+  font-size: 1.2em;
+  margin-right: 5px;
+}
+
+select,
+#blendingControl button,
+#blendingTimeDisplay {
+  padding: 10px 15px;
+  font-size: 1.2em;
+  border: 2px solid #2980b9;
+  border-radius: 10px;
+  background-color: #ffeb99;
+  cursor: pointer;
+  margin: 5px;
+  outline: none;
+  transition: border-color 0.3s, background-color 0.3s;
+  color: #333;
+}
+
+select:focus,
+#blendingControl button:focus {
+  border-color: #1abc9c;
+}
+
+select {
+  appearance: none;
+  background-image: url('data:image/svg+xml;charset=UTF-8,<svg width="14" height="10" xmlns="http://www.w3.org/2000/svg"><polyline points="1 1 7 7 13 1" stroke="%232980b9" stroke-width="2" fill="none" stroke-linecap="round"/></svg>');
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 10px 10px;
+}
+
+.settings-buttons {
+  display: flex;
+  gap: 10px;
+  margin: 5px;
+}
+
+.settings-buttons button {
+  padding: 10px 15px;
+  font-size: 1.2em;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  background-color: #fff;
+  color: #333;
+  transition: background-color 0.3s;
+}
+
+.settings-buttons button:hover {
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+/* ------------------------------
+   Blending Timer, Compliments, Progress
+------------------------------- */
 #blendingTimerContainer {
   width: 80%;
   max-width: 600px;
@@ -279,7 +293,6 @@ select {
   transition: width linear;
 }
 
-/* Compliment Box */
 #complimentBox {
   font-size: 1.5em;
   color: green;
@@ -288,7 +301,6 @@ select {
   transition: opacity 1s ease;
 }
 
-/* Progress Bar */
 .progress-container {
   margin-top: 20px;
 }
@@ -329,7 +341,9 @@ select {
   margin-top: 5px;
 }
 
-/* Footer */
+/* ------------------------------
+   Footer
+------------------------------- */
 footer {
   margin-top: 20px;
   padding: 10px;
@@ -341,7 +355,9 @@ footer {
   font-style: italic;
 }
 
-/* Responsive Adjustments */
+/* ------------------------------
+   Responsive Adjustments
+------------------------------- */
 @media screen and (max-width: 800px) {
   .word-display .letter {
     font-size: 5em;
