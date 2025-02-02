@@ -1,131 +1,370 @@
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    text-align: center;
-    margin: 0;
-    background: linear-gradient(to bottom, #f0f9ff, #dceeff);
-    color: #333;
+/* General Styles */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: 'Comic Neue', 'Comic Sans MS', sans-serif;
+  background: linear-gradient(270deg, #e3f7fc, #a1d3f0, #e3f7fc);
+  background-size: 600% 600%;
+  animation: gradientBG 10s infinite;
+  text-align: center;
 }
 
 header {
-    background: #2d9bf0;
-    color: #fff;
-    padding: 20px 0;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  padding: 20px;
+  background-color: #ffeb99;
+  border-bottom: 3px solid #f39c12;
 }
 
 header h1 {
-    margin: 0;
-    font-size: 2.2em;
-    font-weight: bold;
+  font-size: 3em;
+  margin: 0;
+  color: #333;
 }
 
 header p {
-    margin: 5px 0 0;
-    font-size: 1.1em;
+  font-size: 1.2em;
+  margin: 5px 0 0;
+  color: #555;
 }
 
+/* Animated Gradient Background */
+@keyframes gradientBG {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Container & Sections */
 .container {
-    position: relative;
-    max-width: 800px;
-    margin: 40px auto;
-    padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
 }
 
-.road-strip {
-    display: flex;
-    justify-content: space-around;
-    background: #a5c9ea;
-    border-radius: 20px;
-    padding: 20px;
-    margin-top: 80px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    position: relative;
-    min-height: 140px; /* to accommodate larger letters comfortably */
+.score-section {
+  margin-top: 20px;
+  position: relative;
 }
 
-.road-strip::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 20px;
-    right: 20px;
-    height: 2px;
-    background: #fff;
-    transform: translateY(-50%);
-    opacity: 0.7;
+#scoreText {
+  font-size: 2em;
+  margin: 0;
 }
 
-.road-strip div {
-    border: 2px solid #2d9bf0;
-    width: 100px;
-    height: 100px;
-    font-size: 32px;
-    font-weight: bold;
-    background: #ffffff;
-    text-transform: uppercase;
-    border-radius: 10px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    transition: background 0.3s, box-shadow 0.3s;
-    position: relative;
-    z-index: 1;
+.score-increment {
+  position: absolute;
+  top: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 2.5em;
+  color: green;
+  opacity: 0;
+  transition: opacity 0.5s, top 1s;
 }
 
-.road-strip div.highlight {
-    background: #fdf49b;
-    box-shadow: 0 0 15px #f2dd5e;
+.score-increment.show {
+  opacity: 1;
+  top: -60px;
 }
 
-.road-strip div.complete {
-    /* Highlight the entire word once blending is done */
-    background: #c8ffc8;
-    animation: flash 1s ease-in-out;
+/* Controls Section */
+.controls-section {
+  background-color: #cce0f5;
+  padding: 15px;
+  border-bottom: 3px solid #2980b9;
+  margin-top: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
 }
 
-@keyframes flash {
-    0% { box-shadow: 0 0 0px #66ff66; }
-    50% { box-shadow: 0 0 20px #66ff66; }
-    100% { box-shadow: 0 0 0px #66ff66; }
+.select-controls, .timer-controls {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  margin: 5px;
 }
 
-#bus {
-    position: absolute;
-    top: 0;
-    left: calc(50% - 60px);
-    width: 120px;
-    cursor: grab;
-    user-select: none;
-    transition: transform 0.3s;
+.controls-section label {
+  font-size: 1.2em;
+  margin-right: 5px;
 }
 
-#bus:active {
-    cursor: grabbing;
-    transform: scale(1.05);
+select,
+#blendingControl button,
+#blendingTimeDisplay {
+  padding: 10px 15px;
+  font-size: 1.2em;
+  border: 2px solid #2980b9;
+  border-radius: 10px;
+  background-color: #ffeb99;
+  cursor: pointer;
+  margin: 5px;
+  outline: none;
+  transition: border-color 0.3s, background-color 0.3s;
+  color: #333;
 }
 
-.controls {
-    margin-top: 40px;
+select:focus,
+#blendingControl button:focus {
+  border-color: #1abc9c;
 }
 
-.controls button {
-    padding: 10px 20px;
-    font-size: 1em;
-    background: #2d9bf0;
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    cursor: pointer;
-    transition: background 0.3s;
+select {
+  appearance: none;
+  background-image: url('data:image/svg+xml;charset=UTF-8,<svg width="14" height="10" xmlns="http://www.w3.org/2000/svg"><polyline points="1 1 7 7 13 1" stroke="%232980b9" stroke-width="2" fill="none" stroke-linecap="round"/></svg>');
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 10px 10px;
 }
 
-.controls button:hover {
-    background: #2283ce;
+.settings-buttons {
+  margin-left: auto;
+  display: flex;
+  gap: 10px;
+  margin: 5px;
 }
 
+.settings-buttons button {
+  padding: 10px 15px;
+  font-size: 1.2em;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  background-color: #fff;
+  color: #333;
+  transition: background-color 0.3s;
+}
+
+.settings-buttons button:hover {
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+/* Tooltip for settings buttons */
+.settings-buttons button[title]:hover::after,
+#blendingControl button[title]:hover::after {
+  content: attr(title);
+  position: absolute;
+  bottom: -35px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #333;
+  color: #fff;
+  padding: 5px 8px;
+  border-radius: 5px;
+  font-size: 1em;
+  opacity: 0.9;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* Game Area */
+.game-area {
+  margin-top: 30px;
+}
+
+.word-display-container {
+  background-color: #fff;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  border-radius: 15px;
+  margin: 0 auto 20px;
+  padding: 10px 0;
+  width: 90%;
+  max-width: 800px;
+}
+
+.word-display {
+  display: flex;
+  gap: 0.2em;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+}
+
+.word-display .letter {
+  font-size: 7em;
+  color: #000;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: revealLetter 0.5s forwards;
+}
+
+@keyframes revealLetter {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Differentiate vowels and digraphs */
+.word-display .vowel {
+  color: #cc0000;
+}
+
+.word-display .digraph {
+  color: #006400;
+}
+
+/* Action Buttons */
+.action-buttons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+#spinButton, #repeatButton {
+  padding: 20px 30px;
+  font-size: 2em;
+  border: none;
+  border-radius: 15px;
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+
+#spinButton {
+  background-color: #ff6f3c;
+  color: #fff;
+  border-radius: 50%;
+}
+
+#spinButton:hover {
+  transform: scale(1.1);
+}
+
+#spinButton:active {
+  transform: scale(1.05);
+  background-color: #ff5c1c;
+}
+
+#spinButton:disabled {
+  background-color: gray;
+  cursor: not-allowed;
+}
+
+#repeatButton {
+  background-color: #4CAF50;
+  color: #fff;
+  border-radius: 10px;
+}
+
+#repeatButton:hover {
+  transform: scale(1.05);
+}
+
+#repeatButton:disabled {
+  background-color: gray;
+  cursor: not-allowed;
+}
+
+/* Blending Timer */
+#blendingTimerContainer {
+  width: 80%;
+  max-width: 600px;
+  background-color: #ddd;
+  height: 20px;
+  margin: 10px auto;
+  border-radius: 10px;
+  overflow: hidden;
+  display: none;
+}
+
+#blendingTimer {
+  height: 100%;
+  background-color: #4CAF50;
+  width: 100%;
+  transition: width linear;
+}
+
+/* Compliment Box */
+#complimentBox {
+  font-size: 1.5em;
+  color: green;
+  margin-top: 10px;
+  opacity: 0;
+  transition: opacity 1s ease;
+}
+
+/* Progress Bar */
+.progress-container {
+  margin-top: 20px;
+}
+
+.progress-icon {
+  font-size: 2em;
+  margin-bottom: 5px;
+}
+
+@keyframes starTwinkle {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.2); opacity: 0.8; }
+}
+
+.star-animate {
+  animation: starTwinkle 1s ease-in-out;
+}
+
+#progressBar {
+  width: 80%;
+  max-width: 600px;
+  height: 20px;
+  background-color: lightgray;
+  border-radius: 10px;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+#progressFill {
+  height: 100%;
+  background: linear-gradient(90deg, red, orange, yellow, green, blue, indigo, violet);
+  width: 0;
+  transition: width 0.7s ease;
+}
+
+#progressText {
+  font-size: 1.5em;
+  margin-top: 5px;
+}
+
+/* Footer */
 footer {
-    margin: 40px 0 20px;
-    font-size: 0.9em;
-    color: #555;
+  margin-top: 20px;
+  padding: 10px;
+}
+
+.note {
+  font-size: 1em;
+  color: #555;
+  font-style: italic;
+}
+
+/* Responsive Adjustments */
+@media screen and (max-width: 800px) {
+  .word-display .letter {
+    font-size: 5em;
+  }
+  #spinButton {
+    padding: 20px;
+    font-size: 2em;
+  }
+  #repeatButton {
+    padding: 15px;
+    font-size: 1.5em;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  select,
+  #blendingControl button,
+  #blendingTimeDisplay,
+  .settings-buttons button {
+    padding: 8px 12px;
+    font-size: 1em;
+  }
+  #complimentBox {
+    font-size: 1.2em;
+  }
 }
