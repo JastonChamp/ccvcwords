@@ -39,6 +39,14 @@ const wordGroups = {
     i: ['chip', 'chin', 'thin', 'thing', 'king', 'ring', 'sing', 'wing', 'sting', 'bring', 'cling', 'string', 'swing', 'ditch', 'pitch', 'switch', 'twitch'],
     o: ['shop', 'shot', 'chop', 'strong', 'throb', 'cloth', 'crotch', 'notch', 'botch'],
     u: ['shut', 'thud', 'chug', 'chunk', 'thump', 'shrug', 'brush', 'crush', 'blush', 'flush', 'crutch', 'clutch']
+  },
+  // ---------- New Extended Words Category ----------
+  extended: {
+    a: ['fantastic', 'smashing', 'crashing', 'dancing', 'stamping', 'clapping'],
+    e: ['wrecking'],
+    i: ['blinking', 'drinking', 'tripping', 'flipping', 'snipping'],
+    o: ['blocking', 'rocking'],
+    u: ['jumping']
   }
 };
 
@@ -283,6 +291,7 @@ function getAvailableWords() {
   let words = [];
   const group = wordGroups[selectedWordType];
   if (selectedVowel === 'all') {
+    // When vowel is "all", flatten all arrays from the selected group.
     words = Object.values(group).flat();
   } else {
     words = group[selectedVowel] || [];
@@ -407,4 +416,48 @@ function toggleFullscreen() {
     document.documentElement.requestFullscreen().catch(err => {
       alert(`Error enabling fullscreen: ${err.message}`);
     });
-    fullscreenButton.textCon
+    fullscreenButton.textContent = '⛶ Exit Fullscreen';
+  } else {
+    document.exitFullscreen();
+    fullscreenButton.textContent = '⛶ Fullscreen';
+  }
+}
+
+fullscreenButton.addEventListener('click', toggleFullscreen);
+
+document.addEventListener('fullscreenchange', () => {
+  fullscreenButton.textContent = document.fullscreenElement ? '⛶ Exit Fullscreen' : '⛶ Fullscreen';
+});
+
+spinButton.addEventListener('click', spin);
+repeatButton.addEventListener('click', repeat);
+
+setVoice().then(() => {
+  resetGame(true);
+});
+
+function preloadAudio() {
+  for (const key in letterSounds) {
+    letterSounds[key].load();
+  }
+  clickSound.load();
+  successSound.load();
+}
+
+window.addEventListener('load', preloadAudio);
+
+/* ---------- Advanced Settings Toggle ---------- */
+const toggleSettingsButton = document.getElementById('toggleSettingsButton');
+const advancedSettingsPanel = document.getElementById('advancedSettings');
+let advancedSettingsVisible = false;
+
+toggleSettingsButton.addEventListener('click', () => {
+  advancedSettingsVisible = !advancedSettingsVisible;
+  if (advancedSettingsVisible) {
+    advancedSettingsPanel.style.display = 'block';
+    toggleSettingsButton.textContent = 'Hide Advanced Settings';
+  } else {
+    advancedSettingsPanel.style.display = 'none';
+    toggleSettingsButton.textContent = 'Show Advanced Settings';
+  }
+});
