@@ -407,48 +407,4 @@ function toggleFullscreen() {
     document.documentElement.requestFullscreen().catch(err => {
       alert(`Error enabling fullscreen: ${err.message}`);
     });
-    fullscreenButton.textContent = '⛶ Exit Fullscreen';
-  } else {
-    document.exitFullscreen();
-    fullscreenButton.textContent = '⛶ Fullscreen';
-  }
-}
-
-fullscreenButton.addEventListener('click', toggleFullscreen);
-
-document.addEventListener('fullscreenchange', () => {
-  fullscreenButton.textContent = document.fullscreenElement ? '⛶ Exit Fullscreen' : '⛶ Fullscreen';
-});
-
-spinButton.addEventListener('click', spin);
-repeatButton.addEventListener('click', repeat);
-
-setVoice().then(() => {
-  resetGame(true);
-});
-
-function preloadAudio() {
-  for (const key in letterSounds) {
-    letterSounds[key].load();
-  }
-  clickSound.load();
-  successSound.load();
-}
-
-window.addEventListener('load', preloadAudio);
-
-/* ---------- Advanced Settings Toggle ---------- */
-const toggleSettingsButton = document.getElementById('toggleSettingsButton');
-const advancedSettingsPanel = document.getElementById('advancedSettings');
-let advancedSettingsVisible = false;
-
-toggleSettingsButton.addEventListener('click', () => {
-  advancedSettingsVisible = !advancedSettingsVisible;
-  if (advancedSettingsVisible) {
-    advancedSettingsPanel.style.display = 'block';
-    toggleSettingsButton.textContent = 'Hide Advanced Settings';
-  } else {
-    advancedSettingsPanel.style.display = 'none';
-    toggleSettingsButton.textContent = 'Show Advanced Settings';
-  }
-});
+    fullscreenButton.textCon
