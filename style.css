@@ -172,6 +172,47 @@ header p {
   cursor: not-allowed;
 }
 
+/* Progress Container */
+.progress-container {
+  margin-top: 20px;
+}
+
+.progress-icon {
+  font-size: 2em;
+  margin-bottom: 5px;
+}
+
+#progressBar {
+  width: 80%;
+  max-width: 600px;
+  height: 20px;
+  background-color: lightgray;
+  border-radius: 10px;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+#progressFill {
+  height: 100%;
+  background: linear-gradient(90deg, red, orange, yellow, green, blue, indigo, violet);
+  width: 0;
+  transition: width 0.7s ease;
+}
+
+#progressText {
+  font-size: 1.5em;
+  margin-top: 5px;
+}
+
+/* Compliment Box */
+#complimentBox {
+  font-size: 1.5em;
+  color: green;
+  margin-top: 10px;
+  opacity: 0;
+  transition: opacity 1s ease;
+}
+
 /* ------------------------------
    Settings Toggle Button
 ------------------------------- */
@@ -273,7 +314,7 @@ select {
 }
 
 /* ------------------------------
-   Blending Timer, Compliments, Progress
+   Blending Timer
 ------------------------------- */
 #blendingTimerContainer {
   width: 80%;
@@ -291,54 +332,6 @@ select {
   background-color: #4CAF50;
   width: 100%;
   transition: width linear;
-}
-
-#complimentBox {
-  font-size: 1.5em;
-  color: green;
-  margin-top: 10px;
-  opacity: 0;
-  transition: opacity 1s ease;
-}
-
-.progress-container {
-  margin-top: 20px;
-}
-
-.progress-icon {
-  font-size: 2em;
-  margin-bottom: 5px;
-}
-
-@keyframes starTwinkle {
-  0%, 100% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.2); opacity: 0.8; }
-}
-
-.star-animate {
-  animation: starTwinkle 1s ease-in-out;
-}
-
-#progressBar {
-  width: 80%;
-  max-width: 600px;
-  height: 20px;
-  background-color: lightgray;
-  border-radius: 10px;
-  margin: 0 auto;
-  overflow: hidden;
-}
-
-#progressFill {
-  height: 100%;
-  background: linear-gradient(90deg, red, orange, yellow, green, blue, indigo, violet);
-  width: 0;
-  transition: width 0.7s ease;
-}
-
-#progressText {
-  font-size: 1.5em;
-  margin-top: 5px;
 }
 
 /* ------------------------------
