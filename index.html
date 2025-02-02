@@ -34,6 +34,18 @@
           <button id="repeatButton" aria-label="Repeat the word" disabled>🔁 Repeat</button>
         </div>
       </div>
+      
+      <!-- Progress Container -->
+      <div class="progress-container">
+        <div class="progress-icon" id="progressIcon">⭐</div>
+        <div id="progressBar">
+          <div id="progressFill"></div>
+        </div>
+        <p id="progressText">0 / 0 Words Revealed</p>
+      </div>
+      
+      <!-- Compliment Box -->
+      <div id="complimentBox" aria-live="assertive"></div>
     </section>
     
     <!-- Toggle Button for Advanced Settings -->
@@ -74,26 +86,4 @@
           <!-- Blending Time Control -->
           <div id="blendingControl">
             <label for="blendingDelayInput">Blending Time (sec):</label>
-            <button id="decreaseBlendingTime" aria-label="Decrease blending time" title="Decrease blending time">➖</button>
-            <span id="blendingTimeDisplay">3</span>
-            <button id="increaseBlendingTime" aria-label="Increase blending time" title="Increase blending time">➕</button>
-          </div>
-        </div>
-        <div class="settings-buttons">
-          <!-- Toggle Letter Sounds -->
-          <button id="toggleAudioButton" aria-label="Toggle letter sounds" title="Toggle letter sounds">🔇 Disable Letter Sounds</button>
-          <!-- Fullscreen Toggle -->
-          <button id="fullscreenButton" aria-label="Toggle fullscreen mode" title="Fullscreen">⛶ Fullscreen</button>
-        </div>
-      </div>
-    </section>
-    
-    <footer>
-      <p class="note">Practice sounding out the words! You can disable letter sounds to try on your own.</p>
-    </footer>
-  </main>
-  
-  <!-- Link to external JavaScript file -->
-  <script src="script.js"></script>
-</body>
-</html>
+            <button id="dec
