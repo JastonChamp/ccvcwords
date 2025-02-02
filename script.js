@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
      Word Spinner for All Ages
      (Optimized for both children and elderly)
   ===================== */
-
+  
   /* ---------- Word Groups Configuration ---------- */
   const wordGroups = {
     cvc: {
@@ -41,7 +41,6 @@ document.addEventListener('DOMContentLoaded', () => {
       o: ['shop', 'shot', 'chop', 'strong', 'throb', 'cloth', 'crotch', 'notch', 'botch'],
       u: ['shut', 'thud', 'chug', 'chunk', 'thump', 'shrug', 'brush', 'crush', 'blush', 'flush', 'crutch', 'clutch']
     },
-    // ---------- New Extended Words Category ----------
     extended: {
       a: ['fantastic', 'smashing', 'crashing', 'dancing', 'stamping', 'clapping'],
       e: ['wrecking'],
@@ -52,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   /* ---------- Audio Configuration ---------- */
-  const audioPath = './'; // Path to audio files
+  const audioPath = './'; // Adjust this path if your audio files are in a subfolder.
   const letterSounds = {};
 
   // Preload individual letter sounds
@@ -462,4 +461,4 @@ document.addEventListener('DOMContentLoaded', () => {
       toggleSettingsButton.textContent = 'Show Advanced Settings';
     }
   });
-}); // End of DOMContentLoaded listener
+});
