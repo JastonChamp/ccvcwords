@@ -1,6 +1,6 @@
 /* =====================
-   Word Spinner for Early Readers
-   (Refined for clarity, accessibility & child‐friendly interaction)
+   Word Spinner for All Ages
+   (Optimized for both children and elderly)
 ===================== */
 
 /* ---------- Word Groups Configuration ---------- */
@@ -436,3 +436,19 @@ function preloadAudio() {
 }
 
 window.addEventListener('load', preloadAudio);
+
+/* ---------- Advanced Settings Toggle ---------- */
+const toggleSettingsButton = document.getElementById('toggleSettingsButton');
+const advancedSettingsPanel = document.getElementById('advancedSettings');
+let advancedSettingsVisible = false;
+
+toggleSettingsButton.addEventListener('click', () => {
+  advancedSettingsVisible = !advancedSettingsVisible;
+  if (advancedSettingsVisible) {
+    advancedSettingsPanel.style.display = 'block';
+    toggleSettingsButton.textContent = 'Hide Advanced Settings';
+  } else {
+    advancedSettingsPanel.style.display = 'none';
+    toggleSettingsButton.textContent = 'Show Advanced Settings';
+  }
+});
