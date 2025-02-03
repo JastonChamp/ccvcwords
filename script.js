@@ -91,7 +91,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const complimentBox = document.getElementById('complimentBox');
   const vowelSelector = document.getElementById('vowelSelector');
   const wordTypeSelector = document.getElementById('wordTypeSelector');
-  // Note: scoreText and scoreIncrement are already defined above; ensure no duplicate IDs exist.
+  const scoreText = document.getElementById('scoreText');
   const scoreIncrement = document.getElementById('scoreIncrement');
   const toggleAudioButton = document.getElementById('toggleAudioButton');
   const increaseBlendingTimeButton = document.getElementById('increaseBlendingTime');
@@ -119,6 +119,7 @@ document.addEventListener('DOMContentLoaded', () => {
           if (voices.length) {
             selectedVoice = voices.find(voice => voice.lang.startsWith('en') && voice.name.toLowerCase().includes('female'))
                            || voices.find(voice => voice.lang.startsWith('en')) || voices[0];
+            console.log("Selected voice:", selectedVoice);
             resolve();
           } else {
             speechSynthesisAvailable = false;
@@ -163,6 +164,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function speak(text) {
     return new Promise(resolve => {
+      console.log("Attempting to speak:", text);
       if ('speechSynthesis' in window && selectedVoice) {
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.voice = selectedVoice;
@@ -183,6 +185,7 @@ document.addEventListener('DOMContentLoaded', () => {
         };
         speechSynthesis.speak(utterance);
       } else {
+        console.log("Speech synthesis not available or selectedVoice is null.");
         resolve();
       }
     });
@@ -193,7 +196,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function updateScore() {
     score += 10;
-    // scoreText is updated in HTML directly by its element textContent
     document.getElementById('scoreText').textContent = `Score: ${score}`;
     scoreIncrement.textContent = '+10';
     scoreIncrement.classList.add('show');
@@ -205,6 +207,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function updateProgress() {
     revealedWords = usedWords.length;
     const progressPercentage = totalWords ? (revealedWords / totalWords) * 100 : 0;
+    console.log("Updating progress:", revealedWords, "/", totalWords, "=>", progressPercentage + "%");
     progressText.textContent = `${revealedWords} / ${totalWords} Words Revealed`;
     progressFill.style.width = `${progressPercentage}%`;
     progressIcon.classList.add('star-animate');
@@ -404,14 +407,17 @@ document.addEventListener('DOMContentLoaded', () => {
   updateBlendingTimeDisplay();
 
   function startBlendingTimer(seconds) {
+    console.log("Starting blending timer for", seconds, "seconds");
     blendingTimerContainer.style.display = 'block';
     blendingTimer.style.width = '100%';
     blendingTimer.style.transition = `width ${seconds}s linear`;
     setTimeout(() => {
       blendingTimer.style.width = '0%';
+      console.log("Blending timer is transitioning to 0%");
     }, 50);
     setTimeout(() => {
       blendingTimerContainer.style.display = 'none';
+      console.log("Blending timer hidden after", seconds, "seconds");
     }, seconds * 1000);
   }
 
