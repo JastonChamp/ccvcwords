@@ -172,7 +172,7 @@ header p {
   cursor: not-allowed;
 }
 
-/* Progress Container */
+/* Progress Container (overall progress) */
 .progress-container {
   margin-top: 20px;
 }
@@ -314,7 +314,7 @@ select {
 }
 
 /* ------------------------------
-   Blending Timer
+   Blending Timer (for word blending)
 ------------------------------- */
 #blendingTimerContainer {
   width: 80%;
