@@ -1,4 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
+  console.log("DOM fully loaded. Initializing Word Spinner.");
+
   /* =====================
      Word Spinner for All Ages
      (Optimized for both children and elderly)
@@ -75,7 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let usedWords = [];
   let score = 0;
   let letterSoundsEnabled = true;
-  let blendingTime = 3000; // in milliseconds
+  let blendingTime = 3000; // milliseconds
   let totalWords = 0;
   let currentWord = '';
 
@@ -89,7 +91,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const complimentBox = document.getElementById('complimentBox');
   const vowelSelector = document.getElementById('vowelSelector');
   const wordTypeSelector = document.getElementById('wordTypeSelector');
-  const scoreText = document.getElementById('scoreText');
+  // Note: scoreText and scoreIncrement are already defined above; ensure no duplicate IDs exist.
   const scoreIncrement = document.getElementById('scoreIncrement');
   const toggleAudioButton = document.getElementById('toggleAudioButton');
   const increaseBlendingTimeButton = document.getElementById('increaseBlendingTime');
@@ -191,7 +193,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function updateScore() {
     score += 10;
-    scoreText.textContent = `Score: ${score}`;
+    // scoreText is updated in HTML directly by its element textContent
+    document.getElementById('scoreText').textContent = `Score: ${score}`;
     scoreIncrement.textContent = '+10';
     scoreIncrement.classList.add('show');
     setTimeout(() => {
@@ -262,6 +265,7 @@ document.addEventListener('DOMContentLoaded', () => {
   async function revealWord(word, isRepeat = false) {
     wordBox.innerHTML = '';
     const units = parseWord(word);
+    console.log("Parsed units for", word, ":", units);
     units.forEach((unit, index) => {
       const span = document.createElement('span');
       span.textContent = unit.text;
@@ -291,7 +295,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let words = [];
     const group = wordGroups[selectedWordType];
     if (selectedVowel === 'all') {
-      // When vowel is "all", flatten all arrays from the selected group.
       words = Object.values(group).flat();
     } else {
       words = group[selectedVowel] || [];
@@ -314,6 +317,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   /* ---------- Event Handlers ---------- */
   async function spin() {
+    console.log("Spin triggered.");
     spinButton.disabled = true;
     repeatButton.disabled = true;
     spinButton.innerHTML = '<span class="spin-icon-animate">🎡</span>';
@@ -324,6 +328,7 @@ document.addEventListener('DOMContentLoaded', () => {
     complimentBox.style.opacity = '0';
     const word = getRandomWord();
     currentWord = word;
+    console.log("Selected word:", word);
     try {
       await setVoice();
       await revealWord(word);
@@ -363,7 +368,7 @@ document.addEventListener('DOMContentLoaded', () => {
     usedWords = [];
     revealedWords = 0;
     score = 0;
-    scoreText.textContent = `Score: ${score}`;
+    document.getElementById('scoreText').textContent = `Score: ${score}`;
     currentWord = '';
     repeatButton.disabled = true;
     if (resetTotalWords) {
@@ -396,7 +401,6 @@ document.addEventListener('DOMContentLoaded', () => {
   function updateBlendingTimeDisplay() {
     blendingTimeDisplay.textContent = blendingTime / 1000;
   }
-
   updateBlendingTimeDisplay();
 
   function startBlendingTimer(seconds) {
@@ -443,7 +447,6 @@ document.addEventListener('DOMContentLoaded', () => {
     clickSound.load();
     successSound.load();
   }
-
   window.addEventListener('load', preloadAudio);
 
   /* ---------- Advanced Settings Toggle ---------- */
