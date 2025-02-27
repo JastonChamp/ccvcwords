@@ -1,6 +1,5 @@
-document.addEventListener('DOMContentLoaded', () => {
+  document.addEventListener('DOMContentLoaded', () => {
   console.log('Word Spinner initialized.');
-
   /* =====================
      Word Spinner for All Ages
      (Optimized for both children and elderly)
@@ -71,7 +70,9 @@ document.addEventListener('DOMContentLoaded', () => {
     usedWords: [],
     currentWord: '',
     blendingTime: 3000,
-    soundsEnabled: true
+    soundsEnabled: true,
+    typingEnabled: false,
+    wordPerformance: JSON.parse(localStorage.getItem('wordPerformance')) || {}
   };
 
   /* === DOM Elements === */
@@ -83,11 +84,19 @@ document.addEventListener('DOMContentLoaded', () => {
     scoreIncrement: document.getElementById('scoreIncrement'),
     progressText: document.getElementById('progressText'),
     progressFill: document.getElementById('progressFill'),
+    progressBar: document.getElementById('progressBar'),
     progressIcon: document.getElementById('progressIcon'),
     complimentBox: document.getElementById('complimentBox'),
+    screenReaderAnnounce: document.getElementById('screenReaderAnnounce'),
+    typingPractice: document.getElementById('typingPractice'),
+    typingInput: document.getElementById('typingInput'),
+    submitTyping: document.getElementById('submitTyping'),
+    typingFeedback: document.getElementById('typingFeedback'),
     vowelSelector: document.getElementById('vowelSelector'),
     wordTypeSelector: document.getElementById('wordTypeSelector'),
+    fontSizeSelector: document.getElementById('fontSizeSelector'),
     toggleAudioButton: document.getElementById('toggleAudioButton'),
+    toggleTypingButton: document.getElementById('toggleTypingButton'),
     blendingTimeDisplay: document.getElementById('blendingTimeDisplay'),
     increaseTime: document.getElementById('increaseBlendingTime'),
     decreaseTime: document.getElementById('decreaseBlendingTime'),
@@ -95,7 +104,8 @@ document.addEventListener('DOMContentLoaded', () => {
     blendingTimer: document.getElementById('blendingTimer'),
     fullscreenButton: document.getElementById('fullscreenButton'),
     toggleSettingsButton: document.getElementById('toggleSettingsButton'),
-    advancedSettings: document.getElementById('advancedSettings')
+    advancedSettings: document.getElementById('advancedSettings'),
+    confettiContainer: document.getElementById('confettiContainer')
   };
 
   const compliments = ['Great job!', 'Awesome!', 'You’re a star!', 'Fantastic!', 'Well done!'];
@@ -115,7 +125,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function speak(text) {
-    if (!voice || !speechSynthesis.speaking) return Promise.resolve();
+    if (!voice || speechSynthesis.speaking) return Promise.resolve();
     return new Promise(resolve => {
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.voice = voice;
@@ -131,6 +141,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const isVowel = letter => /[aeiou]/.test(letter);
   const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
+  function announce(text) {
+    els.screenReaderAnnounce.textContent = text;
+    setTimeout(() => els.screenReaderAnnounce.textContent = '', 1000);
+  }
+
   function updateScore() {
     state.score += 10;
     els.scoreText.textContent = state.score;
@@ -144,6 +159,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const percent = (state.revealedWords / state.totalWords) * 100 || 0;
     els.progressText.textContent = `${state.revealedWords} / ${state.totalWords} Words`;
     els.progressFill.style.width = `${percent}%`;
+    els.progressBar.setAttribute('aria-valuenow', Math.round(percent));
     els.progressIcon.classList.add('star-animate');
     setTimeout(() => els.progressIcon.classList.remove('star-animate'), 500);
   }
@@ -154,14 +170,26 @@ document.addEventListener('DOMContentLoaded', () => {
     els.complimentBox.style.opacity = '1';
     speak(compliment);
     uiSounds.success.play();
+    launchConfetti();
     setTimeout(() => els.complimentBox.style.opacity = '0', 2000);
+  }
+
+  function launchConfetti() {
+    for (let i = 0; i < 50; i++) {
+      const confetti = document.createElement('div');
+      confetti.className = 'confetti';
+      confetti.style.left = `${Math.random() * 100}vw`;
+      confetti.style.background = `hsl(${Math.random() * 360}, 100%, 50%)`;
+      els.confettiContainer.appendChild(confetti);
+      setTimeout(() => confetti.remove(), 2000);
+    }
   }
 
   async function playSound(sound) {
     if (!state.soundsEnabled || !letterSounds[sound]) return;
     const audio = letterSounds[sound];
     audio.currentTime = 0;
-    await audio.play();
+    await audio.play().catch(() => console.log(`Failed to play sound: ${sound}`));
   }
 
   function parseWord(word) {
@@ -181,25 +209,53 @@ document.addEventListener('DOMContentLoaded', () => {
     return units;
   }
 
+  function savePreferences() {
+    const prefs = {
+      wordType: els.wordTypeSelector.value,
+      vowel: els.vowelSelector.value,
+      blendingTime: state.blendingTime,
+      soundsEnabled: state.soundsEnabled,
+      typingEnabled: state.typingEnabled,
+      fontSize: els.fontSizeSelector.value
+    };
+    localStorage.setItem('wordSpinnerPrefs', JSON.stringify(prefs));
+  }
+
+  function loadPreferences() {
+    const prefs = JSON.parse(localStorage.getItem('wordSpinnerPrefs')) || {};
+    els.wordTypeSelector.value = prefs.wordType || 'cvc';
+    els.vowelSelector.value = prefs.vowel || 'all';
+    state.blendingTime = prefs.blendingTime || 3000;
+    state.soundsEnabled = prefs.soundsEnabled !== false;
+    state.typingEnabled = prefs.typingEnabled || false;
+    els.fontSizeSelector.value = prefs.fontSize || 'medium';
+    els.blendingTimeDisplay.textContent = state.blendingTime / 1000;
+    els.toggleAudioButton.textContent = state.soundsEnabled ? '🔇 Sounds Off' : '🔊 Sounds On';
+    els.toggleTypingButton.textContent = state.typingEnabled ? '✍️ Typing Off' : '✍️ Typing On';
+    els.wordBox.className = `word-display ${prefs.fontSize || 'medium'}`;
+  }
+
   /* === Core Logic === */
   async function revealWord(word, isRepeat = false) {
     els.wordBox.innerHTML = '';
     const units = parseWord(word);
-    units.forEach((unit, i) => {
+    const spans = units.map((unit, i) => {
       const span = document.createElement('span');
       span.textContent = unit.text;
       span.classList.add('letter');
       if (unit.isVowel) span.classList.add('vowel');
       if (unit.isDigraph) span.classList.add('digraph');
       span.style.animationDelay = `${i * 0.4}s`;
-      els.wordBox.appendChild(span);
+      return span;
     });
+    els.wordBox.append(...spans);
 
     for (const unit of units) {
       await delay(400);
       await playSound(unit.text);
     }
 
+    announce('Now, blend the letters to say the word');
     els.blendingTimerContainer.style.display = 'block';
     els.blendingTimer.style.width = '100%';
     els.blendingTimer.style.transition = `width ${state.blendingTime / 1000}s linear`;
@@ -208,11 +264,38 @@ document.addEventListener('DOMContentLoaded', () => {
     els.blendingTimerContainer.style.display = 'none';
 
     await speak(word);
+    announce(`The word is: ${word}`);
     if (!isRepeat) {
       showCompliment();
       updateScore();
       updateProgress();
+      state.wordPerformance[word] = state.wordPerformance[word] || { seenCount: 0, correctCount: 0 };
+      state.wordPerformance[word].seenCount++;
+      localStorage.setItem('wordPerformance', JSON.stringify(state.wordPerformance));
+      if (state.typingEnabled) showTypingPractice(word);
     }
+  }
+
+  function showTypingPractice(word) {
+    els.typingPractice.hidden = false;
+    els.typingInput.value = '';
+    els.typingInput.focus();
+    els.submitTyping.onclick = () => {
+      const input = els.typingInput.value.trim().toLowerCase();
+      if (input === word.toLowerCase()) {
+        els.typingFeedback.textContent = 'Correct!';
+        els.typingFeedback.style.color = '#28a745';
+        state.wordPerformance[word].correctCount++;
+        localStorage.setItem('wordPerformance', JSON.stringify(state.wordPerformance));
+      } else {
+        els.typingFeedback.textContent = `Incorrect. The word is ${word}.`;
+        els.typingFeedback.style.color = '#e63946';
+      }
+      setTimeout(() => {
+        els.typingPractice.hidden = true;
+        els.typingFeedback.textContent = '';
+      }, 2000);
+    };
   }
 
   function getWords() {
@@ -229,21 +312,21 @@ document.addEventListener('DOMContentLoaded', () => {
       resetGame(false);
       return getRandomWord();
     }
-    const word = words[Math.floor(Math.random() * words.length)];
-    state.usedWords.push(word);
-    return word;
+    return words[Math.floor(Math.random() * words.length)];
   }
 
   /* === Event Handlers === */
   async function spin() {
     els.spinButton.disabled = true;
     els.repeatButton.disabled = true;
+    els.typingPractice.hidden = true;
     els.spinButton.innerHTML = '<span class="spin-icon-animate">🎡</span>';
     uiSounds.click.play();
     await delay(1000);
     els.spinButton.innerHTML = '🎡 Spin';
 
     state.currentWord = getRandomWord();
+    state.usedWords.push(state.currentWord);
     await revealWord(state.currentWord);
     els.spinButton.disabled = false;
     els.repeatButton.disabled = false;
@@ -252,6 +335,7 @@ document.addEventListener('DOMContentLoaded', () => {
   async function repeat() {
     if (!state.currentWord) return alert('Spin first!');
     els.repeatButton.disabled = true;
+    els.typingPractice.hidden = true;
     await revealWord(state.currentWord, true);
     els.repeatButton.disabled = false;
   }
@@ -263,22 +347,35 @@ document.addEventListener('DOMContentLoaded', () => {
     state.currentWord = '';
     els.scoreText.textContent = '0';
     els.repeatButton.disabled = true;
+    els.typingPractice.hidden = true;
     if (updateTotal) state.totalWords = getWords().length;
     updateProgress();
   }
 
-  els.vowelSelector.addEventListener('change', () => resetGame(true));
-  els.wordTypeSelector.addEventListener('change', () => resetGame(true));
+  els.vowelSelector.addEventListener('change', () => { resetGame(true); savePreferences(); });
+  els.wordTypeSelector.addEventListener('change', () => { resetGame(true); savePreferences(); });
+  els.fontSizeSelector.addEventListener('change', () => {
+    els.wordBox.className = `word-display ${els.fontSizeSelector.value}`;
+    savePreferences();
+  });
 
   els.toggleAudioButton.addEventListener('click', () => {
     state.soundsEnabled = !state.soundsEnabled;
     els.toggleAudioButton.textContent = state.soundsEnabled ? '🔇 Sounds Off' : '🔊 Sounds On';
+    savePreferences();
+  });
+
+  els.toggleTypingButton.addEventListener('click', () => {
+    state.typingEnabled = !state.typingEnabled;
+    els.toggleTypingButton.textContent = state.typingEnabled ? '✍️ Typing Off' : '✍️ Typing On';
+    savePreferences();
   });
 
   els.increaseTime.addEventListener('click', () => {
     if (state.blendingTime < 7000) {
       state.blendingTime += 1000;
       els.blendingTimeDisplay.textContent = state.blendingTime / 1000;
+      savePreferences();
     }
   });
 
@@ -286,6 +383,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (state.blendingTime > 1000) {
       state.blendingTime -= 1000;
       els.blendingTimeDisplay.textContent = state.blendingTime / 1000;
+      savePreferences();
     }
   });
 
@@ -310,6 +408,7 @@ document.addEventListener('DOMContentLoaded', () => {
   /* === Initialization === */
   (async () => {
     await initSpeech();
+    loadPreferences();
     resetGame(true);
     Object.values(letterSounds).concat(Object.values(uiSounds)).forEach(audio => audio.load());
     els.spinButton.addEventListener('click', spin);
