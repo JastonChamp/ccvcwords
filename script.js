@@ -47,7 +47,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
-  const audioPath = './audio/';
+  // Updated audio path to point to the main folder (no subdirectory)
+  const audioPath = './';
   const letterSounds = {};
   const digraphs = ['sh', 'th', 'ch', 'ng'];
   'abcdefghijklmnopqrstuvwxyz'.split('').concat(digraphs).forEach(sound => {
@@ -177,10 +178,19 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   async function playSound(sound) {
-    if (!state.soundsEnabled || !letterSounds[sound]) return;
+    if (!state.soundsEnabled || !letterSounds[sound]) {
+      console.warn(`Sound not found or disabled for: ${sound}`);
+      return;
+    }
     const audio = letterSounds[sound];
-    audio.currentTime = 0;
-    await audio.play().catch(() => console.log(`Failed to play sound: ${sound}`));
+    audio.currentTime = 0; // Reset to start
+    try {
+      await audio.play();
+    } catch (error) {
+      console.error(`Failed to play sound ${sound}:`, error);
+      // Fallback: Log the issue and provide a visual indication
+      alert(`Audio for "${sound}" is not available. Please ensure audio files are in the main folder.`);
+    }
   }
 
   function parseWord(word) {
@@ -373,7 +383,19 @@ document.addEventListener('DOMContentLoaded', () => {
     await initSpeech();
     loadPreferences();
     resetGame(true);
-    Object.values(letterSounds).concat(Object.values(uiSounds)).forEach(audio => audio.load());
+
+    // Ensure audio files are loaded and trigger a user interaction check
+    const checkAudio = () => {
+      Object.values(letterSounds).concat(Object.values(uiSounds)).forEach(audio => {
+        audio.load();
+        audio.onerror = () => console.error(`Error loading audio: ${audio.src}`);
+      });
+    };
+
+    // Trigger audio check on user interaction to bypass autoplay restrictions
+    els.spinButton.addEventListener('click', checkAudio, { once: true });
+    els.toggleSettingsButton.addEventListener('click', checkAudio, { once: true });
+
     els.spinButton.addEventListener('click', spin);
     els.repeatButton.addEventListener('click', repeat);
   })();
