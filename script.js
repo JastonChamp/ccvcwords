@@ -86,7 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
     vowelSelector: document.getElementById('vowelSelector'),
     wordTypeSelector: document.getElementById('wordTypeSelector'),
     fontSizeSelector: document.getElementById('fontSizeSelector'),
-    fontSelector: document.getElementById('fontSelector'), // New element
+    fontSelector: document.getElementById('fontSelector'),
     themeSelector: document.getElementById('themeSelector'),
     toggleAudioButton: document.getElementById('toggleAudioButton'),
     blendingTimeDisplay: document.getElementById('blendingTimeDisplay'),
@@ -216,7 +216,7 @@ document.addEventListener('DOMContentLoaded', () => {
       blendingTime: state.blendingTime,
       soundsEnabled: state.soundsEnabled,
       fontSize: els.fontSizeSelector.value,
-      font: els.fontSelector.value, // New preference for font
+      font: els.fontSelector.value,
       theme: els.themeSelector.value
     };
     localStorage.setItem('wordSpinnerPrefs', JSON.stringify(prefs));
@@ -229,7 +229,7 @@ document.addEventListener('DOMContentLoaded', () => {
     state.blendingTime = prefs.blendingTime || 3000;
     state.soundsEnabled = prefs.soundsEnabled !== false;
     els.fontSizeSelector.value = prefs.fontSize || 'medium';
-    els.fontSelector.value = prefs.font || 'fredoka'; // Default to Fredoka
+    els.fontSelector.value = prefs.font || 'fredoka';
     els.themeSelector.value = prefs.theme || 'default';
     document.body.setAttribute('data-theme', els.themeSelector.value);
     document.body.setAttribute('data-font', els.fontSelector.value);
