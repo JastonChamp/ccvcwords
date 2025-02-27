@@ -11,15 +11,12 @@ html, body {
 }
 
 body[data-theme="space"] {
-  background: linear-gradient(135deg, #0f2027, #203a43, #2c5364), url('stars.svg');
-  background-size: cover, auto;
+  background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
   color: #e4e4e4;
 }
 
 body[data-theme="forest"] {
-  background: linear-gradient(135deg, #11998e, #38ef7d), url('leaves.svg');
-  background-size: cover, auto;
-  color: #2d3436;
+  background: linear-gradient(135deg, #11998e, #38ef7d);
 }
 
 body[data-theme="high-contrast"] {
