@@ -35,6 +35,18 @@ header p {
   100% { background-position: 0% 50%; }
 }
 
+/* Utility */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
 /* Container */
 .container {
   max-width: 1200px;
@@ -98,6 +110,10 @@ header p {
   animation: revealLetter 0.4s ease forwards;
 }
 
+.word-display.small .letter { font-size: 3rem; }
+.word-display.medium .letter { font-size: 5rem; }
+.word-display.large .letter { font-size: 7rem; }
+
 @keyframes revealLetter {
   to { opacity: 1; transform: translateY(0); }
 }
@@ -119,6 +135,11 @@ button {
   border-radius: 0.8rem;
   cursor: pointer;
   transition: transform 0.2s, background-color 0.2s;
+}
+
+button:focus {
+  outline: 2px solid #1abc9c;
+  outline-offset: 2px;
 }
 
 #spinButton {
@@ -189,6 +210,30 @@ button {
   transition: opacity 0.5s ease;
 }
 
+/* Typing Practice */
+.typing-practice {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+#typingInput {
+  padding: 0.5rem;
+  font-size: 1.2rem;
+  border: 2px solid #2980b9;
+  border-radius: 0.5rem;
+}
+
+#submitTyping {
+  padding: 0.5rem 1rem;
+  background: #3498db;
+  color: #fff;
+}
+
+#submitTyping:hover { background: #2980b9; }
+
 /* Settings */
 .settings-toggle button {
   padding: 0.8rem 1.2rem;
@@ -237,8 +282,8 @@ select, .time-adjust button, #blendingTimeDisplay {
 }
 
 select:focus, .time-adjust button:focus {
-  outline: none;
-  border-color: #1abc9c;
+  outline: 2px solid #1abc9c;
+  outline-offset: 2px;
 }
 
 .time-adjust {
@@ -255,10 +300,6 @@ select:focus, .time-adjust button:focus {
 .settings-buttons button {
   background: #fff;
   padding: 0.6rem 1rem;
-}
-
-.settings-buttons button:hover {
-  background: rgba(255, 255, 255, 0.7);
 }
 
 /* Blending Timer */
@@ -280,6 +321,20 @@ select:focus, .time-adjust button:focus {
   transition: width linear;
 }
 
+/* Confetti */
+.confetti {
+  position: fixed;
+  width: 10px;
+  height: 10px;
+  opacity: 0.8;
+  animation: confetti-fall 2s linear forwards;
+}
+
+@keyframes confetti-fall {
+  0% { transform: translateY(-100vh) rotate(0deg); }
+  100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+}
+
 /* Footer */
 footer {
   margin-top: 1.5rem;
@@ -293,7 +348,6 @@ footer {
 
 /* Responsive */
 @media (max-width: 800px) {
-  .word-display .letter { font-size: 3.5rem; }
   #spinButton { width: 3.5rem; height: 3.5rem; }
   #repeatButton { padding: 0.8rem 1.5rem; }
 }
