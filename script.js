@@ -2,7 +2,6 @@ document.addEventListener('DOMContentLoaded', () => {
   console.log('Word Spinner initialized.');
 
   /* Configuration */
-  const audioPath = './sounds/';
   const wordGroups = {
     cvc: {
       a: ['bat', 'cat', 'dad', 'fan', 'jam', 'mad', 'pan', 'rat', 'tan', 'wag'],
@@ -48,15 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
-  const letterSounds = {};
   const digraphs = ['sh', 'th', 'ch', 'ng'];
-  'abcdefghijklmnopqrstuvwxyz'.split('').concat(digraphs).forEach(sound => {
-    letterSounds[sound] = new Audio(`${audioPath}${sound}.mp3`);
-  });
-  const uiSounds = {
-    click: new Audio(`${audioPath}click.mp3`),
-    success: new Audio(`${audioPath}success.mp3`)
-  };
 
   /* State */
   let state = {
@@ -69,7 +60,8 @@ document.addEventListener('DOMContentLoaded', () => {
     soundsEnabled: true,
     wordType: 'cvc',
     theme: 'default',
-    celebrationMode: false
+    celebrationMode: false,
+    badges: {}
   };
 
   /* DOM Elements */
@@ -130,7 +122,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function speak(text) {
-    if (!voice || speechSynthesis.speaking) return Promise.resolve();
+    if (!state.soundsEnabled || !voice || speechSynthesis.speaking) return Promise.resolve();
     return new Promise(resolve => {
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.voice = voice;
@@ -175,7 +167,6 @@ document.addEventListener('DOMContentLoaded', () => {
     els.complimentBox.textContent = compliment;
     els.complimentBox.style.opacity = '1';
     speak(compliment);
-    uiSounds.success.play();
     if (state.celebrationMode) launchFireworks();
     else launchConfetti();
     setTimeout(() => els.complimentBox.style.opacity = '0', 2000);
@@ -199,31 +190,12 @@ document.addEventListener('DOMContentLoaded', () => {
   function launchFireworks() {
     for (let i = 0; i < 20; i++) {
       const firework = document.createElement('div');
-      firework.className = 'firework';
+      firework.className = 'confetti star';
       firework.style.left = `${Math.random() * 100}vw`;
       firework.style.top = `${Math.random() * 50}vh`;
       firework.style.background = `hsl(${Math.random() * 360}, 100%, 50%)`;
       els.confettiContainer.appendChild(firework);
       setTimeout(() => firework.remove(), 1500);
-    }
-  }
-
-  async function playSound(sound) {
-    if (!state.soundsEnabled) {
-      console.warn(`Sounds are disabled for: ${sound}`);
-      return;
-    }
-    const audio = letterSounds[sound] || new Audio(`${audioPath}${sound}.mp3`);
-    if (!audio) {
-      console.error(`Sound not found for: ${sound}`);
-      return;
-    }
-    audio.currentTime = 0;
-    try {
-      await audio.play();
-    } catch (error) {
-      console.error(`Failed to play sound ${sound}:`, error);
-      alert(`Audio for "${sound}" failed. Check files in ${audioPath} and ensure browser permissions allow sound.`);
     }
   }
 
@@ -250,7 +222,8 @@ document.addEventListener('DOMContentLoaded', () => {
       theme: state.theme,
       blendingTime: state.blendingTime,
       soundsEnabled: state.soundsEnabled,
-      celebrationMode: state.celebrationMode
+      celebrationMode: state.celebrationMode,
+      badges: state.badges
     };
     localStorage.setItem('wordSpinnerPrefs', JSON.stringify(prefs));
   }
@@ -262,6 +235,7 @@ document.addEventListener('DOMContentLoaded', () => {
     state.blendingTime = prefs.blendingTime || 3000;
     state.soundsEnabled = prefs.soundsEnabled !== false;
     state.celebrationMode = prefs.celebrationMode || false;
+    state.badges = prefs.badges || {};
     document.body.setAttribute('data-theme', state.theme);
     els.wordTypeSelector.value = state.wordType;
     els.themeSelector.value = state.theme;
@@ -288,7 +262,6 @@ document.addEventListener('DOMContentLoaded', () => {
       state.badges[wordType] = true;
       updateBadges();
       speak(`Congratulations! You earned the ${badges[wordType]} badge!`);
-      uiSounds.success.play();
       launchConfetti();
     }
   }
@@ -302,7 +275,7 @@ document.addEventListener('DOMContentLoaded', () => {
       span.textContent = unit.text;
       span.classList.add('letter');
       if (unit.isVowel) span.classList.add('vowel');
-      if (unit.isDigraph) span.classList.add('digraph');
+      else if (unit.isDigraph) span.classList.add('digraph');
       else span.classList.add('consonant');
       span.style.animationDelay = `${i * 0.4}s`;
       return span;
@@ -311,7 +284,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     for (const unit of units) {
       await delay(400);
-      await playSound(unit.text);
+      if (state.soundsEnabled) speak(unit.text);
     }
 
     announce('Now, blend the letters aloud!');
@@ -319,7 +292,6 @@ document.addEventListener('DOMContentLoaded', () => {
     els.blendingTimer.style.width = '100%';
     els.blendingTimer.style.transition = `width ${state.blendingTime / 1000}s linear`;
     if ('vibrate' in navigator) navigator.vibrate([200]);
-    uiSounds.click.play();
     els.blendingTimer.setAttribute('aria-valuenow', 100);
     requestAnimationFrame(() => {
       els.blendingTimer.style.width = '0%';
@@ -328,13 +300,13 @@ document.addEventListener('DOMContentLoaded', () => {
         progress -= 10;
         if (progress >= 0) els.blendingTimer.setAttribute('aria-valuenow', progress);
         else clearInterval(interval);
-      }, 300);
+      }, state.blendingTime / 10);
     });
     await delay(state.blendingTime);
     els.blendingTimerContainer.style.display = 'none';
     els.blendingTimer.setAttribute('aria-valuenow', 0);
 
-    await speak(word);
+    if (state.soundsEnabled) await speak(word);
     announce(`The word is: ${word}`);
     if (!isRepeat) {
       showCompliment();
@@ -350,7 +322,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!state.currentWord) return alert('Spin first!');
     const units = parseWord(state.currentWord);
     const hint = `Try blending: /${units.map(u => u.text).join('/ ')}/`;
-    speak(hint);
+    if (state.soundsEnabled) speak(hint);
     announce(hint);
   }
 
@@ -388,10 +360,7 @@ document.addEventListener('DOMContentLoaded', () => {
     els.repeatButton.disabled = true;
     els.hintButton.hidden = true;
     if ('vibrate' in navigator) navigator.vibrate([200]);
-    els.spinButton.classList.add('spin-animate');
-    uiSounds.click.play();
     await delay(1000);
-    els.spinButton.classList.remove('spin-animate');
 
     state.currentWord = getRandomWord();
     await revealWord(state.currentWord);
@@ -472,19 +441,8 @@ document.addEventListener('DOMContentLoaded', () => {
   (async () => {
     await initSpeech();
     loadPreferences();
+    updateBadges();
     resetGame(true);
-
-    const checkAudio = () => {
-      Object.values(letterSounds).concat(Object.values(uiSounds)).forEach(audio => {
-        audio.load();
-        audio.onerror = (e) => console.error(`Error loading audio ${audio.src}:`, e);
-        console.log(`Preloading audio: ${audio.src}`);
-      });
-    };
-
-    els.spinButton.addEventListener('click', checkAudio, { once: true });
-    els.toggleSettingsButton.addEventListener('click', checkAudio, { once: true });
-
     if (!localStorage.getItem('hasSeenTutorial')) {
       els.tutorialModal.style.display = 'flex';
       els.startTutorial.addEventListener('click', () => {
