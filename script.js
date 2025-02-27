@@ -561,4 +561,35 @@ document.addEventListener('DOMContentLoaded', () => {
   els.hintButton.addEventListener('click', showHint);
 
   els.startTutorial.addEventListener('click', startTutorial);
-  els.skipTutorial
+  els.skipTutorial.addEventListener('click', hideTutorialModal);
+
+  /* === Initialization === */
+  (async () => {
+    await initSpeech();
+    loadPreferences();
+    resetGame(true);
+
+    // Ensure audio files are loaded and trigger a user interaction check
+    const checkAudio = () => {
+      Object.values(letterSounds).concat(Object.values(uiSounds)).forEach(audio => {
+        audio.load();
+        audio.onerror = (e) => console.error(`Error loading audio ${audio.src}:`, e);
+        console.log(`Preloading audio: ${audio.src}`);
+      });
+    };
+
+    // Trigger audio check on user interaction to bypass autoplay restrictions
+    els.spinButton.addEventListener('click', checkAudio, { once: true });
+    els.toggleSettingsButton.addEventListener('click', checkAudio, { once: true });
+
+    // Add welcome animation for buttons and progress
+    setTimeout(() => {
+      els.spinButton.classList.add('fadeIn');
+      els.repeatButton.classList.add('fadeIn');
+      els.progressContainer.classList.add('fadeIn');
+    }, 100);
+
+    els.spinButton.addEventListener('click', spin);
+    els.repeatButton.addEventListener('click', repeat);
+  })();
+});
