@@ -11,7 +11,7 @@
 <body>
   <header>
     <h1>Word Spinner</h1>
-    <p>Spin, sound out, and learn!</p>
+    <p>Spin, blend, and learn!</p>
   </header>
 
   <main class="container">
@@ -40,6 +40,15 @@
       </div>
 
       <div id="complimentBox" class="compliment-box" aria-live="assertive"></div>
+      <div id="screenReaderAnnounce" class="sr-only" role="status" aria-live="assertive"></div>
+
+      <!-- Typing Practice Area -->
+      <div id="typingPractice" class="typing-practice" hidden>
+        <label for="typingInput">Type the word:</label>
+        <input type="text" id="typingInput" aria-label="Type the word you heard">
+        <button id="submitTyping" aria-label="Submit typed word">✔️ Submit</button>
+        <p id="typingFeedback" aria-live="polite"></p>
+      </div>
     </section>
 
     <section class="settings-toggle">
@@ -71,6 +80,14 @@
               <option value="u">⛎ Short U</option>
             </select>
           </div>
+          <div>
+            <label for="fontSizeSelector">Font Size:</label>
+            <select id="fontSizeSelector" aria-label="Select font size">
+              <option value="small">Small</option>
+              <option value="medium" selected>Medium</option>
+              <option value="large">Large</option>
+            </select>
+          </div>
         </div>
         <div class="timer-controls">
           <div>
@@ -84,6 +101,7 @@
         </div>
         <div class="settings-buttons">
           <button id="toggleAudioButton" aria-label="Toggle letter sounds on or off">🔇 Sounds Off</button>
+          <button id="toggleTypingButton" aria-label="Toggle typing practice on or off">✍️ Typing Off</button>
           <button id="fullscreenButton" aria-label="Toggle fullscreen mode">⛶ Fullscreen</button>
         </div>
       </div>
@@ -94,9 +112,11 @@
     </div>
 
     <footer>
-      <p class="note">Tip: Practice blending aloud! Toggle sounds off to try solo.</p>
+      <p class="note">Tip: Blend aloud! Toggle sounds or typing for extra practice.</p>
     </footer>
   </main>
+
+  <div id="confettiContainer" aria-hidden="true"></div>
 
   <script src="script.js"></script>
 </body>
