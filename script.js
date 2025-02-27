@@ -87,6 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
     progressFill: document.getElementById('progressFill'),
     progressBar: document.getElementById('progressBar'),
     progressIcon: document.getElementById('progressIcon'),
+    progressContainer: document.getElementById('progressContainer'), // Added to fix TypeError
     complimentBox: document.getElementById('complimentBox'),
     screenReaderAnnounce: document.getElementById('screenReaderAnnounce'),
     vowelSelector: document.getElementById('vowelSelector'),
@@ -280,7 +281,13 @@ document.addEventListener('DOMContentLoaded', () => {
     els.wordTypeSelector.value = prefs.wordType || 'cvc'; // Default to CVC
     els.vowelSelector.value = prefs.vowel || 'all';
     state.blendingTime = prefs.blendingTime || 3000; // Default to 3 seconds
-    state.soundsEnabled = prefs.soundsEnabled !== false;
+    state.soundsEnabled = prefs.soundsEnabled !== false; // Default to true
+    console.log('Sounds Enabled:', state.soundsEnabled);
+    if (!state.soundsEnabled) {
+      state.soundsEnabled = true; // Force enable if testing
+      els.toggleAudioButton.textContent = '🔇 Sounds Off';
+      savePreferences();
+    }
     els.fontSizeSelector.value = prefs.fontSize || 'large'; // Default to Large for accessibility
     els.fontSelector.value = prefs.font || 'fredoka'; // Default to Fredoka
     els.themeSelector.value = prefs.theme || 'default';
@@ -379,9 +386,26 @@ document.addEventListener('DOMContentLoaded', () => {
     els.blendingTimerContainer.style.display = 'block';
     els.blendingTimer.style.width = '100%';
     els.blendingTimer.style.transition = `width ${state.blendingTime / 1000}s linear`;
-    requestAnimationFrame(() => els.blendingTimer.style.width = '0%');
+    if ('vibrate' in navigator) navigator.vibrate([200]); // Start vibration
+    uiSounds.click.play(); // Optional start sound
+    els.blendingTimer.setAttribute('aria-valuenow', 100); // Start at 100%
+    els.blendingTimerContainer.setAttribute('data-time-remaining', `Blending Time: ${Math.ceil(state.blendingTime / 1000)} seconds remaining`);
+    requestAnimationFrame(() => {
+      els.blendingTimer.style.width = '0%';
+      let progress = 100;
+      const interval = setInterval(() => {
+        progress -= 10; // Update every 300ms for 3s total
+        if (progress >= 0) {
+          els.blendingTimer.setAttribute('aria-valuenow', progress);
+          els.blendingTimerContainer.setAttribute('data-time-remaining', `Blending Time: ${Math.ceil((progress / 100) * (state.blendingTime / 1000))} seconds remaining`);
+        } else clearInterval(interval);
+      }, 300);
+    });
     await delay(state.blendingTime);
+    if ('vibrate' in navigator) navigator.vibrate([200]); // End vibration
+    uiSounds.success.play(); // Optional end sound
     els.blendingTimerContainer.style.display = 'none';
+    els.blendingTimer.setAttribute('aria-valuenow', 0); // Reset to 0%
 
     await speak(word);
     announce(`The word is: ${word}`);
