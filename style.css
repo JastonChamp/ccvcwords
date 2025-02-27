@@ -32,6 +32,7 @@ body[data-theme="forest"] {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  background: inherit; /* Match body background to prevent artifacts */
 }
 
 /* Utility */
@@ -56,6 +57,7 @@ header {
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
+  flex-shrink: 0; /* Prevent header from shrinking */
 }
 
 body[data-theme="space"] header {
@@ -105,6 +107,7 @@ header p {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center; /* Center content vertically */
 }
 
 /* Core Controls */
@@ -115,6 +118,8 @@ header p {
   flex-direction: column;
   align-items: center;
   gap: 1.5rem;
+  padding-bottom: 1rem; /* Ensure no extra space at bottom */
+  box-sizing: border-box; /* Include padding in width/height calculations */
 }
 
 .score-section {
@@ -610,19 +615,53 @@ body[data-theme="forest"] #blendingTimerContainer {
 
 /* Footer */
 footer {
-  margin-top: 2rem;
-  padding: 1rem 0;
+  margin-top: 1rem;
+  padding: 0.5rem 0; /* Reduced padding to minimize space */
   width: 100%;
   max-width: 1200px;
   margin-left: auto;
   margin-right: auto;
   background: transparent; /* Ensure no background causes extra space */
+  border-top: 1px solid rgba(255, 255, 255, 0.1); /* Subtle divider for visibility */
 }
 
 .note {
   font-size: 1rem;
   color: #636e72;
   font-style: italic;
+  margin: 0;
+}
+
+/* Welcome Animation */
+.action-buttons button,
+.progress-container {
+  opacity: 0;
+  animation: fadeIn 1s ease forwards 0.5s;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 /* Responsive */
+@media (max-width: 800px) {
+  h1 { font-size: 2.5rem; }
+  .word-display .letter { font-size: 4rem; }
+  .word-display.small .letter { font-size: 2.5rem; }
+  .word-display.large .letter { font-size: 6rem; }
+  button { padding: 0.8rem 1.5rem; font-size: 1.2rem; }
+  .container { padding: 1rem; }
+  .action-buttons { flex-direction: column; gap: 1rem; }
+  .core-controls { gap: 1rem; }
+  footer { padding: 0.3rem 0; }
+}
+
+@media (max-width: 600px) {
+  h1 { font-size: 2rem; }
+  #scoreText { font-size: 1.5rem; }
+  .progress-icon { font-size: 2rem; }
+  .compliment-box { font-size: 1.4rem; }
+  .word-display-container { width: 100%; padding: 1rem; }
+  #progressBar { width: 90%; }
+}
