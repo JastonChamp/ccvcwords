@@ -1,49 +1,45 @@
-  document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', () => {
   console.log('Word Spinner initialized.');
-  /* =====================
-     Word Spinner for All Ages
-     (Optimized for both children and elderly)
-  ===================== */
-  
-  /* ---------- Word Groups Configuration ---------- */
+
+  /* === Configuration === */
   const wordGroups = {
     cvc: {
-      a: ['bat', 'bag', 'bad', 'cab', 'cap', 'cat', 'dad', 'dam', 'fad', 'fan', 'mad', 'jam', 'van', 'rag', 'tan', 'man', 'lap', 'mat', 'rat', 'can', 'gas', 'wag', 'had', 'lad', 'yam', 'wax', 'pad', 'ram', 'ham', 'pan'],
-      e: ['bed', 'beg', 'ben', 'bet', 'den', 'fed', 'get', 'hen', 'jet', 'leg', 'met', 'net', 'pet', 'men', 'pen', 'red', 'set', 'ten', 'wet', 'web', 'yet', 'vet', 'hem', 'peg', 'let', 'keg', 'pep', 'ned', 'ted', 'ken'],
-      i: ['bib', 'bid', 'big', 'bin', 'bit', 'dig', 'dip', 'fig', 'fin', 'fit', 'him', 'hit', 'kid', 'lid', 'lip', 'mid', 'pin', 'pig', 'pit', 'rid', 'rim', 'sip', 'sit', 'tin', 'tip', 'wig', 'win', 'zip', 'fix', 'mix'],
-      o: ['bob', 'bog', 'cod', 'cob', 'cop', 'cot', 'dog', 'dot', 'fog', 'god', 'box', 'fox', 'got', 'hop', 'hot', 'jog', 'job', 'log', 'lot', 'mob', 'mop', 'nod', 'not', 'pod', 'pop', 'pot', 'rod', 'rot', 'sod', 'top'],
-      u: ['bun', 'bud', 'bug', 'bus', 'but', 'cub', 'cud', 'cup', 'cut', 'dug', 'fun', 'gun', 'gum', 'hut', 'hum', 'hug', 'jug', 'mud', 'mug', 'nut', 'nun', 'pug', 'pun', 'pup', 'rub', 'rug', 'run', 'sum', 'sun', 'tug']
+      a: ['bat', 'cat', 'dad', 'fan', 'jam', 'mad', 'pan', 'rat', 'tan', 'wag'],
+      e: ['bed', 'den', 'get', 'hen', 'jet', 'net', 'pet', 'red', 'ten', 'wet'],
+      i: ['big', 'dig', 'fin', 'hit', 'kid', 'lip', 'pin', 'sit', 'tin', 'wig'],
+      o: ['box', 'cot', 'dog', 'fog', 'hop', 'log', 'mop', 'not', 'pot', 'top'],
+      u: ['bug', 'cup', 'fun', 'gum', 'hug', 'mud', 'nut', 'run', 'sun', 'tug']
     },
     ccvc: {
-      a: ['brag', 'clap', 'crab', 'drag', 'flag', 'flap', 'glad', 'grab', 'plan', 'slam', 'snap', 'snag', 'span', 'stab', 'trap', 'scab', 'scam', 'scan', 'scat', 'swam', 'chap', 'that', 'drab', 'gran', 'plat', 'pram', 'slap', 'clan', 'slab'],
-      e: ['bled', 'bred', 'fled', 'fret', 'glen', 'sped', 'stem', 'step', 'trek', 'clef', 'sled'],
-      i: ['brim', 'brig', 'clip', 'crib', 'drip', 'flip', 'grin', 'grid', 'grip', 'skip', 'slim', 'slip', 'spin', 'spit', 'swim', 'twin', 'trip', 'trim', 'twig', 'skid'],
-      o: ['blot', 'blog', 'clog', 'crop', 'drop', 'frog', 'flop', 'glob', 'glop', 'plod', 'plot', 'prod', 'prop', 'slot', 'smog', 'snob', 'spot', 'stop', 'swop', 'trod'],
+      a: ['brag', 'clap', 'crab', 'drag', 'flag', 'flap', 'glad', 'grab', 'plan', 'slam'],
+      e: ['bled', 'bred', 'fled', 'fret', 'glen', 'sped', 'stem', 'step', 'trek', 'sled'],
+      i: ['brim', 'brig', 'clip', 'crib', 'drip', 'flip', 'grin', 'grip', 'skip', 'slim'],
+      o: ['blot', 'blog', 'clog', 'crop', 'drop', 'frog', 'flop', 'glob', 'plod', 'plot'],
       u: ['drum', 'grub', 'plug', 'slug', 'slum', 'spun', 'stub', 'stud', 'stun']
     },
     cvcc: {
-      a: ['band', 'bank', 'damp', 'hand', 'land', 'lamp', 'ramp', 'sand', 'pant', 'tank', 'camp'],
-      e: ['bent', 'dent', 'felt', 'fend', 'help', 'kept', 'lend', 'mend', 'nest', 'rest', 'sent', 'tent', 'vest', 'vent', 'wept', 'weld', 'text', 'next', 'heft', 'jest', 'best', 'pest', 'test', 'west', 'zest', 'desk', 'self', 'meld', 'held', 'belt'],
-      i: ['dink', 'find', 'film', 'gild', 'gimp', 'hind', 'hilt', 'hint', 'jilt', 'mint', 'milk', 'silk', 'fist', 'list', 'risk', 'sink', 'link', 'pink', 'kink', 'rink', 'tint', 'tilt', 'skimp', 'wilt'],
+      a: ['band', 'bank', 'damp', 'hand', 'land', 'lamp', 'ramp', 'sand', 'pant', 'tank'],
+      e: ['bent', 'dent', 'felt', 'fend', 'help', 'kept', 'lend', 'mend', 'nest', 'rest'],
+      i: ['dink', 'film', 'gild', 'gimp', 'hilt', 'hint', 'jilt', 'mint', 'milk', 'silk'],
       o: ['bond', 'colt', 'comb', 'fond', 'cost', 'lost', 'loft', 'soft', 'post', 'pond'],
-      u: ['bunk', 'bump', 'bust', 'dump', 'dunk', 'fund', 'funk', 'gust', 'gunk', 'hunt', 'junk', 'just', 'lump', 'must', 'pump', 'rust', 'runt', 'sunk', 'tuft', 'tusk', 'husk', 'dust', 'dusk']
+      u: ['bunk', 'bump', 'bust', 'dump', 'dunk', 'fund', 'funk', 'gust', 'hunt', 'junk']
     },
     ccvcc: {
-      a: ['brand', 'blank', 'clamp', 'cramp', 'crank', 'drank', 'flank', 'frank', 'plank', 'prank', 'stamp', 'stand', 'strand', 'tract', 'scrap', 'swank'],
+      a: ['brand', 'blank', 'clamp', 'cramp', 'crank', 'drank', 'flank', 'frank', 'plank', 'prank'],
       e: ['blend', 'blent', 'strep', 'trend', 'swept', 'stent'],
-      i: ['blink', 'brink', 'clink', 'clint', 'crimp', 'drink', 'drift', 'print', 'sprint', 'strip', 'strict', 'shrink', 'script', 'twist', 'flint', 'shrimp', 'splint', 'swift'],
-      o: ['frost', 'stomp', 'strong', 'throb', 'throng', 'swamp', 'prong', 'prompt', 'clomp', 'chomp', 'clonk'],
-      u: ['blunt', 'brunt', 'clump', 'clunk', 'crust', 'drunk', 'flung', 'frump', 'grunt', 'plump', 'plunk', 'skunk', 'stump', 'strut', 'trunk', 'trust', 'strum', 'stunt', 'skulk', 'spunk', 'slump']
+      i: ['blink', 'brink', 'clink', 'clint', 'crimp', 'drink', 'drift', 'print', 'sprint', 'strip'],
+      o: ['frost', 'stomp', 'strong', 'throb', 'throng', 'prong', 'prompt', 'clomp', 'chomp', 'clonk'],
+      u: ['blunt', 'brunt', 'clump', 'clunk', 'crust', 'drunk', 'flung', 'frump', 'grunt', 'plump']
     },
     digraphs: {
-      a: ['chat', 'chap', 'than', 'that', 'math', 'hang', 'bang', 'rang', 'cash', 'dash', 'stash', 'trash', 'patch', 'catch', 'match', 'batch', 'rash', 'sash'],
-      e: ['shed', 'them', 'then', 'fetch', 'bench', 'retch', 'ketch', 'stretch', 'sketch', 'drench', 'flesh', 'fresh'],
-      i: ['chip', 'chin', 'thin', 'thing', 'king', 'ring', 'sing', 'wing', 'sting', 'bring', 'cling', 'string', 'swing', 'ditch', 'pitch', 'switch', 'twitch'],
+      a: ['chat', 'chap', 'than', 'that', 'math', 'hang', 'bang', 'rang', 'cash', 'dash'],
+      e: ['shed', 'them', 'then', 'fetch', 'bench', 'retch', 'ketch', 'stretch', 'sketch', 'drench'],
+      i: ['chip', 'chin', 'thin', 'thing', 'king', 'ring', 'sing', 'wing', 'sting', 'bring'],
       o: ['shop', 'shot', 'chop', 'strong', 'throb', 'cloth', 'crotch', 'notch', 'botch'],
-      u: ['shut', 'thud', 'chug', 'chunk', 'thump', 'shrug', 'brush', 'crush', 'blush', 'flush', 'crutch', 'clutch']
+      u: ['shut', 'thud', 'chug', 'chunk', 'thump', 'shrug', 'brush', 'crush', 'blush', 'flush']
     },
     extended: {
-      a: ['fantastic', 'smashing', 'crashing', 'dancing', 'stamping', 'clapping'],
+      a: ['fantastic', 'smashing', 'crashing', 'stamping', 'clapping'],
       e: ['wrecking'],
       i: ['blinking', 'drinking', 'tripping', 'flipping', 'snipping'],
       o: ['blocking', 'rocking'],
@@ -71,7 +67,6 @@
     currentWord: '',
     blendingTime: 3000,
     soundsEnabled: true,
-    typingEnabled: false,
     wordPerformance: JSON.parse(localStorage.getItem('wordPerformance')) || {}
   };
 
@@ -88,15 +83,11 @@
     progressIcon: document.getElementById('progressIcon'),
     complimentBox: document.getElementById('complimentBox'),
     screenReaderAnnounce: document.getElementById('screenReaderAnnounce'),
-    typingPractice: document.getElementById('typingPractice'),
-    typingInput: document.getElementById('typingInput'),
-    submitTyping: document.getElementById('submitTyping'),
-    typingFeedback: document.getElementById('typingFeedback'),
     vowelSelector: document.getElementById('vowelSelector'),
     wordTypeSelector: document.getElementById('wordTypeSelector'),
     fontSizeSelector: document.getElementById('fontSizeSelector'),
+    themeSelector: document.getElementById('themeSelector'),
     toggleAudioButton: document.getElementById('toggleAudioButton'),
-    toggleTypingButton: document.getElementById('toggleTypingButton'),
     blendingTimeDisplay: document.getElementById('blendingTimeDisplay'),
     increaseTime: document.getElementById('increaseBlendingTime'),
     decreaseTime: document.getElementById('decreaseBlendingTime'),
@@ -108,7 +99,7 @@
     confettiContainer: document.getElementById('confettiContainer')
   };
 
-  const compliments = ['Great job!', 'Awesome!', 'You’re a star!', 'Fantastic!', 'Well done!'];
+  const compliments = ['Superb!', 'Brilliant!', 'You’re Amazing!', 'Fantastic!', 'Well Done!'];
 
   /* === Speech Synthesis === */
   let voice = null;
@@ -181,7 +172,7 @@
       confetti.style.left = `${Math.random() * 100}vw`;
       confetti.style.background = `hsl(${Math.random() * 360}, 100%, 50%)`;
       els.confettiContainer.appendChild(confetti);
-      setTimeout(() => confetti.remove(), 2000);
+      setTimeout(() => confetti.remove(), 3000);
     }
   }
 
@@ -215,8 +206,8 @@
       vowel: els.vowelSelector.value,
       blendingTime: state.blendingTime,
       soundsEnabled: state.soundsEnabled,
-      typingEnabled: state.typingEnabled,
-      fontSize: els.fontSizeSelector.value
+      fontSize: els.fontSizeSelector.value,
+      theme: els.themeSelector.value
     };
     localStorage.setItem('wordSpinnerPrefs', JSON.stringify(prefs));
   }
@@ -227,11 +218,11 @@
     els.vowelSelector.value = prefs.vowel || 'all';
     state.blendingTime = prefs.blendingTime || 3000;
     state.soundsEnabled = prefs.soundsEnabled !== false;
-    state.typingEnabled = prefs.typingEnabled || false;
     els.fontSizeSelector.value = prefs.fontSize || 'medium';
+    els.themeSelector.value = prefs.theme || 'default';
+    document.body.setAttribute('data-theme', els.themeSelector.value);
     els.blendingTimeDisplay.textContent = state.blendingTime / 1000;
     els.toggleAudioButton.textContent = state.soundsEnabled ? '🔇 Sounds Off' : '🔊 Sounds On';
-    els.toggleTypingButton.textContent = state.typingEnabled ? '✍️ Typing Off' : '✍️ Typing On';
     els.wordBox.className = `word-display ${prefs.fontSize || 'medium'}`;
   }
 
@@ -269,33 +260,10 @@
       showCompliment();
       updateScore();
       updateProgress();
-      state.wordPerformance[word] = state.wordPerformance[word] || { seenCount: 0, correctCount: 0 };
+      state.wordPerformance[word] = state.wordPerformance[word] || { seenCount: 0 };
       state.wordPerformance[word].seenCount++;
       localStorage.setItem('wordPerformance', JSON.stringify(state.wordPerformance));
-      if (state.typingEnabled) showTypingPractice(word);
     }
-  }
-
-  function showTypingPractice(word) {
-    els.typingPractice.hidden = false;
-    els.typingInput.value = '';
-    els.typingInput.focus();
-    els.submitTyping.onclick = () => {
-      const input = els.typingInput.value.trim().toLowerCase();
-      if (input === word.toLowerCase()) {
-        els.typingFeedback.textContent = 'Correct!';
-        els.typingFeedback.style.color = '#28a745';
-        state.wordPerformance[word].correctCount++;
-        localStorage.setItem('wordPerformance', JSON.stringify(state.wordPerformance));
-      } else {
-        els.typingFeedback.textContent = `Incorrect. The word is ${word}.`;
-        els.typingFeedback.style.color = '#e63946';
-      }
-      setTimeout(() => {
-        els.typingPractice.hidden = true;
-        els.typingFeedback.textContent = '';
-      }, 2000);
-    };
   }
 
   function getWords() {
@@ -319,11 +287,10 @@
   async function spin() {
     els.spinButton.disabled = true;
     els.repeatButton.disabled = true;
-    els.typingPractice.hidden = true;
-    els.spinButton.innerHTML = '<span class="spin-icon-animate">🎡</span>';
+    els.spinButton.innerHTML = '<span class="button-icon spin-icon-animate">🎡</span> Spin';
     uiSounds.click.play();
     await delay(1000);
-    els.spinButton.innerHTML = '🎡 Spin';
+    els.spinButton.innerHTML = '<span class="button-icon">🎡</span> Spin';
 
     state.currentWord = getRandomWord();
     state.usedWords.push(state.currentWord);
@@ -335,7 +302,6 @@
   async function repeat() {
     if (!state.currentWord) return alert('Spin first!');
     els.repeatButton.disabled = true;
-    els.typingPractice.hidden = true;
     await revealWord(state.currentWord, true);
     els.repeatButton.disabled = false;
   }
@@ -347,7 +313,6 @@
     state.currentWord = '';
     els.scoreText.textContent = '0';
     els.repeatButton.disabled = true;
-    els.typingPractice.hidden = true;
     if (updateTotal) state.totalWords = getWords().length;
     updateProgress();
   }
@@ -358,16 +323,14 @@
     els.wordBox.className = `word-display ${els.fontSizeSelector.value}`;
     savePreferences();
   });
+  els.themeSelector.addEventListener('change', () => {
+    document.body.setAttribute('data-theme', els.themeSelector.value);
+    savePreferences();
+  });
 
   els.toggleAudioButton.addEventListener('click', () => {
     state.soundsEnabled = !state.soundsEnabled;
     els.toggleAudioButton.textContent = state.soundsEnabled ? '🔇 Sounds Off' : '🔊 Sounds On';
-    savePreferences();
-  });
-
-  els.toggleTypingButton.addEventListener('click', () => {
-    state.typingEnabled = !state.typingEnabled;
-    els.toggleTypingButton.textContent = state.typingEnabled ? '✍️ Typing Off' : '✍️ Typing On';
     savePreferences();
   });
 
@@ -400,7 +363,7 @@
   els.toggleSettingsButton.addEventListener('click', () => {
     const isVisible = els.advancedSettings.style.display === 'block';
     els.advancedSettings.style.display = isVisible ? 'none' : 'block';
-    els.toggleSettingsButton.textContent = isVisible ? 'Advanced Settings' : 'Hide Settings';
+    els.toggleSettingsButton.textContent = isVisible ? '⚙️ Customize' : 'Hide Settings';
     els.toggleSettingsButton.setAttribute('aria-expanded', !isVisible);
     els.advancedSettings.setAttribute('aria-hidden', isVisible);
   });
