@@ -6,7 +6,8 @@
   <meta name="description" content="A fun phonics blending game for all ages!">
   <title>Word Spinner - Phonics Fun</title>
   <link rel="stylesheet" href="style.css">
-  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;700&display=swap" rel="stylesheet">
+  <!-- Load both fonts for flexibility -->
+  <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&family=Fredoka:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
   <header>
@@ -86,6 +87,13 @@
               <option value="small">Small</option>
               <option value="medium" selected>Medium</option>
               <option value="large">Large</option>
+            </select>
+          </div>
+          <div>
+            <label for="fontSelector">Font Style:</label>
+            <select id="fontSelector" aria-label="Select font style">
+              <option value="fredoka">Fredoka</option>
+              <option value="comic">Comic Neue</option>
             </select>
           </div>
           <div>
