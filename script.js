@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
   console.log('Word Spinner initialized.');
 
   /* === Configuration === */
+  const audioPath = './'; // Ensure this matches your audio file location
   const wordGroups = {
     cvc: {
       a: ['bat', 'cat', 'dad', 'fan', 'jam', 'mad', 'pan', 'rat', 'tan', 'wag'],
@@ -47,7 +48,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
-  const audioPath = './';
   const letterSounds = {};
   const digraphs = ['sh', 'th', 'ch', 'ng'];
   'abcdefghijklmnopqrstuvwxyz'.split('').concat(digraphs).forEach(sound => {
@@ -219,18 +219,25 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   async function playSound(sound) {
-    if (!state.soundsEnabled || !letterSounds[sound]) {
-      console.warn(`Sound not found or disabled for: ${sound}`);
+    if (!state.soundsEnabled) {
+      console.warn(`Sounds are disabled for: ${sound}`);
+      return;
+    }
+    if (!letterSounds[sound]) {
+      console.error(`Sound not found for: ${sound}. Checking path: ${audioPath}${sound}.mp3`);
+      alert(`Audio for "${sound}" is missing. Please ensure files like "${sound}.mp3" are in the ${audioPath} folder.`);
       return;
     }
     const audio = letterSounds[sound];
+    console.log(`Attempting to play ${audio.src}`);
     audio.currentTime = 0; // Reset to start
     try {
       await audio.play();
+      console.log(`Successfully played ${sound}`);
       uiSounds.chime.play(); // Play chime after each letter sound
     } catch (error) {
       console.error(`Failed to play sound ${sound}:`, error);
-      alert(`Audio for "${sound}" is not available. Please ensure audio files are in the main folder.`);
+      alert(`Audio for "${sound}" failed to play. Check browser console for details and ensure files are web-compatible (.mp3, 64–128 kbps).`);
     }
   }
 
@@ -554,34 +561,4 @@ document.addEventListener('DOMContentLoaded', () => {
   els.hintButton.addEventListener('click', showHint);
 
   els.startTutorial.addEventListener('click', startTutorial);
-  els.skipTutorial.addEventListener('click', hideTutorialModal);
-
-  /* === Initialization === */
-  (async () => {
-    await initSpeech();
-    loadPreferences();
-    resetGame(true);
-
-    // Ensure audio files are loaded and trigger a user interaction check
-    const checkAudio = () => {
-      Object.values(letterSounds).concat(Object.values(uiSounds)).forEach(audio => {
-        audio.load();
-        audio.onerror = () => console.error(`Error loading audio: ${audio.src}`);
-      });
-    };
-
-    // Trigger audio check on user interaction to bypass autoplay restrictions
-    els.spinButton.addEventListener('click', checkAudio, { once: true });
-    els.toggleSettingsButton.addEventListener('click', checkAudio, { once: true });
-
-    // Add welcome animation for buttons and progress
-    setTimeout(() => {
-      els.spinButton.classList.add('fadeIn');
-      els.repeatButton.classList.add('fadeIn');
-      els.progressContainer.classList.add('fadeIn');
-    }, 100);
-
-    els.spinButton.addEventListener('click', spin);
-    els.repeatButton.addEventListener('click', repeat);
-  })();
-});
+  els.skipTutorial
