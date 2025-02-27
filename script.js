@@ -65,7 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
     totalWords: 0,
     usedWords: [],
     currentWord: '',
-    blendingTime: 3000,
+    blendingTime: 3000, // Default to 3 seconds
     soundsEnabled: true,
     wordPerformance: JSON.parse(localStorage.getItem('wordPerformance')) || {}
   };
@@ -229,12 +229,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function loadPreferences() {
     const prefs = JSON.parse(localStorage.getItem('wordSpinnerPrefs')) || {};
-    els.wordTypeSelector.value = prefs.wordType || 'cvc';
+    els.wordTypeSelector.value = prefs.wordType || 'cvc'; // Default to CVC
     els.vowelSelector.value = prefs.vowel || 'all';
-    state.blendingTime = prefs.blendingTime || 3000;
+    state.blendingTime = prefs.blendingTime || 3000; // Default to 3 seconds
     state.soundsEnabled = prefs.soundsEnabled !== false;
     els.fontSizeSelector.value = prefs.fontSize || 'medium';
-    els.fontSelector.value = prefs.font || 'fredoka';
+    els.fontSelector.value = prefs.font || 'fredoka'; // Default to Fredoka
     els.themeSelector.value = prefs.theme || 'default';
     document.body.setAttribute('data-theme', els.themeSelector.value);
     document.body.setAttribute('data-font', els.fontSelector.value);
