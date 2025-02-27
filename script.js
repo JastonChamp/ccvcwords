@@ -55,7 +55,8 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   const uiSounds = {
     click: new Audio(`${audioPath}click.mp3`),
-    success: new Audio(`${audioPath}success.mp3`)
+    success: new Audio(`${audioPath}success.mp3`),
+    chime: new Audio(`${audioPath}chime.mp3`) // New chime sound for feedback
   };
 
   /* === State === */
@@ -67,13 +68,18 @@ document.addEventListener('DOMContentLoaded', () => {
     currentWord: '',
     blendingTime: 3000, // Default to 3 seconds
     soundsEnabled: true,
-    wordPerformance: JSON.parse(localStorage.getItem('wordPerformance')) || {}
+    wordPerformance: JSON.parse(localStorage.getItem('wordPerformance')) || {},
+    badges: JSON.parse(localStorage.getItem('badges')) || {},
+    quickStart: JSON.parse(localStorage.getItem('quickStart')) || true,
+    celebrationMode: JSON.parse(localStorage.getItem('celebrationMode')) || false,
+    hasSeenTutorial: JSON.parse(localStorage.getItem('hasSeenTutorial')) || false
   };
 
   /* === DOM Elements === */
   const els = {
     spinButton: document.getElementById('spinButton'),
     repeatButton: document.getElementById('repeatButton'),
+    hintButton: document.getElementById('hintButton'),
     wordBox: document.getElementById('wordBox'),
     scoreText: document.getElementById('scoreValue'),
     scoreIncrement: document.getElementById('scoreIncrement'),
@@ -97,10 +103,24 @@ document.addEventListener('DOMContentLoaded', () => {
     fullscreenButton: document.getElementById('fullscreenButton'),
     toggleSettingsButton: document.getElementById('toggleSettingsButton'),
     advancedSettings: document.getElementById('advancedSettings'),
-    confettiContainer: document.getElementById('confettiContainer')
+    quickStartCheckbox: document.getElementById('quickStart'),
+    celebrationModeCheckbox: document.getElementById('celebrationMode'),
+    confettiContainer: document.getElementById('confettiContainer'),
+    badges: document.getElementById('badges'),
+    tutorialModal: document.getElementById('tutorialModal'),
+    startTutorial: document.getElementById('startTutorial'),
+    skipTutorial: document.getElementById('skipTutorial')
   };
 
   const compliments = ['Superb!', 'Brilliant!', 'You’re Amazing!', 'Fantastic!', 'Well Done!'];
+  const badges = {
+    cvc: 'CVC Star',
+    ccvc: 'CCVC Explorer',
+    cvcc: 'CVCC Champion',
+    ccvcc: 'CCVCC Master',
+    digraphs: 'Digraph Pro',
+    extended: 'Extended Wizard'
+  };
 
   /* === Speech Synthesis === */
   let voice = null;
@@ -167,18 +187,34 @@ document.addEventListener('DOMContentLoaded', () => {
     els.complimentBox.style.opacity = '1';
     speak(compliment);
     uiSounds.success.play();
-    launchConfetti();
+    if (state.celebrationMode) launchFireworks();
+    else launchConfetti();
     setTimeout(() => els.complimentBox.style.opacity = '0', 2000);
   }
 
   function launchConfetti() {
-    for (let i = 0; i < 50; i++) {
+    for (let i = 0; i < 25; i++) { // Reduced for performance
+      const type = Math.random() > 0.5 ? 'star' : 'rocket';
       const confetti = document.createElement('div');
-      confetti.className = 'confetti';
+      confetti.className = `confetti ${type}`;
       confetti.style.left = `${Math.random() * 100}vw`;
       confetti.style.background = `hsl(${Math.random() * 360}, 100%, 50%)`;
+      const duration = 2000 + Math.random() * 2000; // Random duration 2–4s
+      confetti.style.animationDuration = `${duration}ms`;
       els.confettiContainer.appendChild(confetti);
-      setTimeout(() => confetti.remove(), 3000);
+      setTimeout(() => confetti.remove(), duration);
+    }
+  }
+
+  function launchFireworks() {
+    for (let i = 0; i < 20; i++) {
+      const firework = document.createElement('div');
+      firework.className = 'firework';
+      firework.style.left = `${Math.random() * 100}vw`;
+      firework.style.top = `${Math.random() * 50}vh`;
+      firework.style.background = `hsl(${Math.random() * 360}, 100%, 50%)`;
+      els.confettiContainer.appendChild(firework);
+      setTimeout(() => firework.remove(), 1500);
     }
   }
 
@@ -191,6 +227,7 @@ document.addEventListener('DOMContentLoaded', () => {
     audio.currentTime = 0; // Reset to start
     try {
       await audio.play();
+      uiSounds.chime.play(); // Play chime after each letter sound
     } catch (error) {
       console.error(`Failed to play sound ${sound}:`, error);
       alert(`Audio for "${sound}" is not available. Please ensure audio files are in the main folder.`);
@@ -222,9 +259,13 @@ document.addEventListener('DOMContentLoaded', () => {
       soundsEnabled: state.soundsEnabled,
       fontSize: els.fontSizeSelector.value,
       font: els.fontSelector.value,
-      theme: els.themeSelector.value
+      theme: els.themeSelector.value,
+      quickStart: state.quickStart,
+      celebrationMode: state.celebrationMode
     };
     localStorage.setItem('wordSpinnerPrefs', JSON.stringify(prefs));
+    localStorage.setItem('badges', JSON.stringify(state.badges));
+    localStorage.setItem('hasSeenTutorial', JSON.stringify(state.hasSeenTutorial));
   }
 
   function loadPreferences() {
@@ -233,20 +274,84 @@ document.addEventListener('DOMContentLoaded', () => {
     els.vowelSelector.value = prefs.vowel || 'all';
     state.blendingTime = prefs.blendingTime || 3000; // Default to 3 seconds
     state.soundsEnabled = prefs.soundsEnabled !== false;
-    els.fontSizeSelector.value = prefs.fontSize || 'medium';
+    els.fontSizeSelector.value = prefs.fontSize || 'large'; // Default to Large for accessibility
     els.fontSelector.value = prefs.font || 'fredoka'; // Default to Fredoka
     els.themeSelector.value = prefs.theme || 'default';
+    state.quickStart = prefs.quickStart !== false;
+    state.celebrationMode = prefs.celebrationMode || false;
+    state.badges = JSON.parse(localStorage.getItem('badges')) || {};
+    state.hasSeenTutorial = JSON.parse(localStorage.getItem('hasSeenTutorial')) || false;
     document.body.setAttribute('data-theme', els.themeSelector.value);
     document.body.setAttribute('data-font', els.fontSelector.value);
     els.blendingTimeDisplay.textContent = state.blendingTime / 1000;
     els.toggleAudioButton.textContent = state.soundsEnabled ? '🔇 Sounds Off' : '🔊 Sounds On';
-    els.wordBox.className = `word-display ${prefs.fontSize || 'medium'}`;
+    els.wordBox.className = `word-display ${prefs.fontSize || 'large'}`;
+    els.quickStartCheckbox.checked = state.quickStart;
+    els.celebrationModeCheckbox.checked = state.celebrationMode;
+    updateBadges();
+    if (!state.hasSeenTutorial) showTutorialModal();
+  }
+
+  function updateBadges() {
+    els.badges.innerHTML = '';
+    Object.entries(state.badges).forEach(([type, earned]) => {
+      if (earned) {
+        const badge = document.createElement('div');
+        badge.className = 'badge';
+        badge.textContent = badges[type];
+        els.badges.appendChild(badge);
+      }
+    });
+    els.badges.setAttribute('aria-hidden', els.badges.children.length === 0);
+  }
+
+  function earnBadge(wordType) {
+    if (!state.badges[wordType]) {
+      state.badges[wordType] = true;
+      updateBadges();
+      speak(`Congratulations! You earned the ${badges[wordType]} badge!`);
+      uiSounds.success.play();
+      launchConfetti();
+    }
+  }
+
+  function showTutorialModal() {
+    els.tutorialModal.style.display = 'flex';
+    els.startTutorial.focus();
+  }
+
+  function hideTutorialModal() {
+    els.tutorialModal.style.display = 'none';
+    state.hasSeenTutorial = true;
+    savePreferences();
+  }
+
+  async function startTutorial() {
+    hideTutorialModal();
+    await speak('Welcome to Word Spinner! I’ll guide you through the app.');
+    await delay(2000);
+    announce('Click the Spin button to start blending words.');
+    els.spinButton.classList.add('highlight');
+    await delay(3000);
+    els.spinButton.classList.remove('highlight');
+    announce('After spinning, blend the letters aloud as they appear.');
+    els.wordBox.classList.add('highlight');
+    await delay(3000);
+    els.wordBox.classList.remove('highlight');
+    announce('Use Repeat to hear the word again, or Customize to adjust settings.');
+    els.repeatButton.classList.add('highlight');
+    els.toggleSettingsButton.classList.add('highlight');
+    await delay(3000);
+    els.repeatButton.classList.remove('highlight');
+    els.toggleSettingsButton.classList.remove('highlight');
+    await speak('You’re ready to play! Have fun blending words.');
   }
 
   /* === Core Logic === */
   async function revealWord(word, isRepeat = false) {
     els.wordBox.innerHTML = '';
     const units = parseWord(word);
+    els.wordBox.setAttribute('data-tooltip', `Phonics: /${units.map(u => u.text).join('/ ')}/`);
     const spans = units.map((unit, i) => {
       const span = document.createElement('span');
       span.textContent = unit.text;
@@ -279,8 +384,37 @@ document.addEventListener('DOMContentLoaded', () => {
       updateProgress();
       state.wordPerformance[word] = state.wordPerformance[word] || { seenCount: 0 };
       state.wordPerformance[word].seenCount++;
+      const wordType = els.wordTypeSelector.value;
+      if (state.usedWords.length === state.totalWords) earnBadge(wordType);
       localStorage.setItem('wordPerformance', JSON.stringify(state.wordPerformance));
     }
+    els.hintButton.hidden = false;
+  }
+
+  function showHint() {
+    if (!state.currentWord) return alert('Spin first!');
+    const units = parseWord(state.currentWord);
+    const hint = `Try blending: /${units.map(u => u.text).join('/ ')}/. Example: ${state.currentWord} means ${getWordMeaning(state.currentWord)}.`;
+    speak(hint);
+    announce(hint);
+    els.hintButton.blur();
+  }
+
+  function getWordMeaning(word) {
+    const meanings = {
+      bat: 'a flying mammal',
+      cat: 'a small furry pet',
+      dad: 'a father',
+      fan: 'a device for cooling',
+      jam: 'a sweet fruit spread',
+      mad: 'angry',
+      pan: 'a cooking utensil',
+      rat: 'a small rodent',
+      tan: 'a light brown color',
+      wag: 'to move a tail side to side',
+      // Add more meanings for other words as needed
+    };
+    return meanings[word.toLowerCase()] || 'a word to practice blending';
   }
 
   function getWords() {
@@ -302,12 +436,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
   /* === Event Handlers === */
   async function spin() {
+    if (state.quickStart) {
+      els.wordTypeSelector.value = 'cvc';
+      state.blendingTime = 3000;
+      els.blendingTimeDisplay.textContent = '3';
+      els.fontSizeSelector.value = 'large';
+      els.fontSelector.value = 'fredoka';
+      els.themeSelector.value = 'default';
+      document.body.setAttribute('data-theme', 'default');
+      document.body.setAttribute('data-font', 'fredoka');
+      els.wordBox.className = 'word-display large';
+      savePreferences();
+    }
     els.spinButton.disabled = true;
     els.repeatButton.disabled = true;
-    els.spinButton.innerHTML = '<span class="button-icon spin-icon-animate">🎡</span> Spin';
+    els.hintButton.hidden = true;
+    if ('vibrate' in navigator) navigator.vibrate([200]); // Haptic feedback for touch
+    els.spinButton.innerHTML = '<svg class="button-icon spin-icon-animate" aria-hidden="true" width="24" height="24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2V7zm0 8h2v2h-2v-2z" fill="#e94560"/></svg> Spin';
     uiSounds.click.play();
     await delay(1000);
-    els.spinButton.innerHTML = '<span class="button-icon">🎡</span> Spin';
+    els.spinButton.innerHTML = '<svg class="button-icon" aria-hidden="true" width="24" height="24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2V7zm0 8h2v2h-2v-2z" fill="#e94560"/></svg> Spin';
 
     state.currentWord = getRandomWord();
     state.usedWords.push(state.currentWord);
@@ -319,6 +467,7 @@ document.addEventListener('DOMContentLoaded', () => {
   async function repeat() {
     if (!state.currentWord) return alert('Spin first!');
     els.repeatButton.disabled = true;
+    if ('vibrate' in navigator) navigator.vibrate([200]); // Haptic feedback
     await revealWord(state.currentWord, true);
     els.repeatButton.disabled = false;
   }
@@ -330,8 +479,10 @@ document.addEventListener('DOMContentLoaded', () => {
     state.currentWord = '';
     els.scoreText.textContent = '0';
     els.repeatButton.disabled = true;
+    els.hintButton.hidden = true;
     if (updateTotal) state.totalWords = getWords().length;
     updateProgress();
+    updateBadges();
   }
 
   els.vowelSelector.addEventListener('change', () => { resetGame(true); savePreferences(); });
@@ -352,6 +503,17 @@ document.addEventListener('DOMContentLoaded', () => {
   els.toggleAudioButton.addEventListener('click', () => {
     state.soundsEnabled = !state.soundsEnabled;
     els.toggleAudioButton.textContent = state.soundsEnabled ? '🔇 Sounds Off' : '🔊 Sounds On';
+    savePreferences();
+  });
+
+  els.quickStartCheckbox.addEventListener('change', () => {
+    state.quickStart = els.quickStartCheckbox.checked;
+    if (state.quickStart) spin(); // Reset to defaults
+    savePreferences();
+  });
+
+  els.celebrationModeCheckbox.addEventListener('change', () => {
+    state.celebrationMode = els.celebrationModeCheckbox.checked;
     savePreferences();
   });
 
@@ -388,6 +550,11 @@ document.addEventListener('DOMContentLoaded', () => {
     els.toggleSettingsButton.setAttribute('aria-expanded', !isVisible);
     els.advancedSettings.setAttribute('aria-hidden', isVisible);
   });
+
+  els.hintButton.addEventListener('click', showHint);
+
+  els.startTutorial.addEventListener('click', startTutorial);
+  els.skipTutorial.addEventListener('click', hideTutorialModal);
 
   /* === Initialization === */
   (async () => {
