@@ -47,7 +47,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
-  // Updated audio path to point to the main folder (no subdirectory)
   const audioPath = './';
   const letterSounds = {};
   const digraphs = ['sh', 'th', 'ch', 'ng'];
@@ -87,6 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
     vowelSelector: document.getElementById('vowelSelector'),
     wordTypeSelector: document.getElementById('wordTypeSelector'),
     fontSizeSelector: document.getElementById('fontSizeSelector'),
+    fontSelector: document.getElementById('fontSelector'), // New element
     themeSelector: document.getElementById('themeSelector'),
     toggleAudioButton: document.getElementById('toggleAudioButton'),
     blendingTimeDisplay: document.getElementById('blendingTimeDisplay'),
@@ -188,7 +188,6 @@ document.addEventListener('DOMContentLoaded', () => {
       await audio.play();
     } catch (error) {
       console.error(`Failed to play sound ${sound}:`, error);
-      // Fallback: Log the issue and provide a visual indication
       alert(`Audio for "${sound}" is not available. Please ensure audio files are in the main folder.`);
     }
   }
@@ -217,6 +216,7 @@ document.addEventListener('DOMContentLoaded', () => {
       blendingTime: state.blendingTime,
       soundsEnabled: state.soundsEnabled,
       fontSize: els.fontSizeSelector.value,
+      font: els.fontSelector.value, // New preference for font
       theme: els.themeSelector.value
     };
     localStorage.setItem('wordSpinnerPrefs', JSON.stringify(prefs));
@@ -229,8 +229,10 @@ document.addEventListener('DOMContentLoaded', () => {
     state.blendingTime = prefs.blendingTime || 3000;
     state.soundsEnabled = prefs.soundsEnabled !== false;
     els.fontSizeSelector.value = prefs.fontSize || 'medium';
+    els.fontSelector.value = prefs.font || 'fredoka'; // Default to Fredoka
     els.themeSelector.value = prefs.theme || 'default';
     document.body.setAttribute('data-theme', els.themeSelector.value);
+    document.body.setAttribute('data-font', els.fontSelector.value);
     els.blendingTimeDisplay.textContent = state.blendingTime / 1000;
     els.toggleAudioButton.textContent = state.soundsEnabled ? '🔇 Sounds Off' : '🔊 Sounds On';
     els.wordBox.className = `word-display ${prefs.fontSize || 'medium'}`;
@@ -331,6 +333,10 @@ document.addEventListener('DOMContentLoaded', () => {
   els.wordTypeSelector.addEventListener('change', () => { resetGame(true); savePreferences(); });
   els.fontSizeSelector.addEventListener('change', () => {
     els.wordBox.className = `word-display ${els.fontSizeSelector.value}`;
+    savePreferences();
+  });
+  els.fontSelector.addEventListener('change', () => {
+    document.body.setAttribute('data-font', els.fontSelector.value);
     savePreferences();
   });
   els.themeSelector.addEventListener('change', () => {
