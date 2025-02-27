@@ -152,8 +152,13 @@ document.addEventListener('DOMContentLoaded', () => {
     els.progressText.textContent = `${state.revealedWords} / ${state.totalWords} Words`;
     els.progressFill.style.width = `${percent}%`;
     els.progressBar.setAttribute('aria-valuenow', Math.round(percent));
+    els.progressBar.setAttribute('data-tooltip', `${state.revealedWords} words completed out of ${state.totalWords}`);
+    els.progressFill.classList.add('progress-update');
     els.progressIcon.classList.add('star-animate');
-    setTimeout(() => els.progressIcon.classList.remove('star-animate'), 500);
+    setTimeout(() => {
+      els.progressFill.classList.remove('progress-update');
+      els.progressIcon.classList.remove('star-animate');
+    }, 1000);
   }
 
   function showCompliment() {
@@ -401,6 +406,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // Trigger audio check on user interaction to bypass autoplay restrictions
     els.spinButton.addEventListener('click', checkAudio, { once: true });
     els.toggleSettingsButton.addEventListener('click', checkAudio, { once: true });
+
+    // Add welcome animation for buttons and progress
+    setTimeout(() => {
+      els.spinButton.classList.add('fadeIn');
+      els.repeatButton.classList.add('fadeIn');
+      els.progressContainer.classList.add('fadeIn');
+    }, 100);
 
     els.spinButton.addEventListener('click', spin);
     els.repeatButton.addEventListener('click', repeat);
