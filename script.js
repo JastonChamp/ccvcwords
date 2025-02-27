@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
   console.log('Word Spinner initialized.');
 
   /* Configuration */
-  const audioPath = './';
+  const audioPath = './sounds/';
   const wordGroups = {
     cvc: {
       a: ['bat', 'cat', 'dad', 'fan', 'jam', 'mad', 'pan', 'rat', 'tan', 'wag'],
@@ -10,6 +10,41 @@ document.addEventListener('DOMContentLoaded', () => {
       i: ['big', 'dig', 'fin', 'hit', 'kid', 'lip', 'pin', 'sit', 'tin', 'wig'],
       o: ['box', 'cot', 'dog', 'fog', 'hop', 'log', 'mop', 'not', 'pot', 'top'],
       u: ['bug', 'cup', 'fun', 'gum', 'hug', 'mud', 'nut', 'run', 'sun', 'tug']
+    },
+    ccvc: {
+      a: ['brag', 'clap', 'crab', 'drag', 'flag', 'flap', 'glad', 'grab', 'plan', 'slam'],
+      e: ['bled', 'bred', 'fled', 'fret', 'glen', 'sped', 'stem', 'step', 'trek', 'sled'],
+      i: ['brim', 'brig', 'clip', 'crib', 'drip', 'flip', 'grin', 'grip', 'skip', 'slim'],
+      o: ['blot', 'blog', 'clog', 'crop', 'drop', 'frog', 'flop', 'glob', 'plod', 'plot'],
+      u: ['drum', 'grub', 'plug', 'slug', 'slum', 'spun', 'stub', 'stud', 'stun']
+    },
+    cvcc: {
+      a: ['band', 'bank', 'damp', 'hand', 'land', 'lamp', 'ramp', 'sand', 'pant', 'tank'],
+      e: ['bent', 'dent', 'felt', 'fend', 'help', 'kept', 'lend', 'mend', 'nest', 'rest'],
+      i: ['dink', 'film', 'gild', 'gimp', 'hilt', 'hint', 'jilt', 'mint', 'milk', 'silk'],
+      o: ['bond', 'colt', 'comb', 'fond', 'cost', 'lost', 'loft', 'soft', 'post', 'pond'],
+      u: ['bunk', 'bump', 'bust', 'dump', 'dunk', 'fund', 'funk', 'gust', 'hunt', 'junk']
+    },
+    ccvcc: {
+      a: ['brand', 'blank', 'clamp', 'cramp', 'crank', 'drank', 'flank', 'frank', 'plank', 'prank'],
+      e: ['blend', 'blent', 'strep', 'trend', 'swept', 'stent'],
+      i: ['blink', 'brink', 'clink', 'clint', 'crimp', 'drink', 'drift', 'print', 'sprint', 'strip'],
+      o: ['frost', 'stomp', 'strong', 'throb', 'throng', 'prong', 'prompt', 'clomp', 'chomp', 'clonk'],
+      u: ['blunt', 'brunt', 'clump', 'clunk', 'crust', 'drunk', 'flung', 'frump', 'grunt', 'plump']
+    },
+    digraphs: {
+      a: ['chat', 'chap', 'than', 'that', 'math', 'hang', 'bang', 'rang', 'cash', 'dash'],
+      e: ['shed', 'them', 'then', 'fetch', 'bench', 'retch', 'ketch', 'stretch', 'sketch', 'drench'],
+      i: ['chip', 'chin', 'thin', 'thing', 'king', 'ring', 'sing', 'wing', 'sting', 'bring'],
+      o: ['shop', 'shot', 'chop', 'strong', 'throb', 'cloth', 'crotch', 'notch', 'botch'],
+      u: ['shut', 'thud', 'chug', 'chunk', 'thump', 'shrug', 'brush', 'crush', 'blush', 'flush']
+    },
+    extended: {
+      a: ['fantastic', 'smashing', 'crashing', 'stamping', 'clapping'],
+      e: ['wrecking'],
+      i: ['blinking', 'drinking', 'tripping', 'flipping', 'snipping'],
+      o: ['blocking', 'rocking'],
+      u: ['jumping']
     }
   };
 
@@ -27,10 +62,14 @@ document.addEventListener('DOMContentLoaded', () => {
   let state = {
     score: 0,
     revealedWords: 0,
-    totalWords: 10,
+    totalWords: 50,
     usedWords: [],
     currentWord: '',
-    soundsEnabled: true
+    blendingTime: 3000,
+    soundsEnabled: true,
+    wordType: 'cvc',
+    theme: 'default',
+    celebrationMode: false
   };
 
   /* DOM Elements */
@@ -39,6 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
     repeatButton: document.getElementById('repeatButton'),
     hintButton: document.getElementById('hintButton'),
     wordBox: document.getElementById('wordBox'),
+    wordInput: document.getElementById('wordInput'),
     scoreText: document.getElementById('scoreValue'),
     scoreIncrement: document.getElementById('scoreIncrement'),
     progressText: document.getElementById('progressText'),
@@ -47,18 +87,33 @@ document.addEventListener('DOMContentLoaded', () => {
     progressIcon: document.getElementById('progressIcon'),
     complimentBox: document.getElementById('complimentBox'),
     screenReaderAnnounce: document.getElementById('screenReaderAnnounce'),
+    blendingTimerContainer: document.getElementById('blendingTimerContainer'),
+    blendingTimer: document.getElementById('blendingTimer'),
+    wordTypeSelector: document.getElementById('wordTypeSelector'),
     themeSelector: document.getElementById('themeSelector'),
     toggleAudioButton: document.getElementById('toggleAudioButton'),
-    fullscreenButton: document.getElementById('fullscreenButton'),
-    toggleSettingsButton: document.getElementById('toggleSettingsButton'),
-    advancedSettings: document.getElementById('advancedSettings'),
+    blendingTimeDisplay: document.getElementById('blendingTimeDisplay'),
+    increaseTime: document.getElementById('increaseBlendingTime'),
+    decreaseTime: document.getElementById('decreaseBlendingTime'),
+    celebrationModeCheckbox: document.getElementById('celebrationMode'),
     confettiContainer: document.getElementById('confettiContainer'),
     tutorialModal: document.getElementById('tutorialModal'),
     startTutorial: document.getElementById('startTutorial'),
-    skipTutorial: document.getElementById('skipTutorial')
+    skipTutorial: document.getElementById('skipTutorial'),
+    toggleSettingsButton: document.getElementById('toggleSettingsButton'),
+    advancedSettings: document.getElementById('advancedSettings'),
+    badges: document.getElementById('badges')
   };
 
-  const compliments = ['Superb!', 'Brilliant!', 'Awesome!', 'Great Job!', 'Wow!'];
+  const compliments = ['Superb!', 'Brilliant!', 'You’re Amazing!', 'Fantastic!', 'Well Done!'];
+  const badges = {
+    cvc: 'CVC Star',
+    ccvc: 'CCVC Explorer',
+    cvcc: 'CVCC Champion',
+    ccvcc: 'CCVCC Master',
+    digraphs: 'Digraph Pro',
+    extended: 'Extended Wizard'
+  };
 
   /* Speech Synthesis */
   let voice = null;
@@ -102,6 +157,7 @@ document.addEventListener('DOMContentLoaded', () => {
     els.scoreIncrement.textContent = '+10';
     els.scoreIncrement.classList.add('show');
     setTimeout(() => els.scoreIncrement.classList.remove('show'), 800);
+    speak(`Score: ${state.score}`);
   }
 
   function updateProgress() {
@@ -110,15 +166,21 @@ document.addEventListener('DOMContentLoaded', () => {
     els.progressText.textContent = `${state.revealedWords} / ${state.totalWords} Words`;
     els.progressFill.style.width = `${percent}%`;
     els.progressBar.setAttribute('aria-valuenow', Math.round(percent));
+    if (state.revealedWords % 10 === 0) els.progressIcon.classList.add('star-animate');
+    setTimeout(() => els.progressIcon.classList.remove('star-animate'), 1000);
   }
 
   function showCompliment() {
     const compliment = compliments[Math.floor(Math.random() * compliments.length)];
     els.complimentBox.textContent = compliment;
+    els.complimentBox.style.opacity = '1';
     speak(compliment);
     uiSounds.success.play();
-    launchConfetti();
+    if (state.celebrationMode) launchFireworks();
+    else launchConfetti();
     setTimeout(() => els.complimentBox.style.opacity = '0', 2000);
+    const wordType = els.wordTypeSelector.value;
+    if (state.revealedWords % 10 === 0) earnBadge(wordType);
   }
 
   function launchConfetti() {
@@ -134,14 +196,34 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  function launchFireworks() {
+    for (let i = 0; i < 20; i++) {
+      const firework = document.createElement('div');
+      firework.className = 'firework';
+      firework.style.left = `${Math.random() * 100}vw`;
+      firework.style.top = `${Math.random() * 50}vh`;
+      firework.style.background = `hsl(${Math.random() * 360}, 100%, 50%)`;
+      els.confettiContainer.appendChild(firework);
+      setTimeout(() => firework.remove(), 1500);
+    }
+  }
+
   async function playSound(sound) {
-    if (!state.soundsEnabled) return;
-    const audio = letterSounds[sound];
+    if (!state.soundsEnabled) {
+      console.warn(`Sounds are disabled for: ${sound}`);
+      return;
+    }
+    const audio = letterSounds[sound] || new Audio(`${audioPath}${sound}.mp3`);
+    if (!audio) {
+      console.error(`Sound not found for: ${sound}`);
+      return;
+    }
     audio.currentTime = 0;
     try {
       await audio.play();
     } catch (error) {
       console.error(`Failed to play sound ${sound}:`, error);
+      alert(`Audio for "${sound}" failed. Check files in ${audioPath} and ensure browser permissions allow sound.`);
     }
   }
 
@@ -162,16 +244,66 @@ document.addEventListener('DOMContentLoaded', () => {
     return units;
   }
 
-  /* Core Logic */
+  function savePreferences() {
+    const prefs = {
+      wordType: state.wordType,
+      theme: state.theme,
+      blendingTime: state.blendingTime,
+      soundsEnabled: state.soundsEnabled,
+      celebrationMode: state.celebrationMode
+    };
+    localStorage.setItem('wordSpinnerPrefs', JSON.stringify(prefs));
+  }
+
+  function loadPreferences() {
+    const prefs = JSON.parse(localStorage.getItem('wordSpinnerPrefs')) || {};
+    state.wordType = prefs.wordType || 'cvc';
+    state.theme = prefs.theme || 'default';
+    state.blendingTime = prefs.blendingTime || 3000;
+    state.soundsEnabled = prefs.soundsEnabled !== false;
+    state.celebrationMode = prefs.celebrationMode || false;
+    document.body.setAttribute('data-theme', state.theme);
+    els.wordTypeSelector.value = state.wordType;
+    els.themeSelector.value = state.theme;
+    els.blendingTimeDisplay.textContent = state.blendingTime / 1000;
+    els.toggleAudioButton.textContent = state.soundsEnabled ? '🔇 Sounds Off' : '🔊 Sounds On';
+    els.celebrationModeCheckbox.checked = state.celebrationMode;
+  }
+
+  function updateBadges() {
+    els.badges.innerHTML = '';
+    Object.entries(state.badges).forEach(([type, earned]) => {
+      if (earned) {
+        const badge = document.createElement('div');
+        badge.className = 'badge';
+        badge.textContent = badges[type];
+        els.badges.appendChild(badge);
+      }
+    });
+    els.badges.setAttribute('aria-hidden', !Object.values(state.badges).some(Boolean));
+  }
+
+  function earnBadge(wordType) {
+    if (!state.badges[wordType]) {
+      state.badges[wordType] = true;
+      updateBadges();
+      speak(`Congratulations! You earned the ${badges[wordType]} badge!`);
+      uiSounds.success.play();
+      launchConfetti();
+    }
+  }
+
   async function revealWord(word, isRepeat = false) {
     els.wordBox.innerHTML = '';
     const units = parseWord(word);
+    els.wordBox.setAttribute('data-tooltip', `Phonics: /${units.map(u => u.text).join('/ ')}/`);
     const spans = units.map((unit, i) => {
       const span = document.createElement('span');
       span.textContent = unit.text;
       span.classList.add('letter');
       if (unit.isVowel) span.classList.add('vowel');
       if (unit.isDigraph) span.classList.add('digraph');
+      else span.classList.add('consonant');
       span.style.animationDelay = `${i * 0.4}s`;
       return span;
     });
@@ -182,25 +314,72 @@ document.addEventListener('DOMContentLoaded', () => {
       await playSound(unit.text);
     }
 
-    await delay(3000);
+    announce('Now, blend the letters aloud!');
+    els.blendingTimerContainer.style.display = 'block';
+    els.blendingTimer.style.width = '100%';
+    els.blendingTimer.style.transition = `width ${state.blendingTime / 1000}s linear`;
+    if ('vibrate' in navigator) navigator.vibrate([200]);
+    uiSounds.click.play();
+    els.blendingTimer.setAttribute('aria-valuenow', 100);
+    requestAnimationFrame(() => {
+      els.blendingTimer.style.width = '0%';
+      let progress = 100;
+      const interval = setInterval(() => {
+        progress -= 10;
+        if (progress >= 0) els.blendingTimer.setAttribute('aria-valuenow', progress);
+        else clearInterval(interval);
+      }, 300);
+    });
+    await delay(state.blendingTime);
+    els.blendingTimerContainer.style.display = 'none';
+    els.blendingTimer.setAttribute('aria-valuenow', 0);
+
     await speak(word);
     announce(`The word is: ${word}`);
     if (!isRepeat) {
       showCompliment();
       updateScore();
       updateProgress();
+      state.usedWords.push(word);
+      if (state.usedWords.length === state.totalWords) resetGame(false);
     }
     els.hintButton.hidden = false;
   }
 
+  function showHint() {
+    if (!state.currentWord) return alert('Spin first!');
+    const units = parseWord(state.currentWord);
+    const hint = `Try blending: /${units.map(u => u.text).join('/ ')}/`;
+    speak(hint);
+    announce(hint);
+  }
+
+  function getWords() {
+    const group = wordGroups[state.wordType];
+    return Object.values(group).flat();
+  }
+
   function getRandomWord() {
-    const words = Object.values(wordGroups.cvc).flat().filter(w => !state.usedWords.includes(w));
+    const words = getWords().filter(w => !state.usedWords.includes(w));
     if (!words.length) {
-      alert('All words done! Starting over.');
+      alert('All words completed! Starting over.');
       state.usedWords = [];
       return getRandomWord();
     }
     return words[Math.floor(Math.random() * words.length)];
+  }
+
+  function resetGame(updateTotal = true) {
+    state.usedWords = [];
+    state.revealedWords = 0;
+    state.score = 0;
+    state.currentWord = '';
+    els.scoreText.textContent = '0';
+    els.repeatButton.disabled = true;
+    els.hintButton.hidden = true;
+    if (updateTotal) state.totalWords = getWords().length;
+    updateProgress();
+    updateBadges();
   }
 
   /* Event Handlers */
@@ -208,11 +387,13 @@ document.addEventListener('DOMContentLoaded', () => {
     els.spinButton.disabled = true;
     els.repeatButton.disabled = true;
     els.hintButton.hidden = true;
+    if ('vibrate' in navigator) navigator.vibrate([200]);
+    els.spinButton.classList.add('spin-animate');
     uiSounds.click.play();
     await delay(1000);
+    els.spinButton.classList.remove('spin-animate');
 
     state.currentWord = getRandomWord();
-    state.usedWords.push(state.currentWord);
     await revealWord(state.currentWord);
     els.spinButton.disabled = false;
     els.repeatButton.disabled = false;
@@ -221,53 +402,95 @@ document.addEventListener('DOMContentLoaded', () => {
   async function repeat() {
     if (!state.currentWord) return alert('Spin first!');
     els.repeatButton.disabled = true;
+    if ('vibrate' in navigator) navigator.vibrate([200]);
     await revealWord(state.currentWord, true);
     els.repeatButton.disabled = false;
   }
 
+  function checkWord(event) {
+    if (event.key === 'Enter') {
+      const userInput = els.wordInput.value.trim().toLowerCase();
+      if (userInput === state.currentWord) {
+        showCompliment();
+        updateScore();
+        updateProgress();
+        els.wordInput.value = '';
+        spin();
+      } else {
+        announce('Try again!');
+        els.wordInput.value = '';
+      }
+    }
+  }
+
   els.spinButton.addEventListener('click', spin);
   els.repeatButton.addEventListener('click', repeat);
-  els.hintButton.addEventListener('click', () => speak(state.currentWord || 'Spin first!'));
-
-  els.themeSelector.addEventListener('change', () => {
-    document.body.setAttribute('data-theme', els.themeSelector.value);
+  els.hintButton.addEventListener('click', showHint);
+  els.wordInput.addEventListener('keypress', checkWord);
+  els.wordTypeSelector.addEventListener('change', () => {
+    state.wordType = els.wordTypeSelector.value;
+    resetGame(true);
+    savePreferences();
   });
-
+  els.themeSelector.addEventListener('change', () => {
+    state.theme = els.themeSelector.value;
+    document.body.setAttribute('data-theme', state.theme);
+    savePreferences();
+  });
   els.toggleAudioButton.addEventListener('click', () => {
     state.soundsEnabled = !state.soundsEnabled;
     els.toggleAudioButton.textContent = state.soundsEnabled ? '🔇 Sounds Off' : '🔊 Sounds On';
+    savePreferences();
   });
-
-  els.fullscreenButton.addEventListener('click', () => {
-    if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen();
-      els.fullscreenButton.textContent = '⛶ Exit';
-    } else {
-      document.exitFullscreen();
-      els.fullscreenButton.textContent = '⛶ Fullscreen';
+  els.increaseTime.addEventListener('click', () => {
+    if (state.blendingTime < 7000) {
+      state.blendingTime += 1000;
+      els.blendingTimeDisplay.textContent = state.blendingTime / 1000;
+      savePreferences();
     }
   });
-
+  els.decreaseTime.addEventListener('click', () => {
+    if (state.blendingTime > 1000) {
+      state.blendingTime -= 1000;
+      els.blendingTimeDisplay.textContent = state.blendingTime / 1000;
+      savePreferences();
+    }
+  });
+  els.celebrationModeCheckbox.addEventListener('change', () => {
+    state.celebrationMode = els.celebrationModeCheckbox.checked;
+    savePreferences();
+  });
   els.toggleSettingsButton.addEventListener('click', () => {
     const isVisible = els.advancedSettings.style.display === 'block';
     els.advancedSettings.style.display = isVisible ? 'none' : 'block';
     els.toggleSettingsButton.textContent = isVisible ? '⚙️ Customize' : 'Hide Settings';
+    els.toggleSettingsButton.setAttribute('aria-expanded', !isVisible);
+    els.advancedSettings.setAttribute('aria-hidden', isVisible);
   });
 
   /* Initialization */
   (async () => {
     await initSpeech();
-    els.themeSelector.value = 'default';
-    document.body.setAttribute('data-theme', 'default');
-    state.totalWords = Object.values(wordGroups.cvc).flat().length;
-    updateProgress();
+    loadPreferences();
+    resetGame(true);
+
+    const checkAudio = () => {
+      Object.values(letterSounds).concat(Object.values(uiSounds)).forEach(audio => {
+        audio.load();
+        audio.onerror = (e) => console.error(`Error loading audio ${audio.src}:`, e);
+        console.log(`Preloading audio: ${audio.src}`);
+      });
+    };
+
+    els.spinButton.addEventListener('click', checkAudio, { once: true });
+    els.toggleSettingsButton.addEventListener('click', checkAudio, { once: true });
 
     if (!localStorage.getItem('hasSeenTutorial')) {
       els.tutorialModal.style.display = 'flex';
       els.startTutorial.addEventListener('click', () => {
         els.tutorialModal.style.display = 'none';
         localStorage.setItem('hasSeenTutorial', 'true');
-        speak('Welcome! Click Spin to start.');
+        speak('Welcome! Click Spin to start blending words.');
       });
       els.skipTutorial.addEventListener('click', () => {
         els.tutorialModal.style.display = 'none';
