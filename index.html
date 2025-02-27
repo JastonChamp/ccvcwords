@@ -62,7 +62,7 @@
             <div>
               <label for="wordTypeSelector">Word Type:</label>
               <select id="wordTypeSelector" aria-label="Select word type">
-                <option value="cvc">CVC Words</option>
+                <option value="cvc" selected>CVC Words</option> <!-- Default to CVC -->
                 <option value="ccvc">CCVC Words</option>
                 <option value="cvcc">CVCC Words</option>
                 <option value="ccvcc">CCVCC Words</option>
@@ -92,7 +92,7 @@
             <div>
               <label for="fontSelector">Font Style:</label>
               <select id="fontSelector" aria-label="Select font style">
-                <option value="fredoka">Fredoka</option>
+                <option value="fredoka" selected>Fredoka</option> <!-- Default to Fredoka -->
                 <option value="comic">Comic Neue</option>
               </select>
             </div>
@@ -110,7 +110,7 @@
               <label for="blendingDelayInput">Blending Time (sec):</label>
               <div class="time-adjust">
                 <button id="decreaseBlendingTime" aria-label="Decrease blending time">➖</button>
-                <span id="blendingTimeDisplay" aria-live="polite">3</span>
+                <span id="blendingTimeDisplay" aria-live="polite">3</span> <!-- Default to 3 seconds -->
                 <button id="increaseBlendingTime" aria-label="Increase blending time">➕</button>
               </div>
             </div>
