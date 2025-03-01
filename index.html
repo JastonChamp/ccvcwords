@@ -22,7 +22,6 @@
       <section class="core-controls" aria-label="Game Controls">
         <div class="score-section">
           <p id="scoreText">Score: <span id="scoreValue" aria-live="polite">0</span></p>
-          <div id="scoreIncrement" class="score-increment" aria-hidden="true"></div>
         </div>
 
         <div class="game-area">
@@ -49,15 +48,15 @@
             <div id="progressFill"></div>
           </div>
           <p id="progressText" aria-live="polite">0 / 0 Words</p>
-          <div id="badges" class="badges" aria-label="Earned badges"></div>
         </div>
+
+        <div id="complimentBox" class="compliment-box" aria-live="assertive"></div>
 
         <div id="blendingTimerContainer" role="timer" aria-label="Blending timer">
           <p class="timer-label" aria-live="polite">Blend now! ⏳</p>
           <div id="blendingTimer" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
         </div>
 
-        <div id="complimentBox" class="compliment-box" aria-live="assertive"></div>
         <div id="screenReaderAnnounce" class="sr-only" aria-live="assertive"></div>
       </section>
 
@@ -130,6 +129,7 @@
     </main>
 
     <div id="confettiContainer" aria-hidden="true"></div>
+    <div id="scoreIncrement" class="score-increment" aria-hidden="true"></div>
     <dialog id="tutorialModal" class="modal">
       <div class="modal-content">
         <h2>Welcome to Word Spinner!</h2>
