@@ -1,20 +1,45 @@
 console.log('Script loaded'); // Confirm script starts
 
 document.addEventListener('DOMContentLoaded', () => {
-  console.log('DOM fully loaded'); // Confirm DOM is ready
+  console.log('DOM fully loaded');
 
-  // Larger word database (still demo-sized; ideally load from JSON)
+  // ----------------------------
+  // Configuration & Data Constants
+  // ----------------------------
   const wordGroups = {
-    cvc: { a: ['cat', 'bat', 'hat', 'mat', 'rat'], e: ['bed', 'pen', 'jet', 'net', 'red'], i: ['pig', 'sit', 'win', 'fin', 'lip'], o: ['dog', 'top', 'hop', 'mop', 'pot'], u: ['bug', 'run', 'cup', 'sun', 'mud'] },
-    ccvc: { a: ['clap', 'snap', 'flag', 'trap', 'glad'], e: ['step', 'fret', 'sled', 'bled', 'stem'], i: ['skip', 'trip', 'grin', 'slip', 'clip'], o: ['drop', 'stop', 'flop', 'crop', 'plot'], u: ['drum', 'plug', 'club', 'slug', 'snug'] },
-    digraphs: { a: ['chat', 'bash', 'path', 'that', 'sham'], e: ['shed', 'then', 'chew', 'theft', 'shell'], i: ['chip', 'shin', 'whip', 'thin', 'chill'], o: ['shop', 'thud', 'chop', 'shot', 'show'], u: ['shut', 'chug', 'thump', 'rush', 'brush'] }
+    cvc: {
+      a: ['cat', 'bat', 'hat', 'mat', 'rat'],
+      e: ['bed', 'pen', 'jet', 'net', 'red'],
+      i: ['pig', 'sit', 'win', 'fin', 'lip'],
+      o: ['dog', 'top', 'hop', 'mop', 'pot'],
+      u: ['bug', 'run', 'cup', 'sun', 'mud']
+    },
+    ccvc: {
+      a: ['clap', 'snap', 'flag', 'trap', 'glad'],
+      e: ['step', 'fret', 'sled', 'bled', 'stem'],
+      i: ['skip', 'trip', 'grin', 'slip', 'clip'],
+      o: ['drop', 'stop', 'flop', 'crop', 'plot'],
+      u: ['drum', 'plug', 'club', 'slug', 'snug']
+    },
+    digraphs: {
+      a: ['chat', 'bash', 'path', 'that', 'sham'],
+      e: ['shed', 'then', 'chew', 'theft', 'shell'],
+      i: ['chip', 'shin', 'whip', 'thin', 'chill'],
+      o: ['shop', 'thud', 'chop', 'shot', 'show'],
+      u: ['shut', 'chug', 'thump', 'rush', 'brush']
+    }
   };
+
   const digraphs = ['sh', 'th', 'ch', 'ng', 'wh'];
+
+  // Difficulty configuration: base times in ms, badge thresholds, and success streak required
   const difficulties = {
     easy: { types: ['cvc'], baseTime: 6000, badgeThreshold: 5, successStreak: 3 },
     medium: { types: ['cvc', 'ccvc'], baseTime: 4500, badgeThreshold: 10, successStreak: 4 },
     hard: { types: ['cvc', 'ccvc', 'digraphs'], baseTime: 3000, badgeThreshold: 15, successStreak: 5 }
   };
+
+  // Pete's motivational messages
   const peteMessages = {
     spin: ['Let’s find a nest word!', 'Spin for Pete!', 'Here comes a word!'],
     blend: ['Say each sound slow!', 'Blend it for Pete!', 'Mix those sounds!'],
@@ -23,6 +48,9 @@ document.addEventListener('DOMContentLoaded', () => {
     streak: ['Wow, three in a row!', 'Four perfect blends!', 'Five? You’re flying!']
   };
 
+  // ----------------------------
+  // State Management
+  // ----------------------------
   const state = {
     score: 0,
     level: 1,
@@ -39,6 +67,9 @@ document.addEventListener('DOMContentLoaded', () => {
     maxStreak: 0
   };
 
+  // ----------------------------
+  // DOM Element Cache
+  // ----------------------------
   const els = {
     spinButton: document.querySelector('#spinButton'),
     sayButton: document.querySelector('#sayButton'),
@@ -69,12 +100,15 @@ document.addEventListener('DOMContentLoaded', () => {
     captions: document.querySelector('#captions')
   };
 
-  // Utilities
+  // ----------------------------
+  // Utility Functions
+  // ----------------------------
   const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
   const randomItem = arr => arr[Math.floor(Math.random() * arr.length)];
 
+  // Fuzzy matching: compute Levenshtein distance between two strings
   const levenshteinDistance = (s1, s2) => {
-    const dp = Array(s1.length + 1).fill(null).map(() => Array(s2.length + 1).fill(0));
+    const dp = Array.from({ length: s1.length + 1 }, () => Array(s2.length + 1).fill(0));
     for (let i = 0; i <= s1.length; i++) dp[i][0] = i;
     for (let j = 0; j <= s2.length; j++) dp[0][j] = j;
     for (let i = 1; i <= s1.length; i++) {
@@ -86,6 +120,7 @@ document.addEventListener('DOMContentLoaded', () => {
     return dp[s1.length][s2.length];
   };
 
+  // Announce a message via live region and update captions and mascot animation
   const announce = async (text, duration = 4000) => {
     els.screenReaderAnnounce.textContent = text;
     els.captions.textContent = text;
@@ -96,11 +131,12 @@ document.addEventListener('DOMContentLoaded', () => {
     els.mascot.classList.remove('speaking');
   };
 
+  // Play a letter sound (no TTS fallback for individual letters)
   const playLetterSound = async (sound, caption = sound) => {
     if (!state.soundsEnabled || state.isPaused) return Promise.resolve();
     return new Promise(async (resolve) => {
       try {
-        const audio = new Audio(`${sound}.mp3`); // Use main folder path (e.g., a.mp3, sh.mp3)
+        const audio = new Audio(`${sound}.mp3`);
         els.captions.textContent = caption;
         audio.addEventListener('ended', () => {
           els.captions.textContent = '';
@@ -109,7 +145,7 @@ document.addEventListener('DOMContentLoaded', () => {
         audio.addEventListener('error', (e) => {
           console.error(`Letter sound "${sound}.mp3" failed:`, e);
           els.captions.textContent = '';
-          resolve(); // Continue even if audio fails (no TTS fallback for letters)
+          resolve();
         });
         await audio.play();
       } catch (e) {
@@ -120,11 +156,12 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   };
 
+  // Play a full-word sound; if unavailable, use TTS fallback
   const playWordSound = async (word, caption = word) => {
     if (!state.soundsEnabled || state.isPaused) return Promise.resolve();
     return new Promise(async (resolve) => {
       try {
-        const audio = new Audio(`${word}.mp3`); // Use main folder path (e.g., cat.mp3)
+        const audio = new Audio(`${word}.mp3`);
         els.captions.textContent = caption;
         audio.addEventListener('ended', () => {
           els.captions.textContent = '';
@@ -153,6 +190,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   };
 
+  // Split a word into phonetic units; combine digraphs
   const parseWord = word => {
     const units = [];
     let i = 0;
@@ -170,15 +208,22 @@ document.addEventListener('DOMContentLoaded', () => {
     return units;
   };
 
-  // Game Logic
-  const getAvailableWords = () => difficulties[state.difficulty].types.flatMap(type => Object.values(wordGroups[type]).flat());
+  // ----------------------------
+  // Game Logic Functions
+  // ----------------------------
 
+  // Returns an array of available words based on current difficulty settings
+  const getAvailableWords = () =>
+    difficulties[state.difficulty].types.flatMap(type => Object.values(wordGroups[type]).flat());
+
+  // Returns a random unused word; if all used, resets the used words and levels up
   const getRandomWord = () => {
     const words = getAvailableWords().filter(w => !state.usedWords.has(w));
     if (!words.length) {
       state.usedWords.clear();
       state.level++;
       els.levelValue.textContent = state.level;
+      // Update mascot state based on level
       els.mascot.classList.toggle('mascot--baby', state.level < 3);
       els.mascot.classList.toggle('mascot--grown', state.level >= 3);
       announce(`Level ${state.level}! Pete’s nest is growing!`);
@@ -187,6 +232,7 @@ document.addEventListener('DOMContentLoaded', () => {
     return words[Math.floor(Math.random() * words.length)];
   };
 
+  // Update the progress bar and related UI
   const updateProgress = () => {
     const total = getAvailableWords().length;
     els.progressText.textContent = `${state.wordsDone} / ${total} Words`;
@@ -195,12 +241,13 @@ document.addEventListener('DOMContentLoaded', () => {
     els.progressBar.setAttribute('aria-valuenow', Math.round(percent));
   };
 
+  // Display feedback message; add mascot animations on error/success
   const showFeedback = (text, isCorrect = true) => {
     els.feedbackBox.textContent = text;
     els.feedbackBox.classList.add('show');
     if (!isCorrect) {
       els.feedbackBox.classList.add('error');
-      els.mascot.classList.add('failure'); // Add failure animation for Pete
+      els.mascot.classList.add('failure');
       setTimeout(() => els.mascot.classList.remove('failure'), 2000);
     } else {
       els.feedbackBox.classList.remove('error');
@@ -208,6 +255,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => els.feedbackBox.classList.remove('show', 'error'), 2000);
   };
 
+  // Award a badge and trigger celebratory animations and confetti
   const awardBadge = () => {
     state.badges++;
     els.badgeCount.textContent = state.badges;
@@ -215,10 +263,11 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => els.progressIcon.classList.remove('star-animate'), 1000);
     announce(`Feather earned! Pete’s nest shines brighter!`);
     launchConfetti(true);
-    els.mascot.classList.add('celebrate'); // New celebration animation
+    els.mascot.classList.add('celebrate');
     setTimeout(() => els.mascot.classList.remove('celebrate'), 2000);
   };
 
+  // Launch confetti animation; isStar toggles extra confetti for badge or streak events
   const launchConfetti = (isStar = false) => {
     const count = isStar ? 40 : 25;
     for (let i = 0; i < count; i++) {
@@ -231,12 +280,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
+  // Adjust blending time based on the user's success streak (faster blending for higher streaks)
   const adjustDifficulty = () => {
     const baseTime = difficulties[state.difficulty].baseTime;
-    const streakBonus = Math.min(state.maxStreak, 5) * -200; // Reduce time by 200ms per streak, max 1000ms
-    state.blendingTime = Math.max(baseTime + streakBonus, 2000); // Minimum 2s
+    const streakBonus = Math.min(state.maxStreak, 5) * -200; // Reduce time by 200ms per streak, max 1000ms reduction
+    state.blendingTime = Math.max(baseTime + streakBonus, 2000); // Minimum blending time: 2 seconds
   };
 
+  // Reveal a word: animate each letter, play corresponding sounds, and prompt the user
   const revealWord = async (word, isRepeat = false) => {
     if (state.isPaused) return;
     try {
@@ -249,7 +300,7 @@ document.addEventListener('DOMContentLoaded', () => {
         span.style.animationDelay = `${i * 0.5}s`;
         els.wordBox.appendChild(span);
         await delay(500);
-        await playLetterSound(units[i].text, units[i].text); // Use playLetterSound for letters
+        await playLetterSound(units[i].text, units[i].text);
         await announce(`Say: ${units[i].text}`, 2000);
       }
       els.blendingTimerContainer.style.display = 'block';
@@ -260,7 +311,7 @@ document.addEventListener('DOMContentLoaded', () => {
       await delay(state.blendingTime);
       els.blendingTimerContainer.style.display = 'none';
       if (!isRepeat) {
-        await playWordSound(word, word); // Use playWordSound for words (with TTS fallback)
+        await playWordSound(word, word);
         await announce(`The word is ${word}. Say it for Pete’s nest!`);
       }
     } catch (e) {
@@ -269,14 +320,19 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
+  // Check the user's spoken answer using Speech Recognition with fuzzy matching, optimized for Android and children
   const checkAnswer = async () => {
     if (!state.currentWord || state.isPaused) return;
     try {
+      // Fallback to typed input if SpeechRecognition is unavailable
       if (!window.SpeechRecognition && !window.webkitSpeechRecognition) {
         showFeedback('Pete can’t hear you on this device. Type it instead?', false);
         const answer = prompt('Type the word you heard:', '');
-        if (answer?.toLowerCase().trim() === state.currentWord) handleSuccess();
-        else showFeedback(`It’s ${state.currentWord}. Try again!`, false);
+        if (answer?.toLowerCase().trim() === state.currentWord) {
+          handleSuccess();
+        } else {
+          showFeedback(`It’s ${state.currentWord}. Try again!`, false);
+        }
         return;
       }
       if (state.recognition) state.recognition.stop();
@@ -309,25 +365,28 @@ document.addEventListener('DOMContentLoaded', () => {
           }
         }
       };
+
       recognition.onerror = event => {
-        if (event.error === 'no-speech' || event.error === 'audio-capture') {
+        if (['no-speech', 'audio-capture'].includes(event.error)) {
           attempts++;
           if (attempts < maxAttempts) {
             showFeedback(randomItem(peteMessages.error), false);
           } else {
-            showFeedback('Pete couldn’t hear you after a few tries. Try again later or speak louder!', false);
+            showFeedback('Pete couldn’t hear you after several tries. Please speak up or try again later!', false);
             recognition.stop();
           }
         } else {
           console.warn('Speech recognition error on Android:', event.error);
-          showFeedback('Oops, something went wrong. Try again later!', false);
+          showFeedback('Oops, something went wrong. Please try again later!', false);
           recognition.stop();
         }
       };
+
       recognition.onend = () => {
         state.recognition = null;
         els.sayButton.classList.remove('busy');
       };
+
       recognition.start();
       setTimeout(() => {
         if (state.recognition) {
@@ -337,11 +396,12 @@ document.addEventListener('DOMContentLoaded', () => {
       }, 9000); // Extended to 9 seconds for children’s slower speech
     } catch (e) {
       console.error('Check answer failed on Android:', e);
-      showFeedback('Voice check failed, try again later!', false);
+      showFeedback('Voice check failed, please try again later!', false);
       els.sayButton.classList.remove('busy');
     }
   };
 
+  // Handle a correct answer
   const handleSuccess = () => {
     state.score += 10 * state.level;
     state.wordsDone++;
@@ -358,9 +418,12 @@ document.addEventListener('DOMContentLoaded', () => {
     launchConfetti(isBadge || isStreak);
     if (isBadge) awardBadge();
     adjustDifficulty();
+    if (state.recognition) state.recognition.stop();
   };
 
+  // ----------------------------
   // Event Handlers
+  // ----------------------------
   const spin = async () => {
     if (state.isPaused) return;
     els.spinButton.classList.add('busy');
@@ -416,7 +479,27 @@ document.addEventListener('DOMContentLoaded', () => {
     announce('A fresh quest with Pete begins!');
   };
 
+  // Save and load user preferences
+  const savePreferences = () => {
+    localStorage.setItem('wordSpinnerPrefs', JSON.stringify({
+      difficulty: state.difficulty,
+      soundsEnabled: state.soundsEnabled
+    }));
+  };
+
+  const loadPreferences = () => {
+    const prefs = JSON.parse(localStorage.getItem('wordSpinnerPrefs')) || {};
+    state.difficulty = prefs.difficulty || 'easy';
+    state.soundsEnabled = prefs.soundsEnabled !== undefined ? prefs.soundsEnabled : true;
+    els.soundToggle.textContent = state.soundsEnabled ? '🔊 On' : '🔇 Off';
+    els.difficultyRadios.forEach(radio => {
+      if (radio.value === state.difficulty) radio.checked = true;
+    });
+  };
+
+  // ----------------------------
   // Event Listeners
+  // ----------------------------
   els.spinButton.addEventListener('click', spin);
   els.sayButton.addEventListener('click', checkAnswer);
   els.repeatButton.addEventListener('click', repeat);
@@ -425,7 +508,9 @@ document.addEventListener('DOMContentLoaded', () => {
   els.toggleSettingsButton.addEventListener('click', () => {
     const isVisible = els.advancedSettings.style.display === 'block';
     els.advancedSettings.style.display = isVisible ? 'none' : 'block';
-    els.toggleSettingsButton.textContent = isVisible ? `⚙️ Play ${state.difficulty.charAt(0).toUpperCase() + state.difficulty.slice(1)}` : '✖️ Close';
+    els.toggleSettingsButton.textContent = isVisible
+      ? `⚙️ Play ${state.difficulty.charAt(0).toUpperCase() + state.difficulty.slice(1)}`
+      : '✖️ Close';
     els.toggleSettingsButton.setAttribute('aria-expanded', !isVisible);
   });
   els.difficultyRadios.forEach(radio => {
@@ -433,9 +518,13 @@ document.addEventListener('DOMContentLoaded', () => {
       state.difficulty = radio.value;
       state.blendingTime = difficulties[state.difficulty].baseTime;
       resetGame();
+      savePreferences();
     });
   });
-  els.resetGame.addEventListener('click', resetGame);
+  els.resetGame.addEventListener('click', () => {
+    resetGame();
+    savePreferences();
+  });
   els.startTutorial.addEventListener('click', () => {
     els.tutorialModal.close();
     localStorage.setItem('hasSeenTutorial', 'true');
@@ -446,7 +535,8 @@ document.addEventListener('DOMContentLoaded', () => {
     localStorage.setItem('hasSeenTutorial', 'true');
   });
 
-  // Initialize
+  // Initialize preferences and progress; show tutorial if not seen
+  loadPreferences();
   updateProgress();
   if (!localStorage.getItem('hasSeenTutorial')) els.tutorialModal.showModal();
 });
