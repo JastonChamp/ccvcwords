@@ -1,4 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
+  /* --------------------------
+     Data & State
+  --------------------------- */
   const wordGroups = {
     cvc: {
       a: ['bat', 'cat', 'dad', 'fan', 'hat', 'jam', 'mad', 'nap', 'pan', 'rat', 'sad', 'tan', 'wag', 'zap', 'lap'],
@@ -106,15 +109,22 @@ document.addEventListener('DOMContentLoaded', () => {
     captions: document.querySelector('#captions')
   };
 
+  // Warn for missing elements (except for collections)
   Object.entries(els).forEach(([key, value]) => {
-    if (!value && key !== 'difficultyRadios' && key !== 'themeSelector') console.warn(`Element ${key} not found in DOM`);
+    if (!value && key !== 'difficultyRadios' && key !== 'themeSelector') {
+      console.warn(`Element "${key}" not found.`);
+    }
   });
 
+  /* --------------------------
+     Utility Functions
+  --------------------------- */
   const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
-  const randomItem = arr => arr[Math.floor(Math.random() * arr.length]);
+  const randomItem = arr => arr[Math.floor(Math.random() * arr.length)];
 
+  // Fuzzy matching helper using Levenshtein distance
   const levenshteinDistance = (s1, s2) => {
-    const dp = Array(s1.length + 1).fill(null).map(() => Array(s2.length + 1).fill(0));
+    const dp = Array.from({ length: s1.length + 1 }, () => Array(s2.length + 1).fill(0));
     for (let i = 0; i <= s1.length; i++) dp[i][0] = i;
     for (let j = 0; j <= s2.length; j++) dp[0][j] = j;
     for (let i = 1; i <= s1.length; i++) {
@@ -139,40 +149,34 @@ document.addEventListener('DOMContentLoaded', () => {
   const playLetterSound = async (sound, caption = sound) => {
     if (!state.soundsEnabled || state.isPaused) return;
     try {
-      const audio = new Audio(`${sound}.mp3`); // Files in main folder
+      const audio = new Audio(`${sound}.mp3`);
       els.captions.textContent = caption;
       await audio.play();
       els.captions.textContent = '';
     } catch (e) {
-      console.error(`Letter sound "${sound}.mp3" failed to play:`, e);
-      els.captions.textContent = ''; // Clear caption on failure
+      console.error(`Letter sound "${sound}.mp3" failed:`, e);
+      els.captions.textContent = '';
     }
   };
 
   const playWordSound = async (word, caption = word) => {
     if (!state.soundsEnabled || state.isPaused) return;
     try {
-      const audio = new Audio(`${word}.mp3`); // Files in main folder
+      const audio = new Audio(`${word}.mp3`);
       els.captions.textContent = caption;
       await audio.play();
       els.captions.textContent = '';
     } catch (e) {
       console.warn(`Word sound "${word}.mp3" unavailable. Using UK female TTS.`);
       const utterance = new SpeechSynthesisUtterance(word);
-      utterance.lang = 'en-GB'; // UK English
-      // Attempt to select a female voice (browser-dependent)
+      utterance.lang = 'en-GB';
       const voices = speechSynthesis.getVoices();
-      const ukFemaleVoice = voices.find(voice => voice.lang === 'en-GB' && voice.name.toLowerCase().includes('female')) || voices.find(voice => voice.lang === 'en-GB');
-      if (ukFemaleVoice) utterance.voice = ukFemaleVoice;
+      const ukFemale = voices.find(v => v.lang === 'en-GB' && /female/i.test(v.name)) || voices.find(v => v.lang === 'en-GB');
+      if (ukFemale) utterance.voice = ukFemale;
       els.captions.textContent = caption;
       speechSynthesis.speak(utterance);
       await new Promise(resolve => utterance.onend = () => { els.captions.textContent = ''; resolve(); });
     }
-  };
-
-  // Ensure voices are loaded before use
-  speechSynthesis.onvoiceschanged = () => {
-    // Voices are now available
   };
 
   const parseWord = word => {
@@ -192,7 +196,11 @@ document.addEventListener('DOMContentLoaded', () => {
     return units;
   };
 
-  const getAvailableWords = () => difficulties[state.difficulty].types.flatMap(type => Object.values(wordGroups[type]).flat());
+  /* --------------------------
+     Game Functions
+  --------------------------- */
+  const getAvailableWords = () =>
+    difficulties[state.difficulty].types.flatMap(type => Object.values(wordGroups[type]).flat());
 
   const getRandomWord = () => {
     const words = getAvailableWords().filter(w => !state.usedWords.has(w));
@@ -200,8 +208,14 @@ document.addEventListener('DOMContentLoaded', () => {
       state.usedWords.clear();
       state.level++;
       els.levelValue.textContent = state.level;
-      els.mascot.classList.toggle('mascot--baby', state.level < 3);
-      els.mascot.classList.toggle('mascot--grown', state.level >= 3);
+      // Update mascot state based on level
+      if (state.level >= 3) {
+        els.mascot.classList.remove('mascot--baby');
+        els.mascot.classList.add('mascot--grown');
+      } else {
+        els.mascot.classList.add('mascot--baby');
+        els.mascot.classList.remove('mascot--grown');
+      }
       announce(`Level ${state.level}! Pete’s nest is growing!`);
       return getRandomWord();
     }
@@ -296,7 +310,6 @@ document.addEventListener('DOMContentLoaded', () => {
     recognition.maxAlternatives = 3;
     let attempts = 0;
     const maxAttempts = 3;
-
     recognition.onresult = event => {
       const results = event.results[0];
       const spoken = results[0].transcript.toLowerCase().trim();
@@ -430,12 +443,15 @@ document.addEventListener('DOMContentLoaded', () => {
     state.theme = prefs.theme || 'default';
     document.body.dataset.theme = state.theme;
     if (els.themeSelector) els.themeSelector.value = state.theme;
-    if (els.soundToggle) els.soundToggle.textContent = state.soundsEnabled ? '🔊 On' : '🔇 Off';
+    els.soundToggle.textContent = state.soundsEnabled ? '🔊 On' : '🔇 Off';
     els.difficultyRadios.forEach(radio => {
       if (radio.value === state.difficulty) radio.checked = true;
     });
   };
 
+  /* --------------------------
+     Event Listeners
+  --------------------------- */
   els.spinButton.addEventListener('click', spin);
   els.sayButton.addEventListener('click', checkAnswer);
   els.repeatButton.addEventListener('click', repeat);
