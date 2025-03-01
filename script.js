@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-  // Word database from market version
+  // Word database (market version)
   const wordGroups = {
     cvc: {
       a: ['bat', 'cat', 'dad', 'fan', 'hat', 'jam', 'mad', 'nap', 'pan', 'rat', 'sad', 'tan', 'wag', 'zap', 'lap'],
@@ -55,7 +55,8 @@ document.addEventListener('DOMContentLoaded', () => {
     blend: ['Say each sound slow!', 'Blend it for Pete!', 'Mix those sounds!'],
     success: ['Perfect! Pete’s nest grows!', 'You’re a blending hero!', 'Pete flaps for you!'],
     error: ['Oops, not quite!', 'Try again, Pete believes in you!', 'Close! Listen again!'],
-    streak: ['Wow, three in a row!', 'Four perfect blends!', 'Five? You’re flying!']
+    streak: ['Wow, three in a row!', 'Four perfect blends!', 'Five? You’re flying!'],
+    voice: ['Speak louder, Pete’s listening!', 'Pete didn’t hear you, try again!', 'Say it clear for Pete!']
   };
 
   const state = {
@@ -71,7 +72,8 @@ document.addEventListener('DOMContentLoaded', () => {
     isPaused: false,
     recognition: null,
     successStreak: 0,
-    maxStreak: 0
+    maxStreak: 0,
+    theme: 'default'
   };
 
   const els = {
@@ -96,6 +98,7 @@ document.addEventListener('DOMContentLoaded', () => {
     toggleSettingsButton: document.querySelector('#toggleSettingsButton'),
     advancedSettings: document.querySelector('#advancedSettings'),
     difficultyRadios: document.querySelectorAll('input[name="difficulty"]'),
+    themeSelector: document.querySelector('#themeSelector'),
     resetGame: document.querySelector('#resetGame'),
     tutorialModal: document.querySelector('#tutorialModal'),
     startTutorial: document.querySelector('#startTutorial'),
@@ -106,12 +109,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Validate DOM elements
   Object.entries(els).forEach(([key, value]) => {
-    if (!value && key !== 'difficultyRadios') console.warn(`Element ${key} not found in DOM`);
+    if (!value && key !== 'difficultyRadios' && key !== 'themeSelector') console.warn(`Element ${key} not found in DOM`);
   });
 
   // Utilities
   const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
   const randomItem = arr => arr[Math.floor(Math.random() * arr.length)];
+
+  // Simple Levenshtein distance for fuzzy matching
+  const levenshteinDistance = (s1, s2) => {
+    const dp = Array(s1.length + 1).fill(null).map(() => Array(s2.length + 1).fill(0));
+    for (let i = 0; i <= s1.length; i++) dp[i][0] = i;
+    for (let j = 0; j <= s2.length; j++) dp[0][j] = j;
+    for (let i = 1; i <= s1.length; i++) {
+      for (let j = 1; j <= s2.length; j++) {
+        const cost = s1[i - 1] === s2[j - 1] ? 0 : 1;
+        dp[i][j] = Math.min(dp[i - 1][j] + 1, dp[i][j - 1] + 1, dp[i - 1][j - 1] + cost);
+      }
+    }
+    return dp[s1.length][s2.length];
+  };
 
   const announce = async (text, duration = 4000) => {
     els.screenReaderAnnounce.textContent = text;
@@ -126,7 +143,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const playSound = async (sound, caption = sound) => {
     if (!state.soundsEnabled || state.isPaused) return;
     try {
-      const audio = new Audio(`/sounds/${sound}.mp3`); // Assumes a /sounds/ folder
+      const audio = new Audio(`/sounds/${sound}.mp3`);
       els.captions.textContent = caption;
       await audio.play();
       els.captions.textContent = '';
@@ -211,8 +228,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const adjustDifficulty = () => {
     const baseTime = difficulties[state.difficulty].baseTime;
-    const streakBonus = Math.min(state.maxStreak, 5) * -200; // Reduce time by 200ms per streak, max 1000ms
-    state.blendingTime = Math.max(baseTime + streakBonus, 2000); // Minimum 2s
+    const streakBonus = Math.min(state.maxStreak, 5) * -200;
+    state.blendingTime = Math.max(baseTime + streakBonus, 2000);
   };
 
   const revealWord = async (word, isRepeat = false) => {
@@ -256,26 +273,56 @@ document.addEventListener('DOMContentLoaded', () => {
     const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
     state.recognition = recognition;
     recognition.lang = 'en-US';
+    recognition.continuous = true; // Keep listening until a result
+    recognition.interimResults = true; // Process partial results
+    recognition.maxAlternatives = 3; // More options for fuzzy matching
+    let attempts = 0;
+    const maxAttempts = 3;
+
     recognition.onresult = event => {
-      const spoken = event.results[0][0].transcript.toLowerCase().trim();
-      if (spoken === state.currentWord) handleSuccess();
-      else {
-        state.successStreak = 0;
-        showFeedback(`${randomItem(peteMessages.error)} You said "${spoken}", it’s "${state.currentWord}".`, false);
+      const results = event.results[0];
+      const spoken = results[0].transcript.toLowerCase().trim();
+      if (results.isFinal) {
+        if (spoken === state.currentWord || levenshteinDistance(spoken, state.currentWord) <= 1) {
+          handleSuccess();
+        } else {
+          attempts++;
+          if (attempts < maxAttempts) {
+            showFeedback(`${randomItem(peteMessages.voice)} You said "${spoken}".`, false);
+          } else {
+            state.successStreak = 0;
+            showFeedback(`${randomItem(peteMessages.error)} You said "${spoken}", it’s "${state.currentWord}".`, false);
+            recognition.stop();
+          }
+        }
       }
-      state.recognition = null;
-      els.sayButton.classList.remove('busy');
     };
-    recognition.onerror = () => {
-      showFeedback('Pete couldn’t hear you. Try again!', false);
-      state.recognition = null;
-      els.sayButton.classList.remove('busy');
+    recognition.onerror = event => {
+      if (event.error === 'no-speech' || event.error === 'audio-capture') {
+        attempts++;
+        if (attempts < maxAttempts) {
+          showFeedback(randomItem(peteMessages.voice), false);
+        } else {
+          showFeedback('Pete couldn’t hear you after a few tries. Try again!', false);
+          recognition.stop();
+        }
+      } else {
+        console.warn('Speech recognition error:', event.error);
+        showFeedback('Oops, something went wrong. Try again!', false);
+        recognition.stop();
+      }
     };
     recognition.onend = () => {
       state.recognition = null;
       els.sayButton.classList.remove('busy');
     };
     recognition.start();
+    setTimeout(() => {
+      if (state.recognition) {
+        recognition.stop();
+        if (attempts === 0) showFeedback('Pete didn’t hear anything. Speak up!', false);
+      }
+    }, 5000); // Timeout after 5s if no input
   };
 
   const handleSuccess = () => {
@@ -292,6 +339,7 @@ document.addEventListener('DOMContentLoaded', () => {
     launchConfetti(isBadge || isStreak);
     if (isBadge) awardBadge();
     adjustDifficulty();
+    if (state.recognition) state.recognition.stop();
   };
 
   // Event Handlers
@@ -350,6 +398,27 @@ document.addEventListener('DOMContentLoaded', () => {
     announce('A fresh quest with Pete begins!');
   };
 
+  const savePreferences = () => {
+    localStorage.setItem('wordSpinnerPrefs', JSON.stringify({
+      difficulty: state.difficulty,
+      soundsEnabled: state.soundsEnabled,
+      theme: state.theme
+    }));
+  };
+
+  const loadPreferences = () => {
+    const prefs = JSON.parse(localStorage.getItem('wordSpinnerPrefs')) || {};
+    state.difficulty = prefs.difficulty || 'easy';
+    state.soundsEnabled = prefs.soundsEnabled !== undefined ? prefs.soundsEnabled : true;
+    state.theme = prefs.theme || 'default';
+    document.body.dataset.theme = state.theme;
+    if (els.themeSelector) els.themeSelector.value = state.theme;
+    if (els.soundToggle) els.soundToggle.textContent = state.soundsEnabled ? '🔊 On' : '🔇 Off';
+    els.difficultyRadios.forEach(radio => {
+      if (radio.value === state.difficulty) radio.checked = true;
+    });
+  };
+
   // Event Listeners
   els.spinButton.addEventListener('click', spin);
   els.sayButton.addEventListener('click', checkAnswer);
@@ -367,9 +436,20 @@ document.addEventListener('DOMContentLoaded', () => {
       state.difficulty = radio.value;
       state.blendingTime = difficulties[state.difficulty].baseTime;
       resetGame();
+      savePreferences();
     });
   });
-  els.resetGame.addEventListener('click', resetGame);
+  if (els.themeSelector) {
+    els.themeSelector.addEventListener('change', () => {
+      state.theme = els.themeSelector.value;
+      document.body.dataset.theme = state.theme;
+      savePreferences();
+    });
+  }
+  els.resetGame.addEventListener('click', () => {
+    resetGame();
+    savePreferences();
+  });
   els.startTutorial.addEventListener('click', () => {
     els.tutorialModal.close();
     localStorage.setItem('hasSeenTutorial', 'true');
@@ -381,6 +461,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // Initialize
+  loadPreferences();
   updateProgress();
   if (!localStorage.getItem('hasSeenTutorial')) els.tutorialModal.showModal();
 });
