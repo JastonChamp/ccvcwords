@@ -1,23 +1,60 @@
 document.addEventListener('DOMContentLoaded', () => {
   const wordGroups = {
-    cvc: ['bat', 'cat', 'bed', 'den', 'big', 'dig', 'box', 'cot', 'bug', 'cup'],
-    ccvc: ['brag', 'clap', 'bled', 'fret', 'brim', 'clip', 'blot', 'crop', 'drum', 'grub'],
-    cvcc: ['band', 'damp', 'bent', 'felt', 'film', 'hint', 'bond', 'cost', 'bunk', 'dump'],
-    ccvcc: ['brand', 'clamp', 'blend', 'strep', 'blink', 'crimp', 'frost', 'stomp', 'blunt', 'crust'],
-    digraphs: ['chat', 'shed', 'chip', 'shop', 'shut', 'thud', 'chug', 'than', 'thing', 'strong'],
-    extended: ['fantastic', 'smashing', 'wrecking', 'blinking', 'jumping']
+    cvc: {
+      a: ['bat', 'cat', 'dad', 'fan', 'hat', 'jam', 'mad', 'nap', 'pan', 'rat', 'sad', 'tan', 'wag', 'zap', 'lap'],
+      e: ['bed', 'den', 'fed', 'get', 'hen', 'jet', 'leg', 'men', 'net', 'pen', 'red', 'set', 'ten', 'vet', 'web'],
+      i: ['big', 'dig', 'fin', 'hit', 'jig', 'kid', 'lip', 'mix', 'nip', 'pig', 'pin', 'sit', 'tin', 'wig', 'zip'],
+      o: ['box', 'cot', 'dog', 'fog', 'hop', 'job', 'log', 'mop', 'not', 'pod', 'pop', 'pot', 'rot', 'top', 'sob'],
+      u: ['bug', 'cup', 'cut', 'fun', 'gum', 'hug', 'jug', 'mud', 'nut', 'pup', 'run', 'sun', 'tug', 'bud', 'bus']
+    },
+    ccvc: {
+      a: ['brag', 'clap', 'crab', 'drag', 'flag', 'flap', 'glad', 'grab', 'plan', 'slam', 'snap', 'trap', 'flat', 'swat', 'chat'],
+      e: ['bled', 'bred', 'fled', 'fret', 'glen', 'pled', 'sled', 'spec', 'stem', 'step', 'trek', 'prep', 'flex', 'dred', 'smell'],
+      i: ['brim', 'clip', 'crib', 'drip', 'flip', 'grin', 'grip', 'skip', 'slim', 'snip', 'spin', 'trip', 'twig', 'skin', 'swim'],
+      o: ['blot', 'clog', 'crop', 'drop', 'flop', 'frog', 'glob', 'plot', 'prop', 'shop', 'slot', 'stop', 'trot', 'clot', 'spot'],
+      u: ['club', 'drum', 'grub', 'plug', 'slug', 'snug', 'spun', 'stub', 'stun', 'trud', 'flub', 'glut', 'plum', 'scum', 'shut']
+    },
+    cvcc: {
+      a: ['band', 'bank', 'damp', 'hand', 'lamp', 'land', 'pant', 'ramp', 'sand', 'tank', 'fast', 'last', 'past', 'cast', 'raft'],
+      e: ['bend', 'dent', 'felt', 'lend', 'mend', 'nest', 'rest', 'sent', 'tent', 'vest', 'best', 'jest', 'pest', 'test', 'west'],
+      i: ['film', 'hint', 'lift', 'milk', 'mint', 'pink', 'ring', 'silk', 'sink', 'tilt', 'disk', 'fist', 'list', 'mist', 'wish'],
+      o: ['bond', 'cost', 'fond', 'host', 'lost', 'most', 'pond', 'post', 'soft', 'bolt', 'colt', 'jolt', 'molt', 'roll', 'told'],
+      u: ['bump', 'bunk', 'dust', 'hunt', 'jump', 'just', 'lump', 'must', 'rust', 'dunk', 'cusp', 'fuss', 'gust', 'husk', 'tusk']
+    },
+    ccvcc: {
+      a: ['brand', 'clamp', 'cramp', 'drank', 'flank', 'frank', 'plank', 'prank', 'slant', 'stamp', 'blast', 'craft', 'grant', 'plant', 'stand'],
+      e: ['blend', 'fleck', 'flesh', 'spend', 'strep', 'swept', 'trend', 'bless', 'crept', 'dress', 'fresh', 'press', 'slept', 'smelt', 'spent'],
+      i: ['blink', 'clink', 'crisp', 'drink', 'flint', 'print', 'slink', 'stink', 'twist', 'brisk', 'cling', 'fling', 'grift', 'shift', 'swift'],
+      o: ['blond', 'chomp', 'frost', 'prompt', 'stomp', 'strong', 'throb', 'clonk', 'floss', 'gloss', 'gross', 'prong', 'scoff', 'snort', 'thong'],
+      u: ['blunt', 'brunt', 'clump', 'crust', 'drunk', 'flung', 'grunt', 'plump', 'stump', 'trunk', 'brush', 'crush', 'flush', 'shrug', 'slush']
+    },
+    digraphs: {
+      a: ['chat', 'chap', 'than', 'that', 'math', 'path', 'bash', 'cash', 'dash', 'lash', 'rash', 'shag', 'sham', 'thaw', 'wham'],
+      e: ['shed', 'them', 'then', 'fetch', 'bench', 'check', 'chess', 'fresh', 'retch', 'sheep', 'sheet', 'shell', 'shred', 'theft', 'wrench'],
+      i: ['chip', 'chin', 'thin', 'ship', 'shin', 'chick', 'chill', 'shift', 'shirt', 'thick', 'thing', 'whip', 'wish', 'chime', 'shine'],
+      o: ['shop', 'shot', 'chop', 'shock', 'short', 'cloth', 'froth', 'notch', 'shod', 'show', 'sloth', 'thong', 'choke', 'phone', 'shore'],
+      u: ['shut', 'thud', 'chug', 'chunk', 'thump', 'brush', 'crush', 'flush', 'shrug', 'blush', 'churn', 'shuck', 'stuck', 'thumb', 'whush']
+    },
+    extended: {
+      a: ['fantastic', 'smashing', 'crashing', 'stamping', 'clapping', 'tracking', 'snapping', 'flashing', 'grabbing', 'slashing'],
+      e: ['wrecking', 'spelling', 'pressing', 'dressing', 'fetching', 'stretching', 'checking', 'swelling', 'shedding', 'tempting'],
+      i: ['blinking', 'drinking', 'tripping', 'flipping', 'snipping', 'skipping', 'swinging', 'chirping', 'slipping', 'twisting'],
+      o: ['blocking', 'rocking', 'crossing', 'stopping', 'chopping', 'dropping', 'flopping', 'locking', 'shocking', 'trotting'],
+      u: ['jumping', 'bumping', 'hunting', 'rushing', 'crushing', 'brushing', 'dumping', 'hugging', 'running', 'tugging']
+    }
   };
 
   const digraphs = ['sh', 'th', 'ch', 'ng'];
   const state = {
     score: 0,
     revealedWords: 0,
-    totalWords: 50,
+    totalWords: 0,
     usedWords: new Set(),
     currentWord: '',
     blendingTime: 3000,
     soundsEnabled: true,
     wordType: 'cvc',
+    vowelFilter: 'all',
     theme: 'default',
     celebrationMode: false,
     badges: new Map()
@@ -40,6 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
     blendingTimerContainer: document.querySelector('#blendingTimerContainer'),
     blendingTimer: document.querySelector('#blendingTimer'),
     wordTypeSelector: document.querySelector('#wordTypeSelector'),
+    vowelSelector: document.querySelector('#vowelSelector'),
     themeSelector: document.querySelector('#themeSelector'),
     toggleAudioButton: document.querySelector('#toggleAudioButton'),
     blendingTimeDisplay: document.querySelector('#blendingTimeDisplay'),
@@ -52,7 +90,8 @@ document.addEventListener('DOMContentLoaded', () => {
     skipTutorial: document.querySelector('#skipTutorial'),
     toggleSettingsButton: document.querySelector('#toggleSettingsButton'),
     advancedSettings: document.querySelector('#advancedSettings'),
-    badges: document.querySelector('#badges')
+    badges: document.querySelector('#badges'),
+    fullscreenButton: document.querySelector('#fullscreenButton')
   };
 
   const compliments = ['Great Job!', 'Awesome!', 'You’re a Star!', 'Well Done!', 'Fantastic!'];
@@ -65,29 +104,20 @@ document.addEventListener('DOMContentLoaded', () => {
     extended: 'Word Wizard'
   };
 
-  let voice = null;
-  async function initSpeech() {
-    try {
-      const voices = await new Promise(resolve => {
-        speechSynthesis.onvoiceschanged = () => resolve(speechSynthesis.getVoices());
-        if (speechSynthesis.getVoices().length) resolve(speechSynthesis.getVoices());
+  // Audio handling for letter sounds
+  function playSound(sound) {
+    if (!state.soundsEnabled) return Promise.resolve();
+    return new Promise((resolve) => {
+      const audio = new Audio(`/audio/${sound}.mp3`);
+      audio.onended = resolve;
+      audio.onerror = () => {
+        console.warn(`Sound file for "${sound}" not found`);
+        resolve(); // Continue even if a sound fails
+      };
+      audio.play().catch(e => {
+        console.warn('Audio playback failed:', e);
+        resolve();
       });
-      voice = voices.find(v => v.lang.startsWith('en') && v.name.toLowerCase().includes('female')) || voices[0];
-    } catch (e) {
-      console.warn('Speech synthesis unavailable:', e);
-    }
-  }
-
-  function speak(text) {
-    if (!state.soundsEnabled || !voice) return Promise.resolve();
-    return new Promise(resolve => {
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.voice = voice;
-      utterance.rate = 0.9;
-      utterance.pitch = 1.1;
-      utterance.onend = resolve;
-      utterance.onerror = () => resolve();
-      speechSynthesis.speak(utterance);
     });
   }
 
@@ -103,7 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
     els.scoreIncrement.textContent = `+${points}`;
     els.scoreIncrement.classList.add('show');
     setTimeout(() => els.scoreIncrement.classList.remove('show'), 800);
-    speak(`Score: ${state.score}`);
+    if (state.soundsEnabled) playSound('point'); // Optional: Add a "point" sound
   }
 
   function updateProgress() {
@@ -122,7 +152,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function showCompliment() {
     const compliment = compliments[Math.floor(Math.random() * compliments.length)];
     els.complimentBox.textContent = compliment;
-    speak(compliment);
+    if (state.soundsEnabled) playSound('cheer'); // Optional: Add a "cheer" sound
     state.celebrationMode ? launchFireworks() : launchConfetti();
     setTimeout(() => els.complimentBox.textContent = '', 2000);
   }
@@ -179,6 +209,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const prefs = JSON.parse(localStorage.getItem('wordSpinnerPrefs')) || {};
     Object.assign(state, {
       wordType: prefs.wordType || 'cvc',
+      vowelFilter: prefs.vowelFilter || 'all',
       theme: prefs.theme || 'default',
       blendingTime: prefs.blendingTime || 3000,
       soundsEnabled: prefs.soundsEnabled ?? true,
@@ -188,6 +219,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     document.body.dataset.theme = state.theme;
     els.wordTypeSelector.value = state.wordType;
+    els.vowelSelector.value = state.vowelFilter;
     els.themeSelector.value = state.theme;
     els.blendingTimeDisplay.textContent = state.blendingTime / 1000;
     els.toggleAudioButton.textContent = state.soundsEnabled ? '🔇 Sounds Off' : '🔊 Sounds On';
@@ -208,7 +240,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!state.badges.has(wordType)) {
       state.badges.set(wordType, true);
       updateBadges();
-      speak(`You earned the ${badgeNames[wordType]} badge!`);
+      if (state.soundsEnabled) playSound('badge'); // Optional: Add a "badge" sound
       launchConfetti();
       savePreferences();
     }
@@ -227,7 +259,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     for (const unit of units) {
       await delay(400);
-      if (state.soundsEnabled) await speak(unit.text);
+      await playSound(unit.text);
     }
 
     els.blendingTimerContainer.style.display = 'block';
@@ -238,7 +270,7 @@ document.addEventListener('DOMContentLoaded', () => {
     await delay(state.blendingTime);
     els.blendingTimerContainer.style.display = 'none';
 
-    if (state.soundsEnabled) await speak(word);
+    if (state.soundsEnabled) await playSound(word); // Play full word sound if available
     announce(`The word is: ${word}`);
     if (!isRepeat) {
       state.usedWords.add(word);
@@ -251,8 +283,16 @@ document.addEventListener('DOMContentLoaded', () => {
     els.repeatButton.disabled = false;
   }
 
+  function getAvailableWords() {
+    const group = wordGroups[state.wordType];
+    if (state.vowelFilter === 'all') {
+      return Object.values(group).flat();
+    }
+    return group[state.vowelFilter] || [];
+  }
+
   function getRandomWord() {
-    const words = wordGroups[state.wordType].filter(w => !state.usedWords.has(w));
+    const words = getAvailableWords().filter(w => !state.usedWords.has(w));
     if (!words.length) {
       state.usedWords.clear();
       return getRandomWord();
@@ -268,7 +308,7 @@ document.addEventListener('DOMContentLoaded', () => {
     els.scoreValue.textContent = '0';
     els.repeatButton.disabled = true;
     els.hintButton.hidden = true;
-    state.totalWords = wordGroups[state.wordType].length;
+    state.totalWords = getAvailableWords().length;
     updateProgress();
     savePreferences();
   }
@@ -299,15 +339,20 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
       announce('Try again!');
       els.wordInput.value = '';
+      if (state.soundsEnabled) playSound('error'); // Optional: Add an "error" sound
     }
   }
 
   els.spinButton.addEventListener('click', spin);
   els.repeatButton.addEventListener('click', repeat);
-  els.hintButton.addEventListener('click', () => speak(state.currentWord));
+  els.hintButton.addEventListener('click', () => playSound(state.currentWord));
   els.wordInput.addEventListener('keypress', checkWord);
   els.wordTypeSelector.addEventListener('change', () => {
     state.wordType = els.wordTypeSelector.value;
+    resetGame();
+  });
+  els.vowelSelector.addEventListener('change', () => {
+    state.vowelFilter = els.vowelSelector.value;
     resetGame();
   });
   els.themeSelector.addEventListener('change', () => {
@@ -346,15 +391,21 @@ document.addEventListener('DOMContentLoaded', () => {
   els.startTutorial.addEventListener('click', () => {
     els.tutorialModal.close();
     localStorage.setItem('hasSeenTutorial', 'true');
-    speak('Click Spin to start!');
+    if (state.soundsEnabled) playSound('start'); // Optional: Add a "start" sound
   });
   els.skipTutorial.addEventListener('click', () => {
     els.tutorialModal.close();
     localStorage.setItem('hasSeenTutorial', 'true');
   });
+  els.fullscreenButton.addEventListener('click', () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(console.warn);
+    } else {
+      document.exitFullscreen().catch(console.warn);
+    }
+  });
 
   (async () => {
-    await initSpeech();
     loadPreferences();
     updateBadges();
     resetGame();
