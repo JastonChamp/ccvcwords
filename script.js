@@ -73,6 +73,19 @@ document.addEventListener('DOMContentLoaded', () => {
   const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
   const randomItem = arr => arr[Math.floor(Math.random() * arr.length)];
 
+  const levenshteinDistance = (s1, s2) => {
+    const dp = Array(s1.length + 1).fill(null).map(() => Array(s2.length + 1).fill(0));
+    for (let i = 0; i <= s1.length; i++) dp[i][0] = i;
+    for (let j = 0; j <= s2.length; j++) dp[0][j] = j;
+    for (let i = 1; i <= s1.length; i++) {
+      for (let j = 1; j <= s2.length; j++) {
+        const cost = s1[i - 1] === s2[j - 1] ? 0 : 1;
+        dp[i][j] = Math.min(dp[i - 1][j] + 1, dp[i][j - 1] + 1, dp[i - 1][j - 1] + cost);
+      }
+    }
+    return dp[s1.length][s2.length];
+  };
+
   const announce = async (text, duration = 4000) => {
     els.screenReaderAnnounce.textContent = text;
     els.captions.textContent = text;
@@ -262,23 +275,24 @@ document.addEventListener('DOMContentLoaded', () => {
       els.sayButton.classList.add('busy');
       const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
       state.recognition = recognition;
-      recognition.lang = 'en-US';
-      recognition.continuous = true;
-      recognition.interimResults = true;
-      recognition.maxAlternatives = 3;
+      recognition.lang = 'en-US'; // Match this to your language (e.g., 'en-GB' for UK English)
+      recognition.continuous = true; // Keep listening for a longer period
+      recognition.interimResults = true; // Capture partial results for better detection
+      recognition.maxAlternatives = 5; // Increase to capture more possible transcriptions
       let attempts = 0;
-      const maxAttempts = 3;
+      const maxAttempts = 4; // Allow more attempts for Android
 
       recognition.onresult = event => {
         const results = event.results[0];
         const spoken = results[0].transcript.toLowerCase().trim();
+        console.log(`Recognized on Android: "${spoken}"`); // Debug for Android
         if (results.isFinal) {
-          if (spoken === state.currentWord || levenshteinDistance(spoken, state.currentWord) <= 1) {
+          if (spoken === state.currentWord || levenshteinDistance(spoken, state.currentWord) <= 2) { // Increased threshold for fuzzy matching
             handleSuccess();
           } else {
             attempts++;
             if (attempts < maxAttempts) {
-              showFeedback(`${randomItem(peteMessages.error)} You said "${spoken}".`, false);
+              showFeedback(`${randomItem(peteMessages.error)} You said "${spoken}". Try again!`, false);
             } else {
               state.successStreak = 0;
               showFeedback(`${randomItem(peteMessages.error)} You said "${spoken}", it’s "${state.currentWord}".`, false);
@@ -297,7 +311,7 @@ document.addEventListener('DOMContentLoaded', () => {
             recognition.stop();
           }
         } else {
-          console.warn('Speech recognition error:', event.error);
+          console.warn('Speech recognition error on Android:', event.error);
           showFeedback('Oops, something went wrong. Try again!', false);
           recognition.stop();
         }
@@ -312,9 +326,9 @@ document.addEventListener('DOMContentLoaded', () => {
           recognition.stop();
           if (attempts === 0) showFeedback('Pete didn’t hear anything. Speak up!', false);
         }
-      }, 5000);
+      }, 7000); // Extended timeout to 7 seconds for Android
     } catch (e) {
-      console.error('Check answer failed:', e);
+      console.error('Check answer failed on Android:', e);
       showFeedback('Voice check failed, try again!', false);
       els.sayButton.classList.remove('busy');
     }
