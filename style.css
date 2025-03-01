@@ -74,7 +74,7 @@ body[data-theme="space"] #scoreText { background: #16213e; color: #e4e4e4; }
 }
 .score-increment.show { opacity: 1; top: -4rem; }
 
-.game-area { max-width: 900px; width: 100%; }
+.game-area { max-width: 900px; width: 100%; margin: 1rem 0; }
 .word-display-container {
   background: #fff;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
@@ -103,18 +103,7 @@ body[data-theme="high-contrast"] .word-display-container { background: #fff; bor
 .word-display .consonant { color: #00b894; }
 @keyframes popLetter { to { opacity: 1; transform: scale(1); } }
 
-.input-group { margin: 1rem 0; }
-.input-group label { font-size: 1.5rem; }
-#wordInput {
-  padding: 1rem;
-  font-size: 1.5rem;
-  border-radius: 1rem;
-  border: 2px solid #74b9ff;
-  width: 100%;
-  max-width: 250px;
-}
-
-.action-buttons { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; }
+.action-buttons { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; margin-top: 1rem; }
 button {
   display: flex;
   align-items: center;
@@ -182,6 +171,14 @@ body[data-theme="high-contrast"] #progressBar { background: #fff; border: 2px so
   max-width: 900px;
 }
 .controls-section { display: grid; gap: 1.5rem; justify-items: center; }
+.select-controls {
+  display: grid;
+  gap: 1rem;
+  justify-items: start;
+}
+@media (min-width: 600px) {
+  .select-controls { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+}
 select, .time-adjust button, #blendingTimeDisplay {
   padding: 0.8rem;
   font-size: 1.2rem;
