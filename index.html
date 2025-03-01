@@ -74,15 +74,6 @@
           <label class="difficulty-label">
             <input type="radio" name="difficulty" value="hard" /> Hard (Flying High)
           </label>
-          <div>
-            <label for="themeSelector">Theme:</label>
-            <select id="themeSelector" aria-label="Select theme">
-              <option value="default">Default</option>
-              <option value="space">Space Adventure</option>
-              <option value="forest">Enchanted Forest</option>
-              <option value="high-contrast">High Contrast</option>
-            </select>
-          </div>
         </div>
         <button id="resetGame" aria-label="Start a new quest">🌟 New Quest</button>
       </section>
@@ -95,4 +86,13 @@
     <div id="confettiContainer" aria-hidden="true"></div>
     <dialog id="tutorialModal" class="modal">
       <div class="modal-content">
-        <h2>Pete’s Phonics Quest</h2
+        <h2>Pete’s Phonics Quest</h2>
+        <p>Spin to hear sounds, blend them, and say the word to build Pete’s word nest!</p>
+        <button id="startTutorial">Start Quest</button>
+        <button id="skipTutorial">Skip</button>
+      </div>
+    </dialog>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
