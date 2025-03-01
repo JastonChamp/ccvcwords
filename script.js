@@ -98,7 +98,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // Debug: Log elements to ensure they're found
   console.log('Elements:', {
     toggleSettingsButton: els.toggleSettingsButton,
-    advancedSettings: els.advancedSettings
+    advancedSettings: els.advancedSettings,
+    badges: els.badges
   });
 
   const compliments = ['Great Job!', 'Awesome!', 'You’re a Star!', 'Well Done!', 'Fantastic!'];
@@ -235,6 +236,10 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function updateBadges() {
+    if (!els.badges) {
+      console.warn('Badges element not found, skipping update');
+      return;
+    }
     els.badges.innerHTML = '';
     state.badges.forEach((_, type) => {
       const badge = document.createElement('div');
