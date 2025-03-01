@@ -139,12 +139,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const playLetterSound = async (sound, caption = sound) => {
     if (!state.soundsEnabled || state.isPaused) return;
     try {
-      const audio = new Audio(`/sounds/${sound}.mp3`);
+      const audio = new Audio(`${sound}.mp3`); // Files in main folder
       els.captions.textContent = caption;
       await audio.play();
       els.captions.textContent = '';
     } catch (e) {
-      console.error(`Letter sound "/sounds/${sound}.mp3" failed to play:`, e);
+      console.error(`Letter sound "${sound}.mp3" failed to play:`, e);
       els.captions.textContent = ''; // Clear caption on failure
     }
   };
@@ -152,17 +152,27 @@ document.addEventListener('DOMContentLoaded', () => {
   const playWordSound = async (word, caption = word) => {
     if (!state.soundsEnabled || state.isPaused) return;
     try {
-      const audio = new Audio(`/sounds/${word}.mp3`);
+      const audio = new Audio(`${word}.mp3`); // Files in main folder
       els.captions.textContent = caption;
       await audio.play();
       els.captions.textContent = '';
     } catch (e) {
-      console.warn(`Word sound "/sounds/${word}.mp3" unavailable. Using TTS.`);
+      console.warn(`Word sound "${word}.mp3" unavailable. Using UK female TTS.`);
       const utterance = new SpeechSynthesisUtterance(word);
+      utterance.lang = 'en-GB'; // UK English
+      // Attempt to select a female voice (browser-dependent)
+      const voices = speechSynthesis.getVoices();
+      const ukFemaleVoice = voices.find(voice => voice.lang === 'en-GB' && voice.name.toLowerCase().includes('female')) || voices.find(voice => voice.lang === 'en-GB');
+      if (ukFemaleVoice) utterance.voice = ukFemaleVoice;
       els.captions.textContent = caption;
       speechSynthesis.speak(utterance);
       await new Promise(resolve => utterance.onend = () => { els.captions.textContent = ''; resolve(); });
     }
+  };
+
+  // Ensure voices are loaded before use
+  speechSynthesis.onvoiceschanged = () => {
+    // Voices are now available
   };
 
   const parseWord = word => {
