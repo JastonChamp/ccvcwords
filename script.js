@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
-  // Word database (market version)
   const wordGroups = {
     cvc: {
       a: ['bat', 'cat', 'dad', 'fan', 'hat', 'jam', 'mad', 'nap', 'pan', 'rat', 'sad', 'tan', 'wag', 'zap', 'lap'],
@@ -107,16 +106,13 @@ document.addEventListener('DOMContentLoaded', () => {
     captions: document.querySelector('#captions')
   };
 
-  // Validate DOM elements
   Object.entries(els).forEach(([key, value]) => {
     if (!value && key !== 'difficultyRadios' && key !== 'themeSelector') console.warn(`Element ${key} not found in DOM`);
   });
 
-  // Utilities
   const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
-  const randomItem = arr => arr[Math.floor(Math.random() * arr.length)];
+  const randomItem = arr => arr[Math.floor(Math.random() * arr.length]);
 
-  // Simple Levenshtein distance for fuzzy matching
   const levenshteinDistance = (s1, s2) => {
     const dp = Array(s1.length + 1).fill(null).map(() => Array(s2.length + 1).fill(0));
     for (let i = 0; i <= s1.length; i++) dp[i][0] = i;
@@ -140,7 +136,7 @@ document.addEventListener('DOMContentLoaded', () => {
     els.mascot.classList.remove('speaking');
   };
 
-  const playSound = async (sound, caption = sound) => {
+  const playLetterSound = async (sound, caption = sound) => {
     if (!state.soundsEnabled || state.isPaused) return;
     try {
       const audio = new Audio(`/sounds/${sound}.mp3`);
@@ -148,8 +144,21 @@ document.addEventListener('DOMContentLoaded', () => {
       await audio.play();
       els.captions.textContent = '';
     } catch (e) {
-      console.warn(`Sound "/sounds/${sound}.mp3" unavailable. Using TTS.`);
-      const utterance = new SpeechSynthesisUtterance(sound);
+      console.error(`Letter sound "/sounds/${sound}.mp3" failed to play:`, e);
+      els.captions.textContent = ''; // Clear caption on failure
+    }
+  };
+
+  const playWordSound = async (word, caption = word) => {
+    if (!state.soundsEnabled || state.isPaused) return;
+    try {
+      const audio = new Audio(`/sounds/${word}.mp3`);
+      els.captions.textContent = caption;
+      await audio.play();
+      els.captions.textContent = '';
+    } catch (e) {
+      console.warn(`Word sound "/sounds/${word}.mp3" unavailable. Using TTS.`);
+      const utterance = new SpeechSynthesisUtterance(word);
       els.captions.textContent = caption;
       speechSynthesis.speak(utterance);
       await new Promise(resolve => utterance.onend = () => { els.captions.textContent = ''; resolve(); });
@@ -173,7 +182,6 @@ document.addEventListener('DOMContentLoaded', () => {
     return units;
   };
 
-  // Game Logic
   const getAvailableWords = () => difficulties[state.difficulty].types.flatMap(type => Object.values(wordGroups[type]).flat());
 
   const getRandomWord = () => {
@@ -243,7 +251,7 @@ document.addEventListener('DOMContentLoaded', () => {
       span.style.animationDelay = `${i * 0.5}s`;
       els.wordBox.appendChild(span);
       await delay(500);
-      await playSound(units[i].text, units[i].text);
+      await playLetterSound(units[i].text, units[i].text);
       await announce(`Say: ${units[i].text}`, 2000);
     }
     els.blendingTimerContainer.style.display = 'block';
@@ -254,7 +262,7 @@ document.addEventListener('DOMContentLoaded', () => {
     await delay(state.blendingTime);
     els.blendingTimerContainer.style.display = 'none';
     if (!isRepeat) {
-      await playSound(word, word);
+      await playWordSound(word, word);
       await announce(`The word is ${word}. Say it for Pete’s nest!`);
     }
   };
@@ -273,9 +281,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
     state.recognition = recognition;
     recognition.lang = 'en-US';
-    recognition.continuous = true; // Keep listening until a result
-    recognition.interimResults = true; // Process partial results
-    recognition.maxAlternatives = 3; // More options for fuzzy matching
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    recognition.maxAlternatives = 3;
     let attempts = 0;
     const maxAttempts = 3;
 
@@ -322,7 +330,7 @@ document.addEventListener('DOMContentLoaded', () => {
         recognition.stop();
         if (attempts === 0) showFeedback('Pete didn’t hear anything. Speak up!', false);
       }
-    }, 5000); // Timeout after 5s if no input
+    }, 5000);
   };
 
   const handleSuccess = () => {
@@ -342,7 +350,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (state.recognition) state.recognition.stop();
   };
 
-  // Event Handlers
   const spin = async () => {
     if (state.isPaused) return;
     els.spinButton.classList.add('busy');
@@ -419,7 +426,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   };
 
-  // Event Listeners
   els.spinButton.addEventListener('click', spin);
   els.sayButton.addEventListener('click', checkAnswer);
   els.repeatButton.addEventListener('click', repeat);
@@ -460,7 +466,6 @@ document.addEventListener('DOMContentLoaded', () => {
     localStorage.setItem('hasSeenTutorial', 'true');
   });
 
-  // Initialize
   loadPreferences();
   updateProgress();
   if (!localStorage.getItem('hasSeenTutorial')) els.tutorialModal.showModal();
