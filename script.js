@@ -414,6 +414,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const spin = async () => {
     if (state.isPaused) return;
     try {
+      console.log('Spin clicked'); // Debug log for button press
       els.spinButton.classList.add('busy');
       state.currentWord = getRandomWord();
       await announce(randomItem(peteMessages.spin));
@@ -431,6 +432,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const repeat = async () => {
     if (state.isPaused) return;
     try {
+      console.log('Repeat clicked'); // Debug log for button press
       els.repeatButton.classList.add('busy');
       await revealWord(state.currentWord, true);
     } catch (e) {
@@ -441,18 +443,21 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   const togglePause = () => {
+    console.log('Pause clicked'); // Debug log for button press
     state.isPaused = !state.isPaused;
     els.pauseButton.textContent = state.isPaused ? '▶️ Resume' : '⏸️ Pause';
     announce(state.isPaused ? 'Pete’s taking a nap!' : 'Back to the nest!');
   };
 
   const toggleSound = () => {
+    console.log('Sound Toggle clicked'); // Debug log for button press
     state.soundsEnabled = !state.soundsEnabled;
     els.soundToggle.textContent = state.soundsEnabled ? '🔊 On' : '🔇 Off';
     announce(state.soundsEnabled ? 'Pete’s chirping again!' : 'Quiet time for Pete!');
   };
 
   const resetGame = () => {
+    console.log('Reset Game clicked'); // Debug log for button press
     Object.assign(state, {
       score: 0,
       level: 1,
