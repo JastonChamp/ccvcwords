@@ -52,7 +52,7 @@
           <div id="progressBar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
             <div id="progressFill"></div>
           </div>
-          <p id="progressText" aria-live="polite">0 / 50 Words</p>
+          <p id="progressText" aria-live="polite">0 / 0 Words</p>
           <div id="badges" class="badges" aria-label="Earned badges"></div>
         </div>
 
@@ -84,6 +84,17 @@
                 <option value="ccvcc">CCVCC Words</option>
                 <option value="digraphs">Digraphs</option>
                 <option value="extended">Extended Words</option>
+              </select>
+            </div>
+            <div>
+              <label for="vowelSelector">Focus Vowel:</label>
+              <select id="vowelSelector" aria-label="Select focus vowel">
+                <option value="all" selected>All Vowels</option>
+                <option value="a">A</option>
+                <option value="e">E</option>
+                <option value="i">I</option>
+                <option value="o">O</option>
+                <option value="u">U</option>
               </select>
             </div>
             <div>
@@ -126,7 +137,7 @@
     <dialog id="tutorialModal" class="modal">
       <div class="modal-content">
         <h2>Welcome to Word Spinner!</h2>
-        <p>Spin to blend fun words! Click Start to begin.</p>
+        <p>Spin to hear letter sounds and blend them into words!</p>
         <button id="startTutorial" aria-label="Start tutorial">Start</button>
         <button id="skipTutorial" aria-label="Skip tutorial">Skip</button>
       </div>
