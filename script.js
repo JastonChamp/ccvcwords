@@ -1,8 +1,5 @@
-console.log('Script loaded'); // Confirm script starts
-
 document.addEventListener('DOMContentLoaded', () => {
-  console.log('DOM fully loaded'); // Confirm DOM is ready
-
+  // Word database from market version
   const wordGroups = {
     cvc: {
       a: ['bat', 'cat', 'dad', 'fan', 'hat', 'jam', 'mad', 'nap', 'pan', 'rat', 'sad', 'tan', 'wag', 'zap', 'lap'],
@@ -58,8 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
     blend: ['Say each sound slow!', 'Blend it for Pete!', 'Mix those sounds!'],
     success: ['Perfect! Pete’s nest grows!', 'You’re a blending hero!', 'Pete flaps for you!'],
     error: ['Oops, not quite!', 'Try again, Pete believes in you!', 'Close! Listen again!'],
-    streak: ['Wow, three in a row!', 'Four perfect blends!', 'Five? You’re flying!'],
-    voice: ['Speak louder, Pete’s listening!', 'Pete didn’t hear you, try again!', 'Say it clear for Pete!']
+    streak: ['Wow, three in a row!', 'Four perfect blends!', 'Five? You’re flying!']
   };
 
   const state = {
@@ -75,8 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
     isPaused: false,
     recognition: null,
     successStreak: 0,
-    maxStreak: 0,
-    theme: 'default'
+    maxStreak: 0
   };
 
   const els = {
@@ -101,7 +96,6 @@ document.addEventListener('DOMContentLoaded', () => {
     toggleSettingsButton: document.querySelector('#toggleSettingsButton'),
     advancedSettings: document.querySelector('#advancedSettings'),
     difficultyRadios: document.querySelectorAll('input[name="difficulty"]'),
-    themeSelector: document.querySelector('#themeSelector'),
     resetGame: document.querySelector('#resetGame'),
     tutorialModal: document.querySelector('#tutorialModal'),
     startTutorial: document.querySelector('#startTutorial'),
@@ -110,110 +104,40 @@ document.addEventListener('DOMContentLoaded', () => {
     captions: document.querySelector('#captions')
   };
 
-  // Log all elements to check if they're found
+  // Validate DOM elements
   Object.entries(els).forEach(([key, value]) => {
-    if (!value && key !== 'difficultyRadios' && key !== 'themeSelector') {
-      console.warn(`Element "${key}" not found in DOM`);
-    } else if (key === 'difficultyRadios') {
-      console.log(`Found ${value.length} difficulty radios`);
-    } else {
-      console.log(`Found element: ${key}`);
-    }
+    if (!value && key !== 'difficultyRadios') console.warn(`Element ${key} not found in DOM`);
   });
 
+  // Utilities
   const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
   const randomItem = arr => arr[Math.floor(Math.random() * arr.length)];
 
-  const levenshteinDistance = (s1, s2) => {
-    const dp = Array(s1.length + 1).fill(null).map(() => Array(s2.length + 1).fill(0));
-    for (let i = 0; i <= s1.length; i++) dp[i][0] = i;
-    for (let j = 0; j <= s2.length; j++) dp[0][j] = j;
-    for (let i = 1; i <= s1.length; i++) {
-      for (let j = 1; j <= s2.length; j++) {
-        const cost = s1[i - 1] === s2[j - 1] ? 0 : 1;
-        dp[i][j] = Math.min(dp[i - 1][j] + 1, dp[i][j - 1] + 1, dp[i - 1][j - 1] + cost);
-      }
-    }
-    return dp[s1.length][s2.length];
-  };
-
   const announce = async (text, duration = 4000) => {
+    els.screenReaderAnnounce.textContent = text;
+    els.captions.textContent = text;
+    els.mascot.classList.add('speaking');
+    await delay(duration);
+    els.screenReaderAnnounce.textContent = '';
+    els.captions.textContent = '';
+    els.mascot.classList.remove('speaking');
+  };
+
+  const playSound = async (sound, caption = sound) => {
+    if (!state.soundsEnabled || state.isPaused) return;
     try {
-      els.screenReaderAnnounce.textContent = text;
-      els.captions.textContent = text;
-      els.mascot.classList.add('speaking');
-      await delay(duration);
-      els.screenReaderAnnounce.textContent = '';
+      const audio = new Audio(`/sounds/${sound}.mp3`); // Assumes a /sounds/ folder
+      els.captions.textContent = caption;
+      await audio.play();
       els.captions.textContent = '';
-      els.mascot.classList.remove('speaking');
     } catch (e) {
-      console.error('Announce failed:', e);
+      console.warn(`Sound "/sounds/${sound}.mp3" unavailable. Using TTS.`);
+      const utterance = new SpeechSynthesisUtterance(sound);
+      els.captions.textContent = caption;
+      speechSynthesis.speak(utterance);
+      await new Promise(resolve => utterance.onend = () => { els.captions.textContent = ''; resolve(); });
     }
   };
-
-  const playLetterSound = async (sound, caption = sound) => {
-    if (!state.soundsEnabled || state.isPaused) return Promise.resolve();
-    return new Promise(async (resolve) => {
-      try {
-        const audio = new Audio(`${sound}.mp3`);
-        els.captions.textContent = caption;
-        audio.addEventListener('ended', () => {
-          els.captions.textContent = '';
-          resolve();
-        });
-        audio.addEventListener('error', (e) => {
-          console.error(`Letter sound "${sound}.mp3" failed:`, e);
-          els.captions.textContent = '';
-          resolve(); // Continue even if audio fails
-        });
-        await audio.play();
-      } catch (e) {
-        console.error(`Error playing "${sound}.mp3":`, e);
-        els.captions.textContent = '';
-        resolve();
-      }
-    });
-  };
-
-  const playWordSound = async (word, caption = word) => {
-    if (!state.soundsEnabled || state.isPaused) return Promise.resolve();
-    return new Promise(async (resolve) => {
-      try {
-        const audio = new Audio(`${word}.mp3`);
-        els.captions.textContent = caption;
-        audio.addEventListener('ended', () => {
-          els.captions.textContent = '';
-          resolve();
-        });
-        audio.addEventListener('error', async (e) => {
-          console.warn(`Word sound "${word}.mp3" unavailable, using TTS:`, e);
-          const utterance = new SpeechSynthesisUtterance(word);
-          utterance.lang = 'en-GB';
-          const voices = speechSynthesis.getVoices();
-          const ukFemaleVoice = voices.find(v => v.lang === 'en-GB' && /female/i.test(v.name)) || voices.find(v => v.lang === 'en-GB');
-          if (ukFemaleVoice) utterance.voice = ukFemaleVoice;
-          els.captions.textContent = caption;
-          utterance.onend = () => {
-            els.captions.textContent = '';
-            resolve();
-          };
-          speechSynthesis.speak(utterance);
-        });
-        await audio.play();
-      } catch (e) {
-        console.error(`Error with "${word}.mp3":`, e);
-        els.captions.textContent = '';
-        resolve();
-      }
-    });
-  };
-
-  // Preload voices
-  let voicesLoaded = false;
-  speechSynthesis.onvoiceschanged = () => {
-    voicesLoaded = true;
-  };
-  speechSynthesis.getVoices(); // Trigger voice loading
 
   const parseWord = word => {
     const units = [];
@@ -232,6 +156,7 @@ document.addEventListener('DOMContentLoaded', () => {
     return units;
   };
 
+  // Game Logic
   const getAvailableWords = () => difficulties[state.difficulty].types.flatMap(type => Object.values(wordGroups[type]).flat());
 
   const getRandomWord = () => {
@@ -286,112 +211,71 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const adjustDifficulty = () => {
     const baseTime = difficulties[state.difficulty].baseTime;
-    const streakBonus = Math.min(state.maxStreak, 5) * -200;
-    state.blendingTime = Math.max(baseTime + streakBonus, 2000);
+    const streakBonus = Math.min(state.maxStreak, 5) * -200; // Reduce time by 200ms per streak, max 1000ms
+    state.blendingTime = Math.max(baseTime + streakBonus, 2000); // Minimum 2s
   };
 
   const revealWord = async (word, isRepeat = false) => {
     if (state.isPaused) return;
-    try {
-      els.wordBox.innerHTML = '';
-      const units = parseWord(word);
-      for (let i = 0; i < units.length; i++) {
-        const span = document.createElement('span');
-        span.textContent = units[i].text;
-        span.classList.add('letter', units[i].isVowel ? 'vowel' : units[i].isDigraph ? 'digraph' : 'consonant');
-        span.style.animationDelay = `${i * 0.5}s`;
-        els.wordBox.appendChild(span);
-        await delay(500);
-        await playLetterSound(units[i].text, units[i].text);
-        await announce(`Say: ${units[i].text}`, 2000);
-      }
-      els.blendingTimerContainer.style.display = 'block';
-      els.blendingTimer.style.transition = `width ${state.blendingTime / 1000}s linear`;
-      els.blendingTimer.style.width = '100%';
-      requestAnimationFrame(() => els.blendingTimer.style.width = '0%');
-      await announce(randomItem(peteMessages.blend));
-      await delay(state.blendingTime);
-      els.blendingTimerContainer.style.display = 'none';
-      if (!isRepeat) {
-        await playWordSound(word, word);
-        await announce(`The word is ${word}. Say it for Pete’s nest!`);
-      }
-    } catch (e) {
-      console.error('Reveal word failed:', e);
-      showFeedback('Oops, something went wrong with the word!', false);
+    els.wordBox.innerHTML = '';
+    const units = parseWord(word);
+    for (let i = 0; i < units.length; i++) {
+      const span = document.createElement('span');
+      span.textContent = units[i].text;
+      span.classList.add('letter', units[i].isVowel ? 'vowel' : units[i].isDigraph ? 'digraph' : 'consonant');
+      span.style.animationDelay = `${i * 0.5}s`;
+      els.wordBox.appendChild(span);
+      await delay(500);
+      await playSound(units[i].text, units[i].text);
+      await announce(`Say: ${units[i].text}`, 2000);
+    }
+    els.blendingTimerContainer.style.display = 'block';
+    els.blendingTimer.style.transition = `width ${state.blendingTime / 1000}s linear`;
+    els.blendingTimer.style.width = '100%';
+    requestAnimationFrame(() => els.blendingTimer.style.width = '0%');
+    await announce(randomItem(peteMessages.blend));
+    await delay(state.blendingTime);
+    els.blendingTimerContainer.style.display = 'none';
+    if (!isRepeat) {
+      await playSound(word, word);
+      await announce(`The word is ${word}. Say it for Pete’s nest!`);
     }
   };
 
   const checkAnswer = async () => {
     if (!state.currentWord || state.isPaused) return;
-    try {
-      if (!window.SpeechRecognition && !window.webkitSpeechRecognition) {
-        showFeedback('Pete can’t hear you on this device. Type it instead?', false);
-        const answer = prompt('Type the word you heard:', '');
-        if (answer?.toLowerCase().trim() === state.currentWord) handleSuccess();
-        else showFeedback(`It’s ${state.currentWord}. Try again!`, false);
-        return;
-      }
-      if (state.recognition) state.recognition.stop();
-      els.sayButton.classList.add('busy');
-      const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-      state.recognition = recognition;
-      recognition.lang = 'en-US';
-      recognition.continuous = true;
-      recognition.interimResults = true;
-      recognition.maxAlternatives = 3;
-      let attempts = 0;
-      const maxAttempts = 3;
-
-      recognition.onresult = event => {
-        const results = event.results[0];
-        const spoken = results[0].transcript.toLowerCase().trim();
-        if (results.isFinal) {
-          if (spoken === state.currentWord || levenshteinDistance(spoken, state.currentWord) <= 1) {
-            handleSuccess();
-          } else {
-            attempts++;
-            if (attempts < maxAttempts) {
-              showFeedback(`${randomItem(peteMessages.voice)} You said "${spoken}".`, false);
-            } else {
-              state.successStreak = 0;
-              showFeedback(`${randomItem(peteMessages.error)} You said "${spoken}", it’s "${state.currentWord}".`, false);
-              recognition.stop();
-            }
-          }
-        }
-      };
-      recognition.onerror = event => {
-        if (event.error === 'no-speech' || event.error === 'audio-capture') {
-          attempts++;
-          if (attempts < maxAttempts) {
-            showFeedback(randomItem(peteMessages.voice), false);
-          } else {
-            showFeedback('Pete couldn’t hear you after a few tries. Try again!', false);
-            recognition.stop();
-          }
-        } else {
-          console.warn('Speech recognition error:', event.error);
-          showFeedback('Oops, something went wrong. Try again!', false);
-          recognition.stop();
-        }
-      };
-      recognition.onend = () => {
-        state.recognition = null;
-        els.sayButton.classList.remove('busy');
-      };
-      recognition.start();
-      setTimeout(() => {
-        if (state.recognition) {
-          recognition.stop();
-          if (attempts === 0) showFeedback('Pete didn’t hear anything. Speak up!', false);
-        }
-      }, 5000);
-    } catch (e) {
-      console.error('Check answer failed:', e);
-      showFeedback('Voice check failed, try again!', false);
-      els.sayButton.classList.remove('busy');
+    if (!window.SpeechRecognition && !window.webkitSpeechRecognition) {
+      showFeedback('Pete can’t hear you on this device. Type it instead?', false);
+      const answer = prompt('Type the word you heard:', '');
+      if (answer?.toLowerCase().trim() === state.currentWord) handleSuccess();
+      else showFeedback(`It’s ${state.currentWord}. Try again!`, false);
+      return;
     }
+    if (state.recognition) state.recognition.stop();
+    els.sayButton.classList.add('busy');
+    const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+    state.recognition = recognition;
+    recognition.lang = 'en-US';
+    recognition.onresult = event => {
+      const spoken = event.results[0][0].transcript.toLowerCase().trim();
+      if (spoken === state.currentWord) handleSuccess();
+      else {
+        state.successStreak = 0;
+        showFeedback(`${randomItem(peteMessages.error)} You said "${spoken}", it’s "${state.currentWord}".`, false);
+      }
+      state.recognition = null;
+      els.sayButton.classList.remove('busy');
+    };
+    recognition.onerror = () => {
+      showFeedback('Pete couldn’t hear you. Try again!', false);
+      state.recognition = null;
+      els.sayButton.classList.remove('busy');
+    };
+    recognition.onend = () => {
+      state.recognition = null;
+      els.sayButton.classList.remove('busy');
+    };
+    recognition.start();
   };
 
   const handleSuccess = () => {
@@ -408,56 +292,40 @@ document.addEventListener('DOMContentLoaded', () => {
     launchConfetti(isBadge || isStreak);
     if (isBadge) awardBadge();
     adjustDifficulty();
-    if (state.recognition) state.recognition.stop();
   };
 
+  // Event Handlers
   const spin = async () => {
     if (state.isPaused) return;
-    try {
-      console.log('Spin clicked'); // Debug log for button press
-      els.spinButton.classList.add('busy');
-      state.currentWord = getRandomWord();
-      await announce(randomItem(peteMessages.spin));
-      await revealWord(state.currentWord);
-      els.sayButton.disabled = false;
-      els.repeatButton.disabled = false;
-    } catch (e) {
-      console.error('Spin failed:', e);
-      showFeedback('Something went wrong, try spinning again!', false);
-    } finally {
-      els.spinButton.classList.remove('busy');
-    }
+    els.spinButton.classList.add('busy');
+    state.currentWord = getRandomWord();
+    await announce(randomItem(peteMessages.spin));
+    await revealWord(state.currentWord);
+    els.sayButton.disabled = false;
+    els.repeatButton.disabled = false;
+    els.spinButton.classList.remove('busy');
   };
 
   const repeat = async () => {
     if (state.isPaused) return;
-    try {
-      console.log('Repeat clicked'); // Debug log for button press
-      els.repeatButton.classList.add('busy');
-      await revealWord(state.currentWord, true);
-    } catch (e) {
-      console.error('Repeat failed:', e);
-    } finally {
-      els.repeatButton.classList.remove('busy');
-    }
+    els.repeatButton.classList.add('busy');
+    await revealWord(state.currentWord, true);
+    els.repeatButton.classList.remove('busy');
   };
 
   const togglePause = () => {
-    console.log('Pause clicked'); // Debug log for button press
     state.isPaused = !state.isPaused;
     els.pauseButton.textContent = state.isPaused ? '▶️ Resume' : '⏸️ Pause';
     announce(state.isPaused ? 'Pete’s taking a nap!' : 'Back to the nest!');
   };
 
   const toggleSound = () => {
-    console.log('Sound Toggle clicked'); // Debug log for button press
     state.soundsEnabled = !state.soundsEnabled;
     els.soundToggle.textContent = state.soundsEnabled ? '🔊 On' : '🔇 Off';
     announce(state.soundsEnabled ? 'Pete’s chirping again!' : 'Quiet time for Pete!');
   };
 
   const resetGame = () => {
-    console.log('Reset Game clicked'); // Debug log for button press
     Object.assign(state, {
       score: 0,
       level: 1,
@@ -482,36 +350,13 @@ document.addEventListener('DOMContentLoaded', () => {
     announce('A fresh quest with Pete begins!');
   };
 
-  const savePreferences = () => {
-    localStorage.setItem('wordSpinnerPrefs', JSON.stringify({
-      difficulty: state.difficulty,
-      soundsEnabled: state.soundsEnabled,
-      theme: state.theme
-    }));
-  };
-
-  const loadPreferences = () => {
-    const prefs = JSON.parse(localStorage.getItem('wordSpinnerPrefs')) || {};
-    state.difficulty = prefs.difficulty || 'easy';
-    state.soundsEnabled = prefs.soundsEnabled !== undefined ? prefs.soundsEnabled : true;
-    state.theme = prefs.theme || 'default';
-    document.body.dataset.theme = state.theme;
-    if (els.themeSelector) els.themeSelector.value = state.theme;
-    if (els.soundToggle) els.soundToggle.textContent = state.soundsEnabled ? '🔊 On' : '🔇 Off';
-    els.difficultyRadios.forEach(radio => {
-      if (radio.value === state.difficulty) radio.checked = true;
-    });
-  };
-
-  // Bind event listeners with additional logging
-  console.log('Binding event listeners...');
-  els.spinButton.addEventListener('click', () => { console.log('Spin clicked'); spin(); });
-  els.sayButton.addEventListener('click', () => { console.log('Say It! clicked'); checkAnswer(); });
-  els.repeatButton.addEventListener('click', () => { console.log('Repeat clicked'); repeat(); });
-  els.pauseButton.addEventListener('click', () => { console.log('Pause clicked'); togglePause(); });
-  els.soundToggle.addEventListener('click', () => { console.log('Sound Toggle clicked'); toggleSound(); });
+  // Event Listeners
+  els.spinButton.addEventListener('click', spin);
+  els.sayButton.addEventListener('click', checkAnswer);
+  els.repeatButton.addEventListener('click', repeat);
+  els.pauseButton.addEventListener('click', togglePause);
+  els.soundToggle.addEventListener('click', toggleSound);
   els.toggleSettingsButton.addEventListener('click', () => {
-    console.log('Toggle Settings clicked');
     const isVisible = els.advancedSettings.style.display === 'block';
     els.advancedSettings.style.display = isVisible ? 'none' : 'block';
     els.toggleSettingsButton.textContent = isVisible ? `⚙️ Play ${state.difficulty.charAt(0).toUpperCase() + state.difficulty.slice(1)}` : '✖️ Close';
@@ -519,29 +364,23 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   els.difficultyRadios.forEach(radio => {
     radio.addEventListener('change', () => {
-      console.log(`Difficulty changed to ${radio.value}`);
       state.difficulty = radio.value;
       state.blendingTime = difficulties[state.difficulty].baseTime;
       resetGame();
-      savePreferences();
     });
   });
-  if (els.themeSelector) {
-    els.themeSelector.addEventListener('change', () => {
-      console.log(`Theme changed to ${els.themeSelector.value}`);
-      state.theme = els.themeSelector.value;
-      document.body.dataset.theme = state.theme;
-      savePreferences();
-    });
-  }
-  els.resetGame.addEventListener('click', () => { console.log('Reset Game clicked'); resetGame(); savePreferences(); });
-  els.startTutorial.addEventListener('click', () => { console.log('Start Tutorial clicked'); els.tutorialModal.close(); localStorage.setItem('hasSeenTutorial', 'true'); spin(); });
-  els.skipTutorial.addEventListener('click', () => { console.log('Skip Tutorial clicked'); els.tutorialModal.close(); localStorage.setItem('hasSeenTutorial', 'true'); });
+  els.resetGame.addEventListener('click', resetGame);
+  els.startTutorial.addEventListener('click', () => {
+    els.tutorialModal.close();
+    localStorage.setItem('hasSeenTutorial', 'true');
+    spin();
+  });
+  els.skipTutorial.addEventListener('click', () => {
+    els.tutorialModal.close();
+    localStorage.setItem('hasSeenTutorial', 'true');
+  });
 
-  loadPreferences();
+  // Initialize
   updateProgress();
-  console.log('Preferences loaded, progress updated');
   if (!localStorage.getItem('hasSeenTutorial')) els.tutorialModal.showModal();
-
-  console.log('App initialized');
 });
