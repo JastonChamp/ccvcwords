@@ -1,54 +1,19 @@
+console.log('Script loaded'); // Confirm script starts
+
 document.addEventListener('DOMContentLoaded', () => {
-  // Word database from market version
+  console.log('DOM fully loaded'); // Confirm DOM is ready
+
+  // Larger word database (still demo-sized; ideally load from JSON)
   const wordGroups = {
-    cvc: {
-      a: ['bat', 'cat', 'dad', 'fan', 'hat', 'jam', 'mad', 'nap', 'pan', 'rat', 'sad', 'tan', 'wag', 'zap', 'lap'],
-      e: ['bed', 'den', 'fed', 'get', 'hen', 'jet', 'leg', 'men', 'net', 'pen', 'red', 'set', 'ten', 'vet', 'web'],
-      i: ['big', 'dig', 'fin', 'hit', 'jig', 'kid', 'lip', 'mix', 'nip', 'pig', 'pin', 'sit', 'tin', 'wig', 'zip'],
-      o: ['box', 'cot', 'dog', 'fog', 'hop', 'job', 'log', 'mop', 'not', 'pod', 'pop', 'pot', 'rot', 'top', 'sob'],
-      u: ['bug', 'cup', 'cut', 'fun', 'gum', 'hug', 'jug', 'mud', 'nut', 'pup', 'run', 'sun', 'tug', 'bud', 'bus']
-    },
-    ccvc: {
-      a: ['brag', 'clap', 'crab', 'drag', 'flag', 'flap', 'glad', 'grab', 'plan', 'slam', 'snap', 'trap', 'flat', 'swat', 'chat'],
-      e: ['bled', 'bred', 'fled', 'fret', 'glen', 'pled', 'sled', 'spec', 'stem', 'step', 'trek', 'prep', 'flex', 'dred', 'smell'],
-      i: ['brim', 'clip', 'crib', 'drip', 'flip', 'grin', 'grip', 'skip', 'slim', 'snip', 'spin', 'trip', 'twig', 'skin', 'swim'],
-      o: ['blot', 'clog', 'crop', 'drop', 'flop', 'frog', 'glob', 'plot', 'prop', 'shop', 'slot', 'stop', 'trot', 'clot', 'spot'],
-      u: ['club', 'drum', 'grub', 'plug', 'slug', 'snug', 'spun', 'stub', 'stun', 'trud', 'flub', 'glut', 'plum', 'scum', 'shut']
-    },
-    cvcc: {
-      a: ['band', 'bank', 'damp', 'hand', 'lamp', 'land', 'pant', 'ramp', 'sand', 'tank', 'fast', 'last', 'past', 'cast', 'raft'],
-      e: ['bend', 'dent', 'felt', 'lend', 'mend', 'nest', 'rest', 'sent', 'tent', 'vest', 'best', 'jest', 'pest', 'test', 'west'],
-      i: ['film', 'hint', 'lift', 'milk', 'mint', 'pink', 'ring', 'silk', 'sink', 'tilt', 'disk', 'fist', 'list', 'mist', 'wish'],
-      o: ['bond', 'cost', 'fond', 'host', 'lost', 'most', 'pond', 'post', 'soft', 'bolt', 'colt', 'jolt', 'molt', 'roll', 'told'],
-      u: ['bump', 'bunk', 'dust', 'hunt', 'jump', 'just', 'lump', 'must', 'rust', 'dunk', 'cusp', 'fuss', 'gust', 'husk', 'tusk']
-    },
-    ccvcc: {
-      a: ['brand', 'clamp', 'cramp', 'drank', 'flank', 'frank', 'plank', 'prank', 'slant', 'stamp', 'blast', 'craft', 'grant', 'plant', 'stand'],
-      e: ['blend', 'fleck', 'flesh', 'spend', 'strep', 'swept', 'trend', 'bless', 'crept', 'dress', 'fresh', 'press', 'slept', 'smelt', 'spent'],
-      i: ['blink', 'clink', 'crisp', 'drink', 'flint', 'print', 'slink', 'stink', 'twist', 'brisk', 'cling', 'fling', 'grift', 'shift', 'swift'],
-      o: ['blond', 'chomp', 'frost', 'prompt', 'stomp', 'strong', 'throb', 'clonk', 'floss', 'gloss', 'gross', 'prong', 'scoff', 'snort', 'thong'],
-      u: ['blunt', 'brunt', 'clump', 'crust', 'drunk', 'flung', 'grunt', 'plump', 'stump', 'trunk', 'brush', 'crush', 'flush', 'shrug', 'slush']
-    },
-    digraphs: {
-      a: ['chat', 'chap', 'than', 'that', 'math', 'path', 'bash', 'cash', 'dash', 'lash', 'rash', 'shag', 'sham', 'thaw', 'wham'],
-      e: ['shed', 'them', 'then', 'fetch', 'bench', 'check', 'chess', 'fresh', 'retch', 'sheep', 'sheet', 'shell', 'shred', 'theft', 'wrench'],
-      i: ['chip', 'chin', 'thin', 'ship', 'shin', 'chick', 'chill', 'shift', 'shirt', 'thick', 'thing', 'whip', 'wish', 'chime', 'shine'],
-      o: ['shop', 'shot', 'chop', 'shock', 'short', 'cloth', 'froth', 'notch', 'shod', 'show', 'sloth', 'thong', 'choke', 'phone', 'shore'],
-      u: ['shut', 'thud', 'chug', 'chunk', 'thump', 'brush', 'crush', 'flush', 'shrug', 'blush', 'churn', 'shuck', 'stuck', 'thumb', 'whush']
-    },
-    extended: {
-      a: ['fantastic', 'smashing', 'crashing', 'stamping', 'clapping', 'tracking', 'snapping', 'flashing', 'grabbing', 'slashing'],
-      e: ['wrecking', 'spelling', 'pressing', 'dressing', 'fetching', 'stretching', 'checking', 'swelling', 'shedding', 'tempting'],
-      i: ['blinking', 'drinking', 'tripping', 'flipping', 'snipping', 'skipping', 'swinging', 'chirping', 'slipping', 'twisting'],
-      o: ['blocking', 'rocking', 'crossing', 'stopping', 'chopping', 'dropping', 'flopping', 'locking', 'shocking', 'trotting'],
-      u: ['jumping', 'bumping', 'hunting', 'rushing', 'crushing', 'brushing', 'dumping', 'hugging', 'running', 'tugging']
-    }
+    cvc: { a: ['cat', 'bat', 'hat', 'mat', 'rat'], e: ['bed', 'pen', 'jet', 'net', 'red'], i: ['pig', 'sit', 'win', 'fin', 'lip'], o: ['dog', 'top', 'hop', 'mop', 'pot'], u: ['bug', 'run', 'cup', 'sun', 'mud'] },
+    ccvc: { a: ['clap', 'snap', 'flag', 'trap', 'glad'], e: ['step', 'fret', 'sled', 'bled', 'stem'], i: ['skip', 'trip', 'grin', 'slip', 'clip'], o: ['drop', 'stop', 'flop', 'crop', 'plot'], u: ['drum', 'plug', 'club', 'slug', 'snug'] },
+    digraphs: { a: ['chat', 'bash', 'path', 'that', 'sham'], e: ['shed', 'then', 'chew', 'theft', 'shell'], i: ['chip', 'shin', 'whip', 'thin', 'chill'], o: ['shop', 'thud', 'chop', 'shot', 'show'], u: ['shut', 'chug', 'thump', 'rush', 'brush'] }
   };
   const digraphs = ['sh', 'th', 'ch', 'ng', 'wh'];
   const difficulties = {
     easy: { types: ['cvc'], baseTime: 6000, badgeThreshold: 5, successStreak: 3 },
-    medium: { types: ['cvc', 'ccvc', 'cvcc'], baseTime: 4500, badgeThreshold: 10, successStreak: 4 },
-    hard: { types: ['cvc', 'ccvc', 'cvcc', 'ccvcc', 'digraphs', 'extended'], baseTime: 3000, badgeThreshold: 15, successStreak: 5 }
+    medium: { types: ['cvc', 'ccvc'], baseTime: 4500, badgeThreshold: 10, successStreak: 4 },
+    hard: { types: ['cvc', 'ccvc', 'digraphs'], baseTime: 3000, badgeThreshold: 15, successStreak: 5 }
   };
   const peteMessages = {
     spin: ['Let’s find a nest word!', 'Spin for Pete!', 'Here comes a word!'],
@@ -104,11 +69,6 @@ document.addEventListener('DOMContentLoaded', () => {
     captions: document.querySelector('#captions')
   };
 
-  // Validate DOM elements
-  Object.entries(els).forEach(([key, value]) => {
-    if (!value && key !== 'difficultyRadios') console.warn(`Element ${key} not found in DOM`);
-  });
-
   // Utilities
   const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
   const randomItem = arr => arr[Math.floor(Math.random() * arr.length)];
@@ -123,20 +83,61 @@ document.addEventListener('DOMContentLoaded', () => {
     els.mascot.classList.remove('speaking');
   };
 
-  const playSound = async (sound, caption = sound) => {
-    if (!state.soundsEnabled || state.isPaused) return;
-    try {
-      const audio = new Audio(`/sounds/${sound}.mp3`); // Assumes a /sounds/ folder
-      els.captions.textContent = caption;
-      await audio.play();
-      els.captions.textContent = '';
-    } catch (e) {
-      console.warn(`Sound "/sounds/${sound}.mp3" unavailable. Using TTS.`);
-      const utterance = new SpeechSynthesisUtterance(sound);
-      els.captions.textContent = caption;
-      speechSynthesis.speak(utterance);
-      await new Promise(resolve => utterance.onend = () => { els.captions.textContent = ''; resolve(); });
-    }
+  const playLetterSound = async (sound, caption = sound) => {
+    if (!state.soundsEnabled || state.isPaused) return Promise.resolve();
+    return new Promise(async (resolve) => {
+      try {
+        const audio = new Audio(`${sound}.mp3`); // Use main folder path (e.g., a.mp3, sh.mp3)
+        els.captions.textContent = caption;
+        audio.addEventListener('ended', () => {
+          els.captions.textContent = '';
+          resolve();
+        });
+        audio.addEventListener('error', (e) => {
+          console.error(`Letter sound "${sound}.mp3" failed:`, e);
+          els.captions.textContent = '';
+          resolve(); // Continue even if audio fails (no TTS fallback for letters)
+        });
+        await audio.play();
+      } catch (e) {
+        console.error(`Error playing "${sound}.mp3":`, e);
+        els.captions.textContent = '';
+        resolve();
+      }
+    });
+  };
+
+  const playWordSound = async (word, caption = word) => {
+    if (!state.soundsEnabled || state.isPaused) return Promise.resolve();
+    return new Promise(async (resolve) => {
+      try {
+        const audio = new Audio(`${word}.mp3`); // Use main folder path (e.g., cat.mp3)
+        els.captions.textContent = caption;
+        audio.addEventListener('ended', () => {
+          els.captions.textContent = '';
+          resolve();
+        });
+        audio.addEventListener('error', async (e) => {
+          console.warn(`Word sound "${word}.mp3" unavailable, using TTS:`, e);
+          const utterance = new SpeechSynthesisUtterance(word);
+          utterance.lang = 'en-GB';
+          const voices = speechSynthesis.getVoices();
+          const ukFemaleVoice = voices.find(v => v.lang === 'en-GB' && /female/i.test(v.name)) || voices.find(v => v.lang === 'en-GB');
+          if (ukFemaleVoice) utterance.voice = ukFemaleVoice;
+          els.captions.textContent = caption;
+          utterance.onend = () => {
+            els.captions.textContent = '';
+            resolve();
+          };
+          speechSynthesis.speak(utterance);
+        });
+        await audio.play();
+      } catch (e) {
+        console.error(`Error with "${word}.mp3":`, e);
+        els.captions.textContent = '';
+        resolve();
+      }
+    });
   };
 
   const parseWord = word => {
@@ -217,65 +218,106 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const revealWord = async (word, isRepeat = false) => {
     if (state.isPaused) return;
-    els.wordBox.innerHTML = '';
-    const units = parseWord(word);
-    for (let i = 0; i < units.length; i++) {
-      const span = document.createElement('span');
-      span.textContent = units[i].text;
-      span.classList.add('letter', units[i].isVowel ? 'vowel' : units[i].isDigraph ? 'digraph' : 'consonant');
-      span.style.animationDelay = `${i * 0.5}s`;
-      els.wordBox.appendChild(span);
-      await delay(500);
-      await playSound(units[i].text, units[i].text);
-      await announce(`Say: ${units[i].text}`, 2000);
-    }
-    els.blendingTimerContainer.style.display = 'block';
-    els.blendingTimer.style.transition = `width ${state.blendingTime / 1000}s linear`;
-    els.blendingTimer.style.width = '100%';
-    requestAnimationFrame(() => els.blendingTimer.style.width = '0%');
-    await announce(randomItem(peteMessages.blend));
-    await delay(state.blendingTime);
-    els.blendingTimerContainer.style.display = 'none';
-    if (!isRepeat) {
-      await playSound(word, word);
-      await announce(`The word is ${word}. Say it for Pete’s nest!`);
+    try {
+      els.wordBox.innerHTML = '';
+      const units = parseWord(word);
+      for (let i = 0; i < units.length; i++) {
+        const span = document.createElement('span');
+        span.textContent = units[i].text;
+        span.classList.add('letter', units[i].isVowel ? 'vowel' : units[i].isDigraph ? 'digraph' : 'consonant');
+        span.style.animationDelay = `${i * 0.5}s`;
+        els.wordBox.appendChild(span);
+        await delay(500);
+        await playLetterSound(units[i].text, units[i].text); // Use playLetterSound for letters
+        await announce(`Say: ${units[i].text}`, 2000);
+      }
+      els.blendingTimerContainer.style.display = 'block';
+      els.blendingTimer.style.transition = `width ${state.blendingTime / 1000}s linear`;
+      els.blendingTimer.style.width = '100%';
+      requestAnimationFrame(() => els.blendingTimer.style.width = '0%');
+      await announce(randomItem(peteMessages.blend));
+      await delay(state.blendingTime);
+      els.blendingTimerContainer.style.display = 'none';
+      if (!isRepeat) {
+        await playWordSound(word, word); // Use playWordSound for words (with TTS fallback)
+        await announce(`The word is ${word}. Say it for Pete’s nest!`);
+      }
+    } catch (e) {
+      console.error('Reveal word failed:', e);
+      showFeedback('Oops, something went wrong with the word!', false);
     }
   };
 
   const checkAnswer = async () => {
     if (!state.currentWord || state.isPaused) return;
-    if (!window.SpeechRecognition && !window.webkitSpeechRecognition) {
-      showFeedback('Pete can’t hear you on this device. Type it instead?', false);
-      const answer = prompt('Type the word you heard:', '');
-      if (answer?.toLowerCase().trim() === state.currentWord) handleSuccess();
-      else showFeedback(`It’s ${state.currentWord}. Try again!`, false);
-      return;
-    }
-    if (state.recognition) state.recognition.stop();
-    els.sayButton.classList.add('busy');
-    const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-    state.recognition = recognition;
-    recognition.lang = 'en-US';
-    recognition.onresult = event => {
-      const spoken = event.results[0][0].transcript.toLowerCase().trim();
-      if (spoken === state.currentWord) handleSuccess();
-      else {
-        state.successStreak = 0;
-        showFeedback(`${randomItem(peteMessages.error)} You said "${spoken}", it’s "${state.currentWord}".`, false);
+    try {
+      if (!window.SpeechRecognition && !window.webkitSpeechRecognition) {
+        showFeedback('Pete can’t hear you on this device. Type it instead?', false);
+        const answer = prompt('Type the word you heard:', '');
+        if (answer?.toLowerCase().trim() === state.currentWord) handleSuccess();
+        else showFeedback(`It’s ${state.currentWord}. Try again!`, false);
+        return;
       }
-      state.recognition = null;
+      if (state.recognition) state.recognition.stop();
+      els.sayButton.classList.add('busy');
+      const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+      state.recognition = recognition;
+      recognition.lang = 'en-US';
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.maxAlternatives = 3;
+      let attempts = 0;
+      const maxAttempts = 3;
+
+      recognition.onresult = event => {
+        const results = event.results[0];
+        const spoken = results[0].transcript.toLowerCase().trim();
+        if (results.isFinal) {
+          if (spoken === state.currentWord || levenshteinDistance(spoken, state.currentWord) <= 1) {
+            handleSuccess();
+          } else {
+            attempts++;
+            if (attempts < maxAttempts) {
+              showFeedback(`${randomItem(peteMessages.error)} You said "${spoken}".`, false);
+            } else {
+              state.successStreak = 0;
+              showFeedback(`${randomItem(peteMessages.error)} You said "${spoken}", it’s "${state.currentWord}".`, false);
+              recognition.stop();
+            }
+          }
+        }
+      };
+      recognition.onerror = event => {
+        if (event.error === 'no-speech' || event.error === 'audio-capture') {
+          attempts++;
+          if (attempts < maxAttempts) {
+            showFeedback(randomItem(peteMessages.error), false);
+          } else {
+            showFeedback('Pete couldn’t hear you after a few tries. Try again!', false);
+            recognition.stop();
+          }
+        } else {
+          console.warn('Speech recognition error:', event.error);
+          showFeedback('Oops, something went wrong. Try again!', false);
+          recognition.stop();
+        }
+      };
+      recognition.onend = () => {
+        state.recognition = null;
+        els.sayButton.classList.remove('busy');
+      };
+      recognition.start();
+      setTimeout(() => {
+        if (state.recognition) {
+          recognition.stop();
+          if (attempts === 0) showFeedback('Pete didn’t hear anything. Speak up!', false);
+        }
+      }, 5000);
+    } catch (e) {
+      console.error('Check answer failed:', e);
+      showFeedback('Voice check failed, try again!', false);
       els.sayButton.classList.remove('busy');
-    };
-    recognition.onerror = () => {
-      showFeedback('Pete couldn’t hear you. Try again!', false);
-      state.recognition = null;
-      els.sayButton.classList.remove('busy');
-    };
-    recognition.onend = () => {
-      state.recognition = null;
-      els.sayButton.classList.remove('busy');
-    };
-    recognition.start();
+    }
   };
 
   const handleSuccess = () => {
