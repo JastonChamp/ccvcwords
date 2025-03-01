@@ -198,7 +198,13 @@ document.addEventListener('DOMContentLoaded', () => {
   const showFeedback = (text, isCorrect = true) => {
     els.feedbackBox.textContent = text;
     els.feedbackBox.classList.add('show');
-    if (!isCorrect) els.feedbackBox.classList.add('error');
+    if (!isCorrect) {
+      els.feedbackBox.classList.add('error');
+      els.mascot.classList.add('failure'); // Add failure animation for Pete
+      setTimeout(() => els.mascot.classList.remove('failure'), 2000);
+    } else {
+      els.feedbackBox.classList.remove('error');
+    }
     setTimeout(() => els.feedbackBox.classList.remove('show', 'error'), 2000);
   };
 
@@ -209,6 +215,8 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => els.progressIcon.classList.remove('star-animate'), 1000);
     announce(`Feather earned! Pete’s nest shines brighter!`);
     launchConfetti(true);
+    els.mascot.classList.add('celebrate'); // New celebration animation
+    setTimeout(() => els.mascot.classList.remove('celebrate'), 2000);
   };
 
   const launchConfetti = (isStar = false) => {
@@ -275,27 +283,27 @@ document.addEventListener('DOMContentLoaded', () => {
       els.sayButton.classList.add('busy');
       const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
       state.recognition = recognition;
-      recognition.lang = 'en-US'; // Match this to your language (e.g., 'en-GB' for UK English)
-      recognition.continuous = true; // Keep listening for a longer period
-      recognition.interimResults = true; // Capture partial results for better detection
-      recognition.maxAlternatives = 5; // Increase to capture more possible transcriptions
+      recognition.lang = 'en-US'; // Adjust to 'en-GB' or your language if needed
+      recognition.continuous = true; // Keep listening longer for children
+      recognition.interimResults = true; // Capture partial results
+      recognition.maxAlternatives = 7; // Increased to capture more speech options for children
       let attempts = 0;
-      const maxAttempts = 4; // Allow more attempts for Android
+      const maxAttempts = 5; // Increased to allow more retries for children
 
       recognition.onresult = event => {
         const results = event.results[0];
         const spoken = results[0].transcript.toLowerCase().trim();
         console.log(`Recognized on Android: "${spoken}"`); // Debug for Android
         if (results.isFinal) {
-          if (spoken === state.currentWord || levenshteinDistance(spoken, state.currentWord) <= 2) { // Increased threshold for fuzzy matching
+          if (spoken === state.currentWord || levenshteinDistance(spoken, state.currentWord) <= 3) { // Increased threshold for children’s speech
             handleSuccess();
           } else {
             attempts++;
             if (attempts < maxAttempts) {
-              showFeedback(`${randomItem(peteMessages.error)} You said "${spoken}". Try again!`, false);
+              showFeedback(`${randomItem(peteMessages.error)} You said "${spoken}". Try speaking louder or clearer!`, false);
             } else {
               state.successStreak = 0;
-              showFeedback(`${randomItem(peteMessages.error)} You said "${spoken}", it’s "${state.currentWord}".`, false);
+              showFeedback(`${randomItem(peteMessages.error)} You said "${spoken}", it’s "${state.currentWord}". Try again later!`, false);
               recognition.stop();
             }
           }
@@ -307,12 +315,12 @@ document.addEventListener('DOMContentLoaded', () => {
           if (attempts < maxAttempts) {
             showFeedback(randomItem(peteMessages.error), false);
           } else {
-            showFeedback('Pete couldn’t hear you after a few tries. Try again!', false);
+            showFeedback('Pete couldn’t hear you after a few tries. Try again later or speak louder!', false);
             recognition.stop();
           }
         } else {
           console.warn('Speech recognition error on Android:', event.error);
-          showFeedback('Oops, something went wrong. Try again!', false);
+          showFeedback('Oops, something went wrong. Try again later!', false);
           recognition.stop();
         }
       };
@@ -324,12 +332,12 @@ document.addEventListener('DOMContentLoaded', () => {
       setTimeout(() => {
         if (state.recognition) {
           recognition.stop();
-          if (attempts === 0) showFeedback('Pete didn’t hear anything. Speak up!', false);
+          if (attempts === 0) showFeedback('Pete didn’t hear anything. Speak up or try again!', false);
         }
-      }, 7000); // Extended timeout to 7 seconds for Android
+      }, 9000); // Extended to 9 seconds for children’s slower speech
     } catch (e) {
       console.error('Check answer failed on Android:', e);
-      showFeedback('Voice check failed, try again!', false);
+      showFeedback('Voice check failed, try again later!', false);
       els.sayButton.classList.remove('busy');
     }
   };
@@ -345,6 +353,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const isBadge = state.wordsDone % difficulties[state.difficulty].badgeThreshold === 0;
     const isStreak = state.successStreak === difficulties[state.difficulty].successStreak;
     showFeedback(isStreak ? randomItem(peteMessages.streak) : randomItem(peteMessages.success), true);
+    els.mascot.classList.add('success');
+    setTimeout(() => els.mascot.classList.remove('success'), 2000);
     launchConfetti(isBadge || isStreak);
     if (isBadge) awardBadge();
     adjustDifficulty();
