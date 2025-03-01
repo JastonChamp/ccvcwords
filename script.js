@@ -30,9 +30,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
+  // List of digraphs to consider as a single phonetic unit
   const digraphs = ['sh', 'th', 'ch', 'ng', 'wh'];
 
-  // Difficulty configuration: base times in ms, badge thresholds, and success streak required
+  // Difficulty configuration: base times (in ms), badge thresholds, and success streak required
   const difficulties = {
     easy: { types: ['cvc'], baseTime: 6000, badgeThreshold: 5, successStreak: 3 },
     medium: { types: ['cvc', 'ccvc'], baseTime: 4500, badgeThreshold: 10, successStreak: 4 },
@@ -106,7 +107,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
   const randomItem = arr => arr[Math.floor(Math.random() * arr.length)];
 
-  // Fuzzy matching: compute Levenshtein distance between two strings
+  // Compute the Levenshtein distance between two strings (fuzzy matching)
   const levenshteinDistance = (s1, s2) => {
     const dp = Array.from({ length: s1.length + 1 }, () => Array(s2.length + 1).fill(0));
     for (let i = 0; i <= s1.length; i++) dp[i][0] = i;
@@ -114,13 +115,17 @@ document.addEventListener('DOMContentLoaded', () => {
     for (let i = 1; i <= s1.length; i++) {
       for (let j = 1; j <= s2.length; j++) {
         const cost = s1[i - 1] === s2[j - 1] ? 0 : 1;
-        dp[i][j] = Math.min(dp[i - 1][j] + 1, dp[i][j - 1] + 1, dp[i - 1][j - 1] + cost);
+        dp[i][j] = Math.min(
+          dp[i - 1][j] + 1,
+          dp[i][j - 1] + 1,
+          dp[i - 1][j - 1] + cost
+        );
       }
     }
     return dp[s1.length][s2.length];
   };
 
-  // Announce a message via live region and update captions and mascot animation
+  // Announce a message via live region; update captions and animate mascot
   const announce = async (text, duration = 4000) => {
     els.screenReaderAnnounce.textContent = text;
     els.captions.textContent = text;
@@ -131,7 +136,7 @@ document.addEventListener('DOMContentLoaded', () => {
     els.mascot.classList.remove('speaking');
   };
 
-  // Play a letter sound (no TTS fallback for individual letters)
+  // Play a letter sound; if fails, continue without TTS fallback (for letters)
   const playLetterSound = async (sound, caption = sound) => {
     if (!state.soundsEnabled || state.isPaused) return Promise.resolve();
     return new Promise(async (resolve) => {
@@ -190,7 +195,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   };
 
-  // Split a word into phonetic units; combine digraphs
+  // Parse a word into phonetic units, merging digraphs where appropriate
   const parseWord = word => {
     const units = [];
     let i = 0;
@@ -212,11 +217,11 @@ document.addEventListener('DOMContentLoaded', () => {
   // Game Logic Functions
   // ----------------------------
 
-  // Returns an array of available words based on current difficulty settings
+  // Get available words based on the current difficulty setting
   const getAvailableWords = () =>
     difficulties[state.difficulty].types.flatMap(type => Object.values(wordGroups[type]).flat());
 
-  // Returns a random unused word; if all used, resets the used words and levels up
+  // Choose a random unused word; if all words have been used, reset and level up
   const getRandomWord = () => {
     const words = getAvailableWords().filter(w => !state.usedWords.has(w));
     if (!words.length) {
@@ -232,7 +237,7 @@ document.addEventListener('DOMContentLoaded', () => {
     return words[Math.floor(Math.random() * words.length)];
   };
 
-  // Update the progress bar and related UI
+  // Update the progress bar and display
   const updateProgress = () => {
     const total = getAvailableWords().length;
     els.progressText.textContent = `${state.wordsDone} / ${total} Words`;
@@ -241,7 +246,7 @@ document.addEventListener('DOMContentLoaded', () => {
     els.progressBar.setAttribute('aria-valuenow', Math.round(percent));
   };
 
-  // Display feedback message; add mascot animations on error/success
+  // Show feedback message; animate mascot on success or failure
   const showFeedback = (text, isCorrect = true) => {
     els.feedbackBox.textContent = text;
     els.feedbackBox.classList.add('show');
@@ -255,7 +260,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => els.feedbackBox.classList.remove('show', 'error'), 2000);
   };
 
-  // Award a badge and trigger celebratory animations and confetti
+  // Award a badge and trigger celebration animations
   const awardBadge = () => {
     state.badges++;
     els.badgeCount.textContent = state.badges;
@@ -267,7 +272,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => els.mascot.classList.remove('celebrate'), 2000);
   };
 
-  // Launch confetti animation; isStar toggles extra confetti for badge or streak events
+  // Launch confetti animation; extra confetti for badges or streaks
   const launchConfetti = (isStar = false) => {
     const count = isStar ? 40 : 25;
     for (let i = 0; i < count; i++) {
@@ -280,14 +285,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
-  // Adjust blending time based on the user's success streak (faster blending for higher streaks)
+  // Adjust the blending time based on the user's success streak (faster for longer streaks)
   const adjustDifficulty = () => {
     const baseTime = difficulties[state.difficulty].baseTime;
-    const streakBonus = Math.min(state.maxStreak, 5) * -200; // Reduce time by 200ms per streak, max 1000ms reduction
-    state.blendingTime = Math.max(baseTime + streakBonus, 2000); // Minimum blending time: 2 seconds
+    const streakBonus = Math.min(state.maxStreak, 5) * -200;
+    state.blendingTime = Math.max(baseTime + streakBonus, 2000);
   };
 
-  // Reveal a word: animate each letter, play corresponding sounds, and prompt the user
+  // Reveal a word: animate each letter, play sounds, and prompt the user to speak
   const revealWord = async (word, isRepeat = false) => {
     if (state.isPaused) return;
     try {
@@ -306,7 +311,9 @@ document.addEventListener('DOMContentLoaded', () => {
       els.blendingTimerContainer.style.display = 'block';
       els.blendingTimer.style.transition = `width ${state.blendingTime / 1000}s linear`;
       els.blendingTimer.style.width = '100%';
-      requestAnimationFrame(() => els.blendingTimer.style.width = '0%');
+      requestAnimationFrame(() => {
+        els.blendingTimer.style.width = '0%';
+      });
       await announce(randomItem(peteMessages.blend));
       await delay(state.blendingTime);
       els.blendingTimerContainer.style.display = 'none';
@@ -320,11 +327,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
-  // Check the user's spoken answer using Speech Recognition with fuzzy matching, optimized for Android and children
+  // Check the user's answer using speech recognition with fuzzy matching
   const checkAnswer = async () => {
     if (!state.currentWord || state.isPaused) return;
     try {
-      // Fallback to typed input if SpeechRecognition is unavailable
+      // If SpeechRecognition is not supported, fallback to prompt
       if (!window.SpeechRecognition && !window.webkitSpeechRecognition) {
         showFeedback('Pete can’t hear you on this device. Type it instead?', false);
         const answer = prompt('Type the word you heard:', '');
@@ -339,19 +346,20 @@ document.addEventListener('DOMContentLoaded', () => {
       els.sayButton.classList.add('busy');
       const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
       state.recognition = recognition;
-      recognition.lang = 'en-US'; // Adjust to 'en-GB' or your language if needed
-      recognition.continuous = true; // Keep listening longer for children
-      recognition.interimResults = true; // Capture partial results
-      recognition.maxAlternatives = 7; // Increased to capture more speech options for children
+      recognition.lang = 'en-US';
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.maxAlternatives = 7;
       let attempts = 0;
-      const maxAttempts = 5; // Increased to allow more retries for children
+      const maxAttempts = 5;
 
       recognition.onresult = event => {
         const results = event.results[0];
         const spoken = results[0].transcript.toLowerCase().trim();
-        console.log(`Recognized on Android: "${spoken}"`); // Debug for Android
+        console.log(`Recognized: "${spoken}"`);
         if (results.isFinal) {
-          if (spoken === state.currentWord || levenshteinDistance(spoken, state.currentWord) <= 3) { // Increased threshold for children’s speech
+          // Allow a fuzzy threshold of up to 3 edits for children's speech
+          if (spoken === state.currentWord || levenshteinDistance(spoken, state.currentWord) <= 3) {
             handleSuccess();
           } else {
             attempts++;
@@ -359,7 +367,7 @@ document.addEventListener('DOMContentLoaded', () => {
               showFeedback(`${randomItem(peteMessages.error)} You said "${spoken}". Try speaking louder or clearer!`, false);
             } else {
               state.successStreak = 0;
-              showFeedback(`${randomItem(peteMessages.error)} You said "${spoken}", it’s "${state.currentWord}". Try again later!`, false);
+              showFeedback(`${randomItem(peteMessages.error)} You said "${spoken}", it’s "${state.currentWord}".`, false);
               recognition.stop();
             }
           }
@@ -376,7 +384,7 @@ document.addEventListener('DOMContentLoaded', () => {
             recognition.stop();
           }
         } else {
-          console.warn('Speech recognition error on Android:', event.error);
+          console.warn('Speech recognition error:', event.error);
           showFeedback('Oops, something went wrong. Please try again later!', false);
           recognition.stop();
         }
@@ -388,14 +396,17 @@ document.addEventListener('DOMContentLoaded', () => {
       };
 
       recognition.start();
+      // Extended timeout to 9 seconds to account for slower speech on mobile devices
       setTimeout(() => {
         if (state.recognition) {
           recognition.stop();
-          if (attempts === 0) showFeedback('Pete didn’t hear anything. Speak up or try again!', false);
+          if (attempts === 0) {
+            showFeedback('Pete didn’t hear anything. Please speak up or try again!', false);
+          }
         }
-      }, 9000); // Extended to 9 seconds for children’s slower speech
+      }, 9000);
     } catch (e) {
-      console.error('Check answer failed on Android:', e);
+      console.error('Check answer failed:', e);
       showFeedback('Voice check failed, please try again later!', false);
       els.sayButton.classList.remove('busy');
     }
@@ -535,7 +546,9 @@ document.addEventListener('DOMContentLoaded', () => {
     localStorage.setItem('hasSeenTutorial', 'true');
   });
 
-  // Initialize preferences and progress; show tutorial if not seen
+  // ----------------------------
+  // Initialization
+  // ----------------------------
   loadPreferences();
   updateProgress();
   if (!localStorage.getItem('hasSeenTutorial')) els.tutorialModal.showModal();
