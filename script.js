@@ -325,9 +325,14 @@ document.addEventListener('DOMContentLoaded', () => {
     await revealWord(state.currentWord, true);
   }
 
+  async function hint() {
+    if (!state.currentWord) return;
+    await playSound(state.currentWord);
+  }
+
   els.spinButton.addEventListener('click', spin);
   els.repeatButton.addEventListener('click', repeat);
-  els.hintButton.addEventListener('click', () => state.currentWord && playSound(state.currentWord));
+  els.hintButton.addEventListener('click', hint);
   els.wordTypeSelector.addEventListener('change', () => {
     state.wordType = els.wordTypeSelector.value;
     resetGame();
@@ -365,9 +370,11 @@ document.addEventListener('DOMContentLoaded', () => {
     savePreferences();
   });
   els.toggleSettingsButton.addEventListener('click', () => {
+    console.log('Customize button clicked'); // Debug log
     const isVisible = els.advancedSettings.hidden;
     els.advancedSettings.hidden = !isVisible;
     els.toggleSettingsButton.textContent = isVisible ? 'Hide Settings' : '⚙️ Customize';
+    els.toggleSettingsButton.setAttribute('aria-expanded', !isVisible); // Update accessibility
   });
   els.startTutorial.addEventListener('click', () => {
     els.tutorialModal.close();
