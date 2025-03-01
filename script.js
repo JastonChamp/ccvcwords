@@ -65,7 +65,6 @@ document.addEventListener('DOMContentLoaded', () => {
     repeatButton: document.querySelector('#repeatButton'),
     hintButton: document.querySelector('#hintButton'),
     wordBox: document.querySelector('#wordBox'),
-    wordInput: document.querySelector('#wordInput'),
     scoreValue: document.querySelector('#scoreValue'),
     scoreIncrement: document.querySelector('#scoreIncrement'),
     progressText: document.querySelector('#progressText'),
@@ -108,10 +107,10 @@ document.addEventListener('DOMContentLoaded', () => {
   function playSound(sound) {
     if (!state.soundsEnabled) return Promise.resolve();
     return new Promise((resolve) => {
-      const audio = new Audio(`/audio/${sound}.mp3`);
+      const audio = new Audio(`${sound}.mp3`); // Files in main folder
       audio.onended = resolve;
       audio.onerror = () => {
-        console.warn(`Sound file for "${sound}" not found`);
+        console.warn(`Sound file "${sound}.mp3" not found`);
         resolve(); // Continue even if a sound fails
       };
       audio.play().catch(e => {
@@ -138,7 +137,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function updateProgress() {
     state.revealedWords = state.usedWords.size;
-    const percent = (state.revealedWords / state.totalWords) * 100;
+    const percent = (state.revealedWords / state.totalWords) * 100 || 0;
     els.progressText.textContent = `${state.revealedWords} / ${state.totalWords} Words`;
     els.progressFill.style.width = `${percent}%`;
     els.progressBar.setAttribute('aria-valuenow', Math.round(percent));
@@ -326,27 +325,9 @@ document.addEventListener('DOMContentLoaded', () => {
     await revealWord(state.currentWord, true);
   }
 
-  function checkWord(event) {
-    if (event.key !== 'Enter' || !state.currentWord) return;
-    const input = els.wordInput.value.trim().toLowerCase();
-    if (input === state.currentWord) {
-      state.usedWords.add(state.currentWord);
-      showCompliment();
-      updateScore();
-      updateProgress();
-      els.wordInput.value = '';
-      spin();
-    } else {
-      announce('Try again!');
-      els.wordInput.value = '';
-      if (state.soundsEnabled) playSound('error'); // Optional: Add an "error" sound
-    }
-  }
-
   els.spinButton.addEventListener('click', spin);
   els.repeatButton.addEventListener('click', repeat);
-  els.hintButton.addEventListener('click', () => playSound(state.currentWord));
-  els.wordInput.addEventListener('keypress', checkWord);
+  els.hintButton.addEventListener('click', () => state.currentWord && playSound(state.currentWord));
   els.wordTypeSelector.addEventListener('change', () => {
     state.wordType = els.wordTypeSelector.value;
     resetGame();
