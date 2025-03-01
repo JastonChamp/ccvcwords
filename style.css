@@ -196,7 +196,6 @@ select { padding: 0.5rem; font-size: 1.2rem; border-radius: 0.5rem; border: 2px 
 footer { padding: 1rem; }
 .note { font-size: 1.2rem; color: #636e72; }
 
-/* Space Theme */
 body[data-theme="space"] {
   --background-color: linear-gradient(135deg, #0f2027, #203a43);
   --header-bg: #0f3460;
@@ -213,7 +212,6 @@ body[data-theme="space"] .action-buttons button { background: #4a90e2; }
 body[data-theme="space"] #progressBar { background: #2d4373; border-color: #e94560; }
 body[data-theme="space"] #progressFill { background: linear-gradient(90deg, #e94560, #4a90e2); }
 
-/* Forest Theme */
 body[data-theme="forest"] {
   --background-color: linear-gradient(135deg, #11998e, #38ef7d);
   --header-bg: #78c850;
@@ -230,7 +228,6 @@ body[data-theme="forest"] .action-buttons button { background: #2f9e44; }
 body[data-theme="forest"] #progressBar { background: #c3e6cb; border-color: #2f9e44; }
 body[data-theme="forest"] #progressFill { background: linear-gradient(90deg, #2f9e44, #56ab2f); }
 
-/* High-Contrast Theme */
 body[data-theme="high-contrast"] {
   --background-color: #fff;
   --header-bg: #fff;
@@ -247,7 +244,6 @@ body[data-theme="high-contrast"] .action-buttons button { background: #000; colo
 body[data-theme="high-contrast"] #progressBar { background: #fff; border-color: #000; }
 body[data-theme="high-contrast"] #progressFill { background: linear-gradient(90deg, #000, #666); }
 
-/* Ensure theme consistency */
 body { background: var(--background-color); }
 header { background: var(--header-bg); border-bottom: 4px solid var(--header-border); }
 .word-display-container { border: 3px solid var(--primary-color); }
