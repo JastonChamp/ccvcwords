@@ -112,14 +112,14 @@ document.addEventListener('DOMContentLoaded', () => {
     extended: 'Word Wizard'
   };
 
-  // Audio handling for letter sounds
+  // Audio handling for letter sounds with fallback
   function playSound(sound) {
     if (!state.soundsEnabled) return Promise.resolve();
     return new Promise((resolve) => {
       const audio = new Audio(`${sound}.mp3`); // Files in main folder
       audio.onended = resolve;
       audio.onerror = () => {
-        console.warn(`Sound file "${sound}.mp3" not found`);
+        console.warn(`Sound file "${sound}.mp3" not found, skipping`);
         resolve(); // Continue even if a sound fails
       };
       audio.play().catch(e => {
@@ -141,7 +141,7 @@ document.addEventListener('DOMContentLoaded', () => {
     els.scoreIncrement.textContent = `+${points}`;
     els.scoreIncrement.classList.add('show');
     setTimeout(() => els.scoreIncrement.classList.remove('show'), 800);
-    if (state.soundsEnabled) playSound('point'); // Optional: Add a "point" sound
+    // if (state.soundsEnabled) playSound('point'); // Commented out to avoid 404 errors if file is missing
   }
 
   function updateProgress() {
@@ -161,7 +161,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const compliment = compliments[Math.floor(Math.random() * compliments.length)];
     els.complimentBox.textContent = compliment;
     els.complimentBox.classList.add('show');
-    if (state.soundsEnabled) playSound('cheer'); // Optional: Add a "cheer" sound
+    // if (state.soundsEnabled) playSound('cheer'); // Commented out to avoid 404 errors if file is missing
     state.celebrationMode ? launchFireworks() : launchConfetti();
     setTimeout(() => els.complimentBox.classList.remove('show'), 2000);
   }
@@ -384,16 +384,18 @@ document.addEventListener('DOMContentLoaded', () => {
     savePreferences();
   });
   els.toggleSettingsButton.addEventListener('click', (event) => {
-    console.log('Customize button clicked'); // Debug log
+    console.log('Customize button clicked');
     if (!els.toggleSettingsButton || !els.advancedSettings) {
       console.error('Settings elements not found');
       return;
     }
-    event.preventDefault(); // Prevent default behavior if any
-    const isVisible = els.advancedSettings.hidden;
-    els.advancedSettings.hidden = !isVisible;
+    event.preventDefault();
+    const isVisible = els.advancedSettings.style.display === 'block';
+    console.log('Toggling settings visibility. Current display:', isVisible);
+    els.advancedSettings.style.display = isVisible ? 'none' : 'block';
     els.toggleSettingsButton.textContent = isVisible ? '⚙️ Customize' : 'Hide Settings';
-    els.toggleSettingsButton.setAttribute('aria-expanded', !isVisible); // Update accessibility
+    els.toggleSettingsButton.setAttribute('aria-expanded', !isVisible);
+    els.advancedSettings.setAttribute('aria-hidden', isVisible);
   });
   els.startTutorial.addEventListener('click', () => {
     els.tutorialModal.close();
