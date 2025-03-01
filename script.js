@@ -1,7 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
-  /* --------------------------
-     Data & State
-  --------------------------- */
   const wordGroups = {
     cvc: {
       a: ['bat', 'cat', 'dad', 'fan', 'hat', 'jam', 'mad', 'nap', 'pan', 'rat', 'sad', 'tan', 'wag', 'zap', 'lap'],
@@ -109,22 +106,15 @@ document.addEventListener('DOMContentLoaded', () => {
     captions: document.querySelector('#captions')
   };
 
-  // Warn for missing elements (except for collections)
   Object.entries(els).forEach(([key, value]) => {
-    if (!value && key !== 'difficultyRadios' && key !== 'themeSelector') {
-      console.warn(`Element "${key}" not found.`);
-    }
+    if (!value && key !== 'difficultyRadios' && key !== 'themeSelector') console.warn(`Element ${key} not found in DOM`);
   });
 
-  /* --------------------------
-     Utility Functions
-  --------------------------- */
   const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
   const randomItem = arr => arr[Math.floor(Math.random() * arr.length)];
 
-  // Fuzzy matching helper using Levenshtein distance
   const levenshteinDistance = (s1, s2) => {
-    const dp = Array.from({ length: s1.length + 1 }, () => Array(s2.length + 1).fill(0));
+    const dp = Array(s1.length + 1).fill(null).map(() => Array(s2.length + 1).fill(0));
     for (let i = 0; i <= s1.length; i++) dp[i][0] = i;
     for (let j = 0; j <= s2.length; j++) dp[0][j] = j;
     for (let i = 1; i <= s1.length; i++) {
@@ -137,47 +127,82 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   const announce = async (text, duration = 4000) => {
-    els.screenReaderAnnounce.textContent = text;
-    els.captions.textContent = text;
-    els.mascot.classList.add('speaking');
-    await delay(duration);
-    els.screenReaderAnnounce.textContent = '';
-    els.captions.textContent = '';
-    els.mascot.classList.remove('speaking');
+    try {
+      els.screenReaderAnnounce.textContent = text;
+      els.captions.textContent = text;
+      els.mascot.classList.add('speaking');
+      await delay(duration);
+      els.screenReaderAnnounce.textContent = '';
+      els.captions.textContent = '';
+      els.mascot.classList.remove('speaking');
+    } catch (e) {
+      console.error('Announce failed:', e);
+    }
   };
 
   const playLetterSound = async (sound, caption = sound) => {
-    if (!state.soundsEnabled || state.isPaused) return;
-    try {
-      const audio = new Audio(`${sound}.mp3`);
-      els.captions.textContent = caption;
-      await audio.play();
-      els.captions.textContent = '';
-    } catch (e) {
-      console.error(`Letter sound "${sound}.mp3" failed:`, e);
-      els.captions.textContent = '';
-    }
+    if (!state.soundsEnabled || state.isPaused) return Promise.resolve();
+    return new Promise(async (resolve) => {
+      try {
+        const audio = new Audio(`${sound}.mp3`);
+        els.captions.textContent = caption;
+        audio.addEventListener('ended', () => {
+          els.captions.textContent = '';
+          resolve();
+        });
+        audio.addEventListener('error', (e) => {
+          console.error(`Letter sound "${sound}.mp3" failed:`, e);
+          els.captions.textContent = '';
+          resolve(); // Continue even if audio fails
+        });
+        await audio.play();
+      } catch (e) {
+        console.error(`Error playing "${sound}.mp3":`, e);
+        els.captions.textContent = '';
+        resolve();
+      }
+    });
   };
 
   const playWordSound = async (word, caption = word) => {
-    if (!state.soundsEnabled || state.isPaused) return;
-    try {
-      const audio = new Audio(`${word}.mp3`);
-      els.captions.textContent = caption;
-      await audio.play();
-      els.captions.textContent = '';
-    } catch (e) {
-      console.warn(`Word sound "${word}.mp3" unavailable. Using UK female TTS.`);
-      const utterance = new SpeechSynthesisUtterance(word);
-      utterance.lang = 'en-GB';
-      const voices = speechSynthesis.getVoices();
-      const ukFemale = voices.find(v => v.lang === 'en-GB' && /female/i.test(v.name)) || voices.find(v => v.lang === 'en-GB');
-      if (ukFemale) utterance.voice = ukFemale;
-      els.captions.textContent = caption;
-      speechSynthesis.speak(utterance);
-      await new Promise(resolve => utterance.onend = () => { els.captions.textContent = ''; resolve(); });
-    }
+    if (!state.soundsEnabled || state.isPaused) return Promise.resolve();
+    return new Promise(async (resolve) => {
+      try {
+        const audio = new Audio(`${word}.mp3`);
+        els.captions.textContent = caption;
+        audio.addEventListener('ended', () => {
+          els.captions.textContent = '';
+          resolve();
+        });
+        audio.addEventListener('error', async (e) => {
+          console.warn(`Word sound "${word}.mp3" unavailable, using TTS:`, e);
+          const utterance = new SpeechSynthesisUtterance(word);
+          utterance.lang = 'en-GB';
+          const voices = speechSynthesis.getVoices();
+          const ukFemaleVoice = voices.find(v => v.lang === 'en-GB' && /female/i.test(v.name)) || voices.find(v => v.lang === 'en-GB');
+          if (ukFemaleVoice) utterance.voice = ukFemaleVoice;
+          els.captions.textContent = caption;
+          utterance.onend = () => {
+            els.captions.textContent = '';
+            resolve();
+          };
+          speechSynthesis.speak(utterance);
+        });
+        await audio.play();
+      } catch (e) {
+        console.error(`Error with "${word}.mp3":`, e);
+        els.captions.textContent = '';
+        resolve();
+      }
+    });
   };
+
+  // Preload voices
+  let voicesLoaded = false;
+  speechSynthesis.onvoiceschanged = () => {
+    voicesLoaded = true;
+  };
+  speechSynthesis.getVoices(); // Trigger voice loading
 
   const parseWord = word => {
     const units = [];
@@ -196,11 +221,7 @@ document.addEventListener('DOMContentLoaded', () => {
     return units;
   };
 
-  /* --------------------------
-     Game Functions
-  --------------------------- */
-  const getAvailableWords = () =>
-    difficulties[state.difficulty].types.flatMap(type => Object.values(wordGroups[type]).flat());
+  const getAvailableWords = () => difficulties[state.difficulty].types.flatMap(type => Object.values(wordGroups[type]).flat());
 
   const getRandomWord = () => {
     const words = getAvailableWords().filter(w => !state.usedWords.has(w));
@@ -208,14 +229,8 @@ document.addEventListener('DOMContentLoaded', () => {
       state.usedWords.clear();
       state.level++;
       els.levelValue.textContent = state.level;
-      // Update mascot state based on level
-      if (state.level >= 3) {
-        els.mascot.classList.remove('mascot--baby');
-        els.mascot.classList.add('mascot--grown');
-      } else {
-        els.mascot.classList.add('mascot--baby');
-        els.mascot.classList.remove('mascot--grown');
-      }
+      els.mascot.classList.toggle('mascot--baby', state.level < 3);
+      els.mascot.classList.toggle('mascot--grown', state.level >= 3);
       announce(`Level ${state.level}! Pete’s nest is growing!`);
       return getRandomWord();
     }
@@ -266,94 +281,106 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const revealWord = async (word, isRepeat = false) => {
     if (state.isPaused) return;
-    els.wordBox.innerHTML = '';
-    const units = parseWord(word);
-    for (let i = 0; i < units.length; i++) {
-      const span = document.createElement('span');
-      span.textContent = units[i].text;
-      span.classList.add('letter', units[i].isVowel ? 'vowel' : units[i].isDigraph ? 'digraph' : 'consonant');
-      span.style.animationDelay = `${i * 0.5}s`;
-      els.wordBox.appendChild(span);
-      await delay(500);
-      await playLetterSound(units[i].text, units[i].text);
-      await announce(`Say: ${units[i].text}`, 2000);
-    }
-    els.blendingTimerContainer.style.display = 'block';
-    els.blendingTimer.style.transition = `width ${state.blendingTime / 1000}s linear`;
-    els.blendingTimer.style.width = '100%';
-    requestAnimationFrame(() => els.blendingTimer.style.width = '0%');
-    await announce(randomItem(peteMessages.blend));
-    await delay(state.blendingTime);
-    els.blendingTimerContainer.style.display = 'none';
-    if (!isRepeat) {
-      await playWordSound(word, word);
-      await announce(`The word is ${word}. Say it for Pete’s nest!`);
+    try {
+      els.wordBox.innerHTML = '';
+      const units = parseWord(word);
+      for (let i = 0; i < units.length; i++) {
+        const span = document.createElement('span');
+        span.textContent = units[i].text;
+        span.classList.add('letter', units[i].isVowel ? 'vowel' : units[i].isDigraph ? 'digraph' : 'consonant');
+        span.style.animationDelay = `${i * 0.5}s`;
+        els.wordBox.appendChild(span);
+        await delay(500);
+        await playLetterSound(units[i].text, units[i].text);
+        await announce(`Say: ${units[i].text}`, 2000);
+      }
+      els.blendingTimerContainer.style.display = 'block';
+      els.blendingTimer.style.transition = `width ${state.blendingTime / 1000}s linear`;
+      els.blendingTimer.style.width = '100%';
+      requestAnimationFrame(() => els.blendingTimer.style.width = '0%');
+      await announce(randomItem(peteMessages.blend));
+      await delay(state.blendingTime);
+      els.blendingTimerContainer.style.display = 'none';
+      if (!isRepeat) {
+        await playWordSound(word, word);
+        await announce(`The word is ${word}. Say it for Pete’s nest!`);
+      }
+    } catch (e) {
+      console.error('Reveal word failed:', e);
+      showFeedback('Oops, something went wrong with the word!', false);
     }
   };
 
   const checkAnswer = async () => {
     if (!state.currentWord || state.isPaused) return;
-    if (!window.SpeechRecognition && !window.webkitSpeechRecognition) {
-      showFeedback('Pete can’t hear you on this device. Type it instead?', false);
-      const answer = prompt('Type the word you heard:', '');
-      if (answer?.toLowerCase().trim() === state.currentWord) handleSuccess();
-      else showFeedback(`It’s ${state.currentWord}. Try again!`, false);
-      return;
-    }
-    if (state.recognition) state.recognition.stop();
-    els.sayButton.classList.add('busy');
-    const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-    state.recognition = recognition;
-    recognition.lang = 'en-US';
-    recognition.continuous = true;
-    recognition.interimResults = true;
-    recognition.maxAlternatives = 3;
-    let attempts = 0;
-    const maxAttempts = 3;
-    recognition.onresult = event => {
-      const results = event.results[0];
-      const spoken = results[0].transcript.toLowerCase().trim();
-      if (results.isFinal) {
-        if (spoken === state.currentWord || levenshteinDistance(spoken, state.currentWord) <= 1) {
-          handleSuccess();
-        } else {
-          attempts++;
-          if (attempts < maxAttempts) {
-            showFeedback(`${randomItem(peteMessages.voice)} You said "${spoken}".`, false);
+    try {
+      if (!window.SpeechRecognition && !window.webkitSpeechRecognition) {
+        showFeedback('Pete can’t hear you on this device. Type it instead?', false);
+        const answer = prompt('Type the word you heard:', '');
+        if (answer?.toLowerCase().trim() === state.currentWord) handleSuccess();
+        else showFeedback(`It’s ${state.currentWord}. Try again!`, false);
+        return;
+      }
+      if (state.recognition) state.recognition.stop();
+      els.sayButton.classList.add('busy');
+      const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+      state.recognition = recognition;
+      recognition.lang = 'en-US';
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.maxAlternatives = 3;
+      let attempts = 0;
+      const maxAttempts = 3;
+
+      recognition.onresult = event => {
+        const results = event.results[0];
+        const spoken = results[0].transcript.toLowerCase().trim();
+        if (results.isFinal) {
+          if (spoken === state.currentWord || levenshteinDistance(spoken, state.currentWord) <= 1) {
+            handleSuccess();
           } else {
-            state.successStreak = 0;
-            showFeedback(`${randomItem(peteMessages.error)} You said "${spoken}", it’s "${state.currentWord}".`, false);
-            recognition.stop();
+            attempts++;
+            if (attempts < maxAttempts) {
+              showFeedback(`${randomItem(peteMessages.voice)} You said "${spoken}".`, false);
+            } else {
+              state.successStreak = 0;
+              showFeedback(`${randomItem(peteMessages.error)} You said "${spoken}", it’s "${state.currentWord}".`, false);
+              recognition.stop();
+            }
           }
         }
-      }
-    };
-    recognition.onerror = event => {
-      if (event.error === 'no-speech' || event.error === 'audio-capture') {
-        attempts++;
-        if (attempts < maxAttempts) {
-          showFeedback(randomItem(peteMessages.voice), false);
+      };
+      recognition.onerror = event => {
+        if (event.error === 'no-speech' || event.error === 'audio-capture') {
+          attempts++;
+          if (attempts < maxAttempts) {
+            showFeedback(randomItem(peteMessages.voice), false);
+          } else {
+            showFeedback('Pete couldn’t hear you after a few tries. Try again!', false);
+            recognition.stop();
+          }
         } else {
-          showFeedback('Pete couldn’t hear you after a few tries. Try again!', false);
+          console.warn('Speech recognition error:', event.error);
+          showFeedback('Oops, something went wrong. Try again!', false);
           recognition.stop();
         }
-      } else {
-        console.warn('Speech recognition error:', event.error);
-        showFeedback('Oops, something went wrong. Try again!', false);
-        recognition.stop();
-      }
-    };
-    recognition.onend = () => {
-      state.recognition = null;
+      };
+      recognition.onend = () => {
+        state.recognition = null;
+        els.sayButton.classList.remove('busy');
+      };
+      recognition.start();
+      setTimeout(() => {
+        if (state.recognition) {
+          recognition.stop();
+          if (attempts === 0) showFeedback('Pete didn’t hear anything. Speak up!', false);
+        }
+      }, 5000);
+    } catch (e) {
+      console.error('Check answer failed:', e);
+      showFeedback('Voice check failed, try again!', false);
       els.sayButton.classList.remove('busy');
-    };
-    recognition.start();
-    setTimeout(() => {
-      if (state.recognition) {
-        recognition.stop();
-        if (attempts === 0) showFeedback('Pete didn’t hear anything. Speak up!', false);
-      }
-    }, 5000);
+    }
   };
 
   const handleSuccess = () => {
@@ -375,20 +402,31 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const spin = async () => {
     if (state.isPaused) return;
-    els.spinButton.classList.add('busy');
-    state.currentWord = getRandomWord();
-    await announce(randomItem(peteMessages.spin));
-    await revealWord(state.currentWord);
-    els.sayButton.disabled = false;
-    els.repeatButton.disabled = false;
-    els.spinButton.classList.remove('busy');
+    try {
+      els.spinButton.classList.add('busy');
+      state.currentWord = getRandomWord();
+      await announce(randomItem(peteMessages.spin));
+      await revealWord(state.currentWord);
+      els.sayButton.disabled = false;
+      els.repeatButton.disabled = false;
+    } catch (e) {
+      console.error('Spin failed:', e);
+      showFeedback('Something went wrong, try spinning again!', false);
+    } finally {
+      els.spinButton.classList.remove('busy');
+    }
   };
 
   const repeat = async () => {
     if (state.isPaused) return;
-    els.repeatButton.classList.add('busy');
-    await revealWord(state.currentWord, true);
-    els.repeatButton.classList.remove('busy');
+    try {
+      els.repeatButton.classList.add('busy');
+      await revealWord(state.currentWord, true);
+    } catch (e) {
+      console.error('Repeat failed:', e);
+    } finally {
+      els.repeatButton.classList.remove('busy');
+    }
   };
 
   const togglePause = () => {
@@ -443,15 +481,12 @@ document.addEventListener('DOMContentLoaded', () => {
     state.theme = prefs.theme || 'default';
     document.body.dataset.theme = state.theme;
     if (els.themeSelector) els.themeSelector.value = state.theme;
-    els.soundToggle.textContent = state.soundsEnabled ? '🔊 On' : '🔇 Off';
+    if (els.soundToggle) els.soundToggle.textContent = state.soundsEnabled ? '🔊 On' : '🔇 Off';
     els.difficultyRadios.forEach(radio => {
       if (radio.value === state.difficulty) radio.checked = true;
     });
   };
 
-  /* --------------------------
-     Event Listeners
-  --------------------------- */
   els.spinButton.addEventListener('click', spin);
   els.sayButton.addEventListener('click', checkAnswer);
   els.repeatButton.addEventListener('click', repeat);
