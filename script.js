@@ -151,9 +151,10 @@ document.addEventListener('DOMContentLoaded', () => {
   function showCompliment() {
     const compliment = compliments[Math.floor(Math.random() * compliments.length)];
     els.complimentBox.textContent = compliment;
+    els.complimentBox.classList.add('show');
     if (state.soundsEnabled) playSound('cheer'); // Optional: Add a "cheer" sound
     state.celebrationMode ? launchFireworks() : launchConfetti();
-    setTimeout(() => els.complimentBox.textContent = '', 2000);
+    setTimeout(() => els.complimentBox.classList.remove('show'), 2000);
   }
 
   function launchConfetti() {
