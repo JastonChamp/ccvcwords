@@ -101,8 +101,14 @@ header {
 .mascot.mascot--baby { background-image: url('baby-parrot.png'); }
 .mascot.mascot--grown { background-image: url('grown-parrot.png'); width: 4rem; height: 4rem; }
 .mascot.speaking { animation: bounce 0.6s infinite alternate, speak 1.2s infinite; }
+.mascot.success { animation: flapWings 1.5s infinite alternate; }
+.mascot.failure { animation: sadShake 1s forwards; }
+.mascot.celebrate { animation: celebrateDance 1.5s infinite; }
 @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-15px); } } /* Larger bounce */
 @keyframes speak { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(15deg); } } /* Larger tilt */
+@keyframes flapWings { from { transform: translateY(0) rotate(0deg); } to { transform: translateY(-20px) rotate(20deg); } }
+@keyframes sadShake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-10px); } 75% { transform: translateX(10px); } }
+@keyframes celebrateDance { 0% { transform: rotate(0deg); } 25% { transform: rotate(15deg); } 50% { transform: rotate(-15deg); } 100% { transform: rotate(0deg); } }
 
 .action-buttons {
   display: flex;
@@ -171,3 +177,10 @@ footer { padding: 1rem; }
 }
 
 :focus { outline: 4px solid var(--primary-color); outline-offset: 3px; }
+
+.modal { border-radius: 1.5rem; padding: 2rem; background: #fff; box-shadow: 0 8px 24px rgba(0,0,0,0.2); }
+.modal-content { text-align: center; }
+.modal-content h2 { font-size: 2.5rem; color: #ff4444; }
+.modal-content p { font-size: 1.8rem; margin: 1rem 0; }
+.tutorial-step { margin: 1rem 0; }
+.tutorial-icon { width: 4rem; height: 4rem; }
