@@ -1,4 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
+  console.log('DOM fully loaded and parsed');
+
   const wordGroups = {
     cvc: {
       a: ['bat', 'cat', 'dad', 'fan', 'hat', 'jam', 'mad', 'nap', 'pan', 'rat', 'sad', 'tan', 'wag', 'zap', 'lap'],
@@ -92,6 +94,12 @@ document.addEventListener('DOMContentLoaded', () => {
     badges: document.querySelector('#badges'),
     fullscreenButton: document.querySelector('#fullscreenButton')
   };
+
+  // Debug: Log elements to ensure they're found
+  console.log('Elements:', {
+    toggleSettingsButton: els.toggleSettingsButton,
+    advancedSettings: els.advancedSettings
+  });
 
   const compliments = ['Great Job!', 'Awesome!', 'You’re a Star!', 'Well Done!', 'Fantastic!'];
   const badgeNames = {
@@ -370,11 +378,16 @@ document.addEventListener('DOMContentLoaded', () => {
     state.celebrationMode = els.celebrationModeCheckbox.checked;
     savePreferences();
   });
-  els.toggleSettingsButton.addEventListener('click', () => {
+  els.toggleSettingsButton.addEventListener('click', (event) => {
     console.log('Customize button clicked'); // Debug log
+    if (!els.toggleSettingsButton || !els.advancedSettings) {
+      console.error('Settings elements not found');
+      return;
+    }
+    event.preventDefault(); // Prevent default behavior if any
     const isVisible = els.advancedSettings.hidden;
     els.advancedSettings.hidden = !isVisible;
-    els.toggleSettingsButton.textContent = isVisible ? 'Hide Settings' : '⚙️ Customize';
+    els.toggleSettingsButton.textContent = isVisible ? '⚙️ Customize' : 'Hide Settings';
     els.toggleSettingsButton.setAttribute('aria-expanded', !isVisible); // Update accessibility
   });
   els.startTutorial.addEventListener('click', () => {
