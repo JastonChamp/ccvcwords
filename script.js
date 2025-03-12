@@ -1,197 +1,235 @@
-console.log('Script loaded'); // Confirm script starts
-
 document.addEventListener('DOMContentLoaded', () => {
-  console.log('DOM fully loaded');
+  console.log('DOM fully loaded and parsed');
 
-  // ----------------------------
-  // Configuration & Data Constants
-  // ----------------------------
   const wordGroups = {
     cvc: {
-      a: ['cat', 'bat', 'hat', 'mat', 'rat'],
-      e: ['bed', 'pen', 'jet', 'net', 'red'],
-      i: ['pig', 'sit', 'win', 'fin', 'lip'],
-      o: ['dog', 'top', 'hop', 'mop', 'pot'],
-      u: ['bug', 'run', 'cup', 'sun', 'mud']
+      a: ['bat', 'cat', 'dad', 'fan', 'hat', 'jam', 'mad', 'nap', 'pan', 'rat', 'sad', 'tan', 'wag', 'zap', 'lap'],
+      e: ['bed', 'den', 'fed', 'get', 'hen', 'jet', 'leg', 'men', 'net', 'pen', 'red', 'set', 'ten', 'vet', 'web'],
+      i: ['big', 'dig', 'fin', 'hit', 'jig', 'kid', 'lip', 'mix', 'nip', 'pig', 'pin', 'sit', 'tin', 'wig', 'zip'],
+      o: ['box', 'cot', 'dog', 'fog', 'hop', 'job', 'log', 'mop', 'not', 'pod', 'pop', 'pot', 'rot', 'top', 'sob'],
+      u: ['bug', 'cup', 'cut', 'fun', 'gum', 'hug', 'jug', 'mud', 'nut', 'pup', 'run', 'sun', 'tug', 'bud', 'bus']
     },
     ccvc: {
-      a: ['clap', 'snap', 'flag', 'trap', 'glad'],
-      e: ['step', 'fret', 'sled', 'bled', 'stem'],
-      i: ['skip', 'trip', 'grin', 'slip', 'clip'],
-      o: ['drop', 'stop', 'flop', 'crop', 'plot'],
-      u: ['drum', 'plug', 'club', 'slug', 'snug']
+      a: ['brag', 'clap', 'crab', 'drag', 'flag', 'flap', 'glad', 'grab', 'plan', 'slam', 'snap', 'trap', 'flat', 'swat', 'chat'],
+      e: ['bled', 'bred', 'fled', 'fret', 'glen', 'pled', 'sled', 'spec', 'stem', 'step', 'trek', 'prep', 'flex', 'dred', 'smell'],
+      i: ['brim', 'clip', 'crib', 'drip', 'flip', 'grin', 'grip', 'skip', 'slim', 'snip', 'spin', 'trip', 'twig', 'skin', 'swim'],
+      o: ['blot', 'clog', 'crop', 'drop', 'flop', 'frog', 'glob', 'plot', 'prop', 'shop', 'slot', 'stop', 'trot', 'clot', 'spot'],
+      u: ['club', 'drum', 'grub', 'plug', 'slug', 'snug', 'spun', 'stub', 'stun', 'trud', 'flub', 'glut', 'plum', 'scum', 'shut']
+    },
+    cvcc: {
+      a: ['band', 'bank', 'damp', 'hand', 'lamp', 'land', 'pant', 'ramp', 'sand', 'tank', 'fast', 'last', 'past', 'cast', 'raft'],
+      e: ['bend', 'dent', 'felt', 'lend', 'mend', 'nest', 'rest', 'sent', 'tent', 'vest', 'best', 'jest', 'pest', 'test', 'west'],
+      i: ['film', 'hint', 'lift', 'milk', 'mint', 'pink', 'ring', 'silk', 'sink', 'tilt', 'disk', 'fist', 'list', 'mist', 'wish'],
+      o: ['bond', 'cost', 'fond', 'host', 'lost', 'most', 'pond', 'post', 'soft', 'bolt', 'colt', 'jolt', 'molt', 'roll', 'told'],
+      u: ['bump', 'bunk', 'dust', 'hunt', 'jump', 'just', 'lump', 'must', 'rust', 'dunk', 'cusp', 'fuss', 'gust', 'husk', 'tusk']
+    },
+    ccvcc: {
+      a: ['brand', 'clamp', 'cramp', 'drank', 'flank', 'frank', 'plank', 'prank', 'stamp', 'plant', 'stand'],
+      e: ['blend', 'fleck', 'flesh', 'spend', 'strep', 'swept', 'trend', 'bless', 'crept', 'dress', 'fresh', 'press', 'slept', 'smelt', 'spent'],
+      i: ['blink', 'clink', 'crisp', 'drink', 'flint', 'print', 'slink', 'stink', 'twist', 'brisk', 'cling', 'fling', 'grift', 'shift', 'swift'],
+      o: ['blond', 'chomp', 'frost', 'prompt', 'stomp', 'strong', 'throb', 'clonk', 'floss', 'gloss', 'gross', 'prong', 'scoff', 'snort', 'thong'],
+      u: ['blunt', 'brunt', 'clump', 'crust', 'drunk', 'flung', 'grunt', 'plump', 'stump', 'trunk', 'brush', 'crush', 'flush', 'shrug', 'slush']
     },
     digraphs: {
-      a: ['chat', 'bash', 'path', 'that', 'sham'],
-      e: ['shed', 'then', 'chew', 'theft', 'shell'],
-      i: ['chip', 'shin', 'whip', 'thin', 'chill'],
-      o: ['shop', 'thud', 'chop', 'shot', 'show'],
-      u: ['shut', 'chug', 'thump', 'rush', 'brush']
+      a: ['chat', 'chap', 'than', 'that', 'math', 'path', 'bash', 'cash', 'dash', 'lash', 'rash', 'shag', 'sham', 'wham'],
+      e: ['shed', 'them', 'then', 'fetch', 'bench', 'check', 'chess', 'fresh', 'retch', 'shell', 'shred', 'theft', 'wrench'],
+      i: ['chip', 'chin', 'thin', 'ship', 'shin', 'chick', 'chill', 'shift', 'thick', 'thing','wish'],
+      o: ['shop', 'shot', 'chop', 'shock', 'cloth', 'froth', 'notch', 'shod', 'sloth', 'thong' ],
+      u: ['shut', 'thud', 'chug', 'chunk', 'thump', 'brush', 'crush', 'flush', 'shrug', 'blush','shuck', 'stuck', 'thumb']
+    },
+    extended: {
+      a: ['fantastic', 'smashing', 'crashing', 'stamping', 'clapping', 'tracking', 'snapping', 'flashing', 'grabbing', 'slashing'],
+      e: ['wrecking', 'spelling', 'pressing', 'dressing', 'fetching', 'stretching', 'checking', 'swelling', 'shedding', 'tempting'],
+      i: ['blinking', 'drinking', 'tripping', 'flipping', 'snipping', 'skipping', 'swinging', 'chirping', 'slipping', 'twisting'],
+      o: ['blocking', 'rocking', 'crossing', 'stopping', 'chopping', 'dropping', 'flopping', 'locking', 'shocking', 'trotting'],
+      u: ['jumping', 'bumping', 'hunting', 'rushing', 'crushing', 'brushing', 'dumping', 'hugging', 'running', 'tugging']
+    },
+    silentE: {
+      a: ['spade', 'mate', 'game', 'bake', 'gave', 'rake', 'cake', 'lake'],
+      e: ['theme', 'these', 'eve'],
+      i: ['bike', 'kite', 'lime', 'mine', 'pine', 'time', 'dive', 'five'],
+      o: ['home', 'nose', 'rope', 'note', 'cone', 'hope', 'robe', 'stone'],
+      u: ['cube', 'tune', 'mule', 'rude', 'flute', 'cute', 'dune', 'june']
     }
   };
 
-  const digraphs = ['sh', 'th', 'ch', 'ng', 'wh'];
-
-  // Difficulty configuration: base times in ms, badge thresholds, and success streak required
-  const difficulties = {
-    easy: { types: ['cvc'], baseTime: 6000, badgeThreshold: 5, successStreak: 3 },
-    medium: { types: ['cvc', 'ccvc'], baseTime: 4500, badgeThreshold: 10, successStreak: 4 },
-    hard: { types: ['cvc', 'ccvc', 'digraphs'], baseTime: 3000, badgeThreshold: 15, successStreak: 5 }
-  };
-
-  // Pete's motivational messages
-  const peteMessages = {
-    spin: ['Let’s find a nest word!', 'Spin for Pete!', 'Here comes a word!'],
-    blend: ['Say each sound slow!', 'Blend it for Pete!', 'Mix those sounds!'],
-    success: ['Perfect! Pete’s nest grows!', 'You’re a blending hero!', 'Pete flaps for you!'],
-    error: ['Oops, not quite!', 'Try again, Pete believes in you!', 'Close! Listen again!'],
-    streak: ['Wow, three in a row!', 'Four perfect blends!', 'Five? You’re flying!']
-  };
-
-  // ----------------------------
-  // State Management
-  // ----------------------------
+  const digraphs = ['sh', 'th', 'ch', 'ng'];
   const state = {
     score: 0,
-    level: 1,
-    wordsDone: 0,
-    badges: 0,
-    currentWord: '',
-    difficulty: 'easy',
-    blendingTime: difficulties.easy.baseTime,
-    soundsEnabled: true,
+    revealedWords: 0,
+    totalWords: 0,
     usedWords: new Set(),
-    isPaused: false,
-    recognition: null,
-    successStreak: 0,
-    maxStreak: 0
+    currentWord: '',
+    blendingTime: 3000,
+    soundsEnabled: true,
+    wordType: 'cvc',
+    vowelFilter: 'all',
+    theme: 'default',
+    celebrationMode: false,
+    badges: new Map()
   };
 
-  // ----------------------------
-  // DOM Element Cache
-  // ----------------------------
   const els = {
     spinButton: document.querySelector('#spinButton'),
-    sayButton: document.querySelector('#sayButton'),
     repeatButton: document.querySelector('#repeatButton'),
-    pauseButton: document.querySelector('#pauseButton'),
-    soundToggle: document.querySelector('#soundToggle'),
+    hintButton: document.querySelector('#hintButton'),
     wordBox: document.querySelector('#wordBox'),
     scoreValue: document.querySelector('#scoreValue'),
-    levelValue: document.querySelector('#levelValue'),
-    badgeCount: document.querySelector('#badgeCount'),
+    scoreIncrement: document.querySelector('#scoreIncrement'),
     progressText: document.querySelector('#progressText'),
     progressFill: document.querySelector('#progressFill'),
     progressBar: document.querySelector('#progressBar'),
     progressIcon: document.querySelector('#progressIcon'),
-    feedbackBox: document.querySelector('#feedbackBox'),
+    complimentBox: document.querySelector('#complimentBox'),
+    screenReaderAnnounce: document.querySelector('#screenReaderAnnounce'),
     blendingTimerContainer: document.querySelector('#blendingTimerContainer'),
     blendingTimer: document.querySelector('#blendingTimer'),
-    mascot: document.querySelector('#mascot'),
+    wordTypeSelector: document.querySelector('#wordTypeSelector'),
+    vowelSelector: document.querySelector('#vowelSelector'),
+    themeSelector: document.querySelector('#themeSelector'),
+    toggleAudioButton: document.querySelector('#toggleAudioButton'),
+    blendingTimeDisplay: document.querySelector('#blendingTimeDisplay'),
+    increaseTime: document.querySelector('#increaseBlendingTime'),
+    decreaseTime: document.querySelector('#decreaseBlendingTime'),
+    celebrationModeCheckbox: document.querySelector('#celebrationMode'),
     confettiContainer: document.querySelector('#confettiContainer'),
-    toggleSettingsButton: document.querySelector('#toggleSettingsButton'),
-    advancedSettings: document.querySelector('#advancedSettings'),
-    difficultyRadios: document.querySelectorAll('input[name="difficulty"]'),
-    resetGame: document.querySelector('#resetGame'),
     tutorialModal: document.querySelector('#tutorialModal'),
     startTutorial: document.querySelector('#startTutorial'),
     skipTutorial: document.querySelector('#skipTutorial'),
-    screenReaderAnnounce: document.querySelector('#screenReaderAnnounce'),
-    captions: document.querySelector('#captions')
+    toggleSettingsButton: document.querySelector('#toggleSettingsButton'),
+    advancedSettings: document.querySelector('#advancedSettings'),
+    badges: document.querySelector('#badges'),
+    fullscreenButton: document.querySelector('#fullscreenButton')
   };
 
-  // ----------------------------
-  // Utility Functions
-  // ----------------------------
-  const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
-  const randomItem = arr => arr[Math.floor(Math.random() * arr.length)];
+  const compliments = ['Great Job!', 'Awesome!', 'You’re a Star!', 'Well Done!', 'Fantastic!'];
+  const badgeNames = {
+    cvc: 'CVC Star',
+    ccvc: 'CCVC Hero',
+    cvcc: 'CVCC Champ',
+    ccvcc: 'CCVCC Master',
+    digraphs: 'Digraph Ace',
+    extended: 'Word Wizard',
+    silentE: 'Silent E Expert'
+  };
 
-  // Fuzzy matching: compute Levenshtein distance between two strings
-  const levenshteinDistance = (s1, s2) => {
-    const dp = Array.from({ length: s1.length + 1 }, () => Array(s2.length + 1).fill(0));
-    for (let i = 0; i <= s1.length; i++) dp[i][0] = i;
-    for (let j = 0; j <= s2.length; j++) dp[0][j] = j;
-    for (let i = 1; i <= s1.length; i++) {
-      for (let j = 1; j <= s2.length; j++) {
-        const cost = s1[i - 1] === s2[j - 1] ? 0 : 1;
-        dp[i][j] = Math.min(dp[i - 1][j] + 1, dp[i][j - 1] + 1, dp[i - 1][j - 1] + cost);
-      }
+  let voice = null;
+  async function initSpeech() {
+    return new Promise(resolve => {
+      const checkVoices = () => {
+        const voices = speechSynthesis.getVoices();
+        if (voices.length > 0) {
+          voice = voices.find(v => v.lang.startsWith('en') && v.name.toLowerCase().includes('female')) ||
+                  voices.find(v => v.lang.startsWith('en')) || voices[0];
+          console.log('Selected voice for words:', voice ? voice.name : 'Default voice');
+          resolve();
+        } else {
+          speechSynthesis.onvoiceschanged = checkVoices;
+        }
+      };
+      checkVoices();
+    });
+  }
+
+  function speakWord(text) {
+    if (!voice || !state.soundsEnabled || speechSynthesis.speaking) {
+      console.warn(`Speech synthesis skipped for word "${text}" due to disabled sounds or speaking in progress`);
+      return Promise.resolve();
     }
-    return dp[s1.length][s2.length];
-  };
+    return new Promise(resolve => {
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.voice = voice;
+      utterance.rate = 0.9;
+      utterance.pitch = 1.2;
+      utterance.onend = resolve;
+      utterance.onerror = () => {
+        console.error(`Speech synthesis failed for word "${text}"`);
+        resolve();
+      };
+      speechSynthesis.speak(utterance);
+    });
+  }
 
-  // Announce a message via live region and update captions and mascot animation
-  const announce = async (text, duration = 4000) => {
+  function playSound(sound) {
+    if (!state.soundsEnabled) return Promise.resolve();
+    return new Promise((resolve) => {
+      const audio = new Audio(`${sound}.mp3`);
+      console.log(`Attempting to play sound: ${sound}.mp3`);
+      audio.onended = () => {
+        console.log(`Successfully played ${sound}.mp3`);
+        resolve();
+      };
+      audio.onerror = () => {
+        console.warn(`Sound file "${sound}.mp3" not found, skipping`);
+        resolve();
+      };
+      audio.play().catch(e => {
+        console.error(`Audio playback failed for ${sound}.mp3:`, e);
+        resolve();
+      });
+    });
+  }
+
+  const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
+  const announce = text => {
     els.screenReaderAnnounce.textContent = text;
-    els.captions.textContent = text;
-    els.mascot.classList.add('speaking');
-    await delay(duration);
-    els.screenReaderAnnounce.textContent = '';
-    els.captions.textContent = '';
-    els.mascot.classList.remove('speaking');
+    setTimeout(() => els.screenReaderAnnounce.textContent = '', 1000);
   };
 
-  // Play a letter sound (no TTS fallback for individual letters)
-  const playLetterSound = async (sound, caption = sound) => {
-    if (!state.soundsEnabled || state.isPaused) return Promise.resolve();
-    return new Promise(async (resolve) => {
-      try {
-        const audio = new Audio(`${sound}.mp3`);
-        els.captions.textContent = caption;
-        audio.addEventListener('ended', () => {
-          els.captions.textContent = '';
-          resolve();
-        });
-        audio.addEventListener('error', (e) => {
-          console.error(`Letter sound "${sound}.mp3" failed:`, e);
-          els.captions.textContent = '';
-          resolve();
-        });
-        await audio.play();
-      } catch (e) {
-        console.error(`Error playing "${sound}.mp3":`, e);
-        els.captions.textContent = '';
-        resolve();
-      }
-    });
-  };
+  function updateScore(points = 10) {
+    state.score += points;
+    els.scoreValue.textContent = state.score;
+    els.scoreIncrement.textContent = `+${points}`;
+    els.scoreIncrement.classList.add('show');
+    setTimeout(() => els.scoreIncrement.classList.remove('show'), 800);
+  }
 
-  // Play a full-word sound; if unavailable, use TTS fallback
-  const playWordSound = async (word, caption = word) => {
-    if (!state.soundsEnabled || state.isPaused) return Promise.resolve();
-    return new Promise(async (resolve) => {
-      try {
-        const audio = new Audio(`${word}.mp3`);
-        els.captions.textContent = caption;
-        audio.addEventListener('ended', () => {
-          els.captions.textContent = '';
-          resolve();
-        });
-        audio.addEventListener('error', async (e) => {
-          console.warn(`Word sound "${word}.mp3" unavailable, using TTS:`, e);
-          const utterance = new SpeechSynthesisUtterance(word);
-          utterance.lang = 'en-GB';
-          const voices = speechSynthesis.getVoices();
-          const ukFemaleVoice = voices.find(v => v.lang === 'en-GB' && /female/i.test(v.name)) || voices.find(v => v.lang === 'en-GB');
-          if (ukFemaleVoice) utterance.voice = ukFemaleVoice;
-          els.captions.textContent = caption;
-          utterance.onend = () => {
-            els.captions.textContent = '';
-            resolve();
-          };
-          speechSynthesis.speak(utterance);
-        });
-        await audio.play();
-      } catch (e) {
-        console.error(`Error with "${word}.mp3":`, e);
-        els.captions.textContent = '';
-        resolve();
-      }
-    });
-  };
+  function updateProgress() {
+    state.revealedWords = state.usedWords.size;
+    const percent = (state.revealedWords / state.totalWords) * 100 || 0;
+    els.progressText.textContent = `${state.revealedWords} / ${state.totalWords} Words`;
+    els.progressFill.style.width = `${percent}%`;
+    els.progressBar.setAttribute('aria-valuenow', Math.round(percent));
+    if (state.revealedWords % 10 === 0 && state.revealedWords > 0) {
+      els.progressIcon.classList.add('star-animate');
+      setTimeout(() => els.progressIcon.classList.remove('star-animate'), 1000);
+      earnBadge(state.wordType);
+    }
+  }
 
-  // Split a word into phonetic units; combine digraphs
-  const parseWord = word => {
+  function showCompliment() {
+    const compliment = compliments[Math.floor(Math.random() * compliments.length)];
+    els.complimentBox.textContent = compliment;
+    els.complimentBox.classList.add('show');
+    if (state.soundsEnabled) speakWord(compliment);
+    state.celebrationMode ? launchFireworks() : launchConfetti();
+    setTimeout(() => els.complimentBox.classList.remove('show'), 2000);
+  }
+
+  function launchConfetti() {
+    for (let i = 0; i < 20; i++) {
+      const confetti = document.createElement('div');
+      confetti.className = 'confetti';
+      confetti.style.left = `${Math.random() * 100}vw`;
+      confetti.style.background = `hsl(${Math.random() * 360}, 100%, 50%)`;
+      els.confettiContainer.appendChild(confetti);
+      setTimeout(() => confetti.remove(), 3000);
+    }
+  }
+
+  function launchFireworks() {
+    for (let i = 0; i < 15; i++) {
+      const firework = document.createElement('div');
+      firework.className = 'confetti star';
+      firework.style.left = `${Math.random() * 100}vw`;
+      firework.style.top = `${Math.random() * 50}vh`;
+      firework.style.background = `hsl(${Math.random() * 360}, 100%, 50%)`;
+      els.confettiContainer.appendChild(firework);
+      setTimeout(() => firework.remove(), 1500);
+    }
+  }
+
+  function parseWord(word) {
     const units = [];
     let i = 0;
     while (i < word.length) {
@@ -205,338 +243,244 @@ document.addEventListener('DOMContentLoaded', () => {
         i++;
       }
     }
+    if (state.wordType === 'silentE') {
+      let vowelMarked = false;
+      for (let unit of units) {
+        if (!vowelMarked && unit.isVowel && !unit.isDigraph) {
+          unit.isLongVowel = true;
+          vowelMarked = true;
+        }
+      }
+      if (units.length > 0 && units[units.length - 1].text === 'e') {
+        units[units.length - 1].isSilent = true;
+      }
+    }
     return units;
-  };
+  }
 
-  // ----------------------------
-  // Game Logic Functions
-  // ----------------------------
+  function savePreferences() {
+    localStorage.setItem('wordSpinnerPrefs', JSON.stringify({
+      ...state,
+      usedWords: Array.from(state.usedWords),
+      badges: Object.fromEntries(state.badges)
+    }));
+  }
 
-  // Returns an array of available words based on current difficulty settings
-  const getAvailableWords = () =>
-    difficulties[state.difficulty].types.flatMap(type => Object.values(wordGroups[type]).flat());
+  function loadPreferences() {
+    const prefs = JSON.parse(localStorage.getItem('wordSpinnerPrefs')) || {};
+    Object.assign(state, {
+      wordType: prefs.wordType || 'cvc',
+      vowelFilter: prefs.vowelFilter || 'all',
+      theme: prefs.theme || 'default',
+      blendingTime: prefs.blendingTime || 3000,
+      soundsEnabled: prefs.soundsEnabled ?? true,
+      celebrationMode: prefs.celebrationMode || false,
+      badges: new Map(Object.entries(prefs.badges || {})),
+      usedWords: new Set(prefs.usedWords || [])
+    });
+    document.body.dataset.theme = state.theme;
+    els.wordTypeSelector.value = state.wordType;
+    els.vowelSelector.value = state.vowelFilter;
+    els.themeSelector.value = state.theme;
+    els.blendingTimeDisplay.textContent = state.blendingTime / 1000;
+    els.toggleAudioButton.textContent = state.soundsEnabled ? '🔇 Sounds Off' : '🔊 Sounds On';
+    els.celebrationModeCheckbox.checked = state.celebrationMode;
+  }
 
-  // Returns a random unused word; if all used, resets the used words and levels up
-  const getRandomWord = () => {
+  function updateBadges() {
+    if (!els.badges) {
+      console.warn('Badges element not found, skipping update');
+      return;
+    }
+    els.badges.innerHTML = '';
+    state.badges.forEach((_, type) => {
+      const badge = document.createElement('div');
+      badge.className = 'badge';
+      badge.textContent = badgeNames[type];
+      els.badges.appendChild(badge);
+    });
+  }
+
+  function earnBadge(wordType) {
+    if (!state.badges.has(wordType)) {
+      state.badges.set(wordType, true);
+      updateBadges();
+      if (state.soundsEnabled) speakWord(`Congratulations! You earned the ${badgeNames[wordType]} badge!`);
+      launchConfetti();
+      savePreferences();
+    }
+  }
+
+  async function revealWord(word, isRepeat = false) {
+    els.wordBox.innerHTML = '';
+    const units = parseWord(word);
+    units.forEach((unit, i) => {
+      const span = document.createElement('span');
+      span.textContent = unit.text;
+      span.classList.add('letter');
+      if (unit.isVowel) span.classList.add('vowel');
+      if (unit.isDigraph) span.classList.add('digraph');
+      if (unit.isLongVowel) span.classList.add('long-vowel');
+      if (unit.isSilent) span.classList.add('silent');
+      span.style.animationDelay = `${i * 0.4}s`;
+      els.wordBox.appendChild(span);
+    });
+
+    for (const unit of units) {
+      await delay(400);
+      if (unit.isSilent) continue;
+      const sound = unit.isLongVowel ? `long_${unit.text}` : unit.text;
+      await playSound(sound);
+    }
+
+    els.blendingTimerContainer.style.display = 'block';
+    els.blendingTimer.style.transition = `width ${state.blendingTime / 1000}s linear`;
+    els.blendingTimer.style.width = '100%';
+    requestAnimationFrame(() => els.blendingTimer.style.width = '0%');
+    announce('Blend the letters aloud!');
+    await delay(state.blendingTime);
+    els.blendingTimerContainer.style.display = 'none';
+
+    if (state.soundsEnabled) {
+      console.log(`Attempting to speak full word: ${word}`);
+      await speakWord(word);
+      console.log(`Full word "${word}" spoken`);
+    }
+    announce(`The word is: ${word}`);
+    if (!isRepeat) {
+      state.usedWords.add(word);
+      showCompliment();
+      updateScore();
+      updateProgress();
+      if (state.usedWords.size === state.totalWords) resetGame();
+    }
+    els.hintButton.hidden = false;
+    els.repeatButton.disabled = false;
+  }
+
+  function getAvailableWords() {
+    const group = wordGroups[state.wordType];
+    if (state.vowelFilter === 'all') {
+      return Object.values(group).flat();
+    }
+    return group[state.vowelFilter] || [];
+  }
+
+  function getRandomWord() {
     const words = getAvailableWords().filter(w => !state.usedWords.has(w));
     if (!words.length) {
       state.usedWords.clear();
-      state.level++;
-      els.levelValue.textContent = state.level;
-      // Update mascot state based on level
-      els.mascot.classList.toggle('mascot--baby', state.level < 3);
-      els.mascot.classList.toggle('mascot--grown', state.level >= 3);
-      announce(`Level ${state.level}! Pete’s nest is growing!`);
       return getRandomWord();
     }
     return words[Math.floor(Math.random() * words.length)];
-  };
+  }
 
-  // Update the progress bar and related UI
-  const updateProgress = () => {
-    const total = getAvailableWords().length;
-    els.progressText.textContent = `${state.wordsDone} / ${total} Words`;
-    const percent = (state.wordsDone / total) * 100;
-    els.progressFill.style.width = `${percent}%`;
-    els.progressBar.setAttribute('aria-valuenow', Math.round(percent));
-  };
-
-  // Display feedback message; add mascot animations on error/success
-  const showFeedback = (text, isCorrect = true) => {
-    els.feedbackBox.textContent = text;
-    els.feedbackBox.classList.add('show');
-    if (!isCorrect) {
-      els.feedbackBox.classList.add('error');
-      els.mascot.classList.add('failure');
-      setTimeout(() => els.mascot.classList.remove('failure'), 2000);
-    } else {
-      els.feedbackBox.classList.remove('error');
-    }
-    setTimeout(() => els.feedbackBox.classList.remove('show', 'error'), 2000);
-  };
-
-  // Award a badge and trigger celebratory animations and confetti
-  const awardBadge = () => {
-    state.badges++;
-    els.badgeCount.textContent = state.badges;
-    els.progressIcon.classList.add('star-animate');
-    setTimeout(() => els.progressIcon.classList.remove('star-animate'), 1000);
-    announce(`Feather earned! Pete’s nest shines brighter!`);
-    launchConfetti(true);
-    els.mascot.classList.add('celebrate');
-    setTimeout(() => els.mascot.classList.remove('celebrate'), 2000);
-  };
-
-  // Launch confetti animation; isStar toggles extra confetti for badge or streak events
-  const launchConfetti = (isStar = false) => {
-    const count = isStar ? 40 : 25;
-    for (let i = 0; i < count; i++) {
-      const confetti = document.createElement('div');
-      confetti.className = `confetti${isStar && Math.random() > 0.5 ? ' star' : ''}`;
-      confetti.style.left = `${Math.random() * 100}vw`;
-      confetti.style.background = `hsl(${Math.random() * 360}, 100%, 50%)`;
-      els.confettiContainer.appendChild(confetti);
-      setTimeout(() => confetti.remove(), 3000);
-    }
-  };
-
-  // Adjust blending time based on the user's success streak (faster blending for higher streaks)
-  const adjustDifficulty = () => {
-    const baseTime = difficulties[state.difficulty].baseTime;
-    const streakBonus = Math.min(state.maxStreak, 5) * -200; // Reduce time by 200ms per streak, max 1000ms reduction
-    state.blendingTime = Math.max(baseTime + streakBonus, 2000); // Minimum blending time: 2 seconds
-  };
-
-  // Reveal a word: animate each letter, play corresponding sounds, and prompt the user
-  const revealWord = async (word, isRepeat = false) => {
-    if (state.isPaused) return;
-    try {
-      els.wordBox.innerHTML = '';
-      const units = parseWord(word);
-      for (let i = 0; i < units.length; i++) {
-        const span = document.createElement('span');
-        span.textContent = units[i].text;
-        span.classList.add('letter', units[i].isVowel ? 'vowel' : units[i].isDigraph ? 'digraph' : 'consonant');
-        span.style.animationDelay = `${i * 0.5}s`;
-        els.wordBox.appendChild(span);
-        await delay(500);
-        await playLetterSound(units[i].text, units[i].text);
-        await announce(`Say: ${units[i].text}`, 2000);
-      }
-      els.blendingTimerContainer.style.display = 'block';
-      els.blendingTimer.style.transition = `width ${state.blendingTime / 1000}s linear`;
-      els.blendingTimer.style.width = '100%';
-      requestAnimationFrame(() => els.blendingTimer.style.width = '0%');
-      await announce(randomItem(peteMessages.blend));
-      await delay(state.blendingTime);
-      els.blendingTimerContainer.style.display = 'none';
-      if (!isRepeat) {
-        await playWordSound(word, word);
-        await announce(`The word is ${word}. Say it for Pete’s nest!`);
-      }
-    } catch (e) {
-      console.error('Reveal word failed:', e);
-      showFeedback('Oops, something went wrong with the word!', false);
-    }
-  };
-
-  // Check the user's spoken answer using Speech Recognition with fuzzy matching, optimized for Android and children
-  const checkAnswer = async () => {
-    if (!state.currentWord || state.isPaused) return;
-    try {
-      // Fallback to typed input if SpeechRecognition is unavailable
-      if (!window.SpeechRecognition && !window.webkitSpeechRecognition) {
-        showFeedback('Pete can’t hear you on this device. Type it instead?', false);
-        const answer = prompt('Type the word you heard:', '');
-        if (answer?.toLowerCase().trim() === state.currentWord) {
-          handleSuccess();
-        } else {
-          showFeedback(`It’s ${state.currentWord}. Try again!`, false);
-        }
-        return;
-      }
-      if (state.recognition) state.recognition.stop();
-      els.sayButton.classList.add('busy');
-      const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-      state.recognition = recognition;
-      recognition.lang = 'en-US'; // Adjust to 'en-GB' or your language if needed
-      recognition.continuous = true; // Keep listening longer for children
-      recognition.interimResults = true; // Capture partial results
-      recognition.maxAlternatives = 7; // Increased to capture more speech options for children
-      let attempts = 0;
-      const maxAttempts = 5; // Increased to allow more retries for children
-
-      recognition.onresult = event => {
-        const results = event.results[0];
-        const spoken = results[0].transcript.toLowerCase().trim();
-        console.log(`Recognized on Android: "${spoken}"`); // Debug for Android
-        if (results.isFinal) {
-          if (spoken === state.currentWord || levenshteinDistance(spoken, state.currentWord) <= 3) { // Increased threshold for children’s speech
-            handleSuccess();
-          } else {
-            attempts++;
-            if (attempts < maxAttempts) {
-              showFeedback(`${randomItem(peteMessages.error)} You said "${spoken}". Try speaking louder or clearer!`, false);
-            } else {
-              state.successStreak = 0;
-              showFeedback(`${randomItem(peteMessages.error)} You said "${spoken}", it’s "${state.currentWord}". Try again later!`, false);
-              recognition.stop();
-            }
-          }
-        }
-      };
-
-      recognition.onerror = event => {
-        if (['no-speech', 'audio-capture'].includes(event.error)) {
-          attempts++;
-          if (attempts < maxAttempts) {
-            showFeedback(randomItem(peteMessages.error), false);
-          } else {
-            showFeedback('Pete couldn’t hear you after several tries. Please speak up or try again later!', false);
-            recognition.stop();
-          }
-        } else {
-          console.warn('Speech recognition error on Android:', event.error);
-          showFeedback('Oops, something went wrong. Please try again later!', false);
-          recognition.stop();
-        }
-      };
-
-      recognition.onend = () => {
-        state.recognition = null;
-        els.sayButton.classList.remove('busy');
-      };
-
-      recognition.start();
-      setTimeout(() => {
-        if (state.recognition) {
-          recognition.stop();
-          if (attempts === 0) showFeedback('Pete didn’t hear anything. Speak up or try again!', false);
-        }
-      }, 9000); // Extended to 9 seconds for children’s slower speech
-    } catch (e) {
-      console.error('Check answer failed on Android:', e);
-      showFeedback('Voice check failed, please try again later!', false);
-      els.sayButton.classList.remove('busy');
-    }
-  };
-
-  // Handle a correct answer
-  const handleSuccess = () => {
-    state.score += 10 * state.level;
-    state.wordsDone++;
-    state.successStreak++;
-    state.maxStreak = Math.max(state.maxStreak, state.successStreak);
-    state.usedWords.add(state.currentWord);
-    els.scoreValue.textContent = state.score;
-    updateProgress();
-    const isBadge = state.wordsDone % difficulties[state.difficulty].badgeThreshold === 0;
-    const isStreak = state.successStreak === difficulties[state.difficulty].successStreak;
-    showFeedback(isStreak ? randomItem(peteMessages.streak) : randomItem(peteMessages.success), true);
-    els.mascot.classList.add('success');
-    setTimeout(() => els.mascot.classList.remove('success'), 2000);
-    launchConfetti(isBadge || isStreak);
-    if (isBadge) awardBadge();
-    adjustDifficulty();
-    if (state.recognition) state.recognition.stop();
-  };
-
-  // ----------------------------
-  // Event Handlers
-  // ----------------------------
-  const spin = async () => {
-    if (state.isPaused) return;
-    els.spinButton.classList.add('busy');
-    state.currentWord = getRandomWord();
-    await announce(randomItem(peteMessages.spin));
-    await revealWord(state.currentWord);
-    els.sayButton.disabled = false;
-    els.repeatButton.disabled = false;
-    els.spinButton.classList.remove('busy');
-  };
-
-  const repeat = async () => {
-    if (state.isPaused) return;
-    els.repeatButton.classList.add('busy');
-    await revealWord(state.currentWord, true);
-    els.repeatButton.classList.remove('busy');
-  };
-
-  const togglePause = () => {
-    state.isPaused = !state.isPaused;
-    els.pauseButton.textContent = state.isPaused ? '▶️ Resume' : '⏸️ Pause';
-    announce(state.isPaused ? 'Pete’s taking a nap!' : 'Back to the nest!');
-  };
-
-  const toggleSound = () => {
-    state.soundsEnabled = !state.soundsEnabled;
-    els.soundToggle.textContent = state.soundsEnabled ? '🔊 On' : '🔇 Off';
-    announce(state.soundsEnabled ? 'Pete’s chirping again!' : 'Quiet time for Pete!');
-  };
-
-  const resetGame = () => {
-    Object.assign(state, {
-      score: 0,
-      level: 1,
-      wordsDone: 0,
-      badges: 0,
-      usedWords: new Set(),
-      currentWord: '',
-      isPaused: false,
-      successStreak: 0,
-      maxStreak: 0,
-      blendingTime: difficulties[state.difficulty].baseTime
-    });
+  function resetGame() {
+    state.usedWords.clear();
+    state.revealedWords = 0;
+    state.score = 0;
+    state.currentWord = '';
     els.scoreValue.textContent = '0';
-    els.levelValue.textContent = '1';
-    els.badgeCount.textContent = '0';
-    els.mascot.classList.remove('mascot--grown');
-    els.mascot.classList.add('mascot--baby');
-    els.sayButton.disabled = true;
     els.repeatButton.disabled = true;
-    els.pauseButton.textContent = '⏸️ Pause';
+    els.hintButton.hidden = true;
+    state.totalWords = getAvailableWords().length;
     updateProgress();
-    announce('A fresh quest with Pete begins!');
-  };
-
-  // Save and load user preferences
-  const savePreferences = () => {
-    localStorage.setItem('wordSpinnerPrefs', JSON.stringify({
-      difficulty: state.difficulty,
-      soundsEnabled: state.soundsEnabled
-    }));
-  };
-
-  const loadPreferences = () => {
-    const prefs = JSON.parse(localStorage.getItem('wordSpinnerPrefs')) || {};
-    state.difficulty = prefs.difficulty || 'easy';
-    state.soundsEnabled = prefs.soundsEnabled !== undefined ? prefs.soundsEnabled : true;
-    els.soundToggle.textContent = state.soundsEnabled ? '🔊 On' : '🔇 Off';
-    els.difficultyRadios.forEach(radio => {
-      if (radio.value === state.difficulty) radio.checked = true;
-    });
-  };
-
-  // ----------------------------
-  // Event Listeners
-  // ----------------------------
-  els.spinButton.addEventListener('click', spin);
-  els.sayButton.addEventListener('click', checkAnswer);
-  els.repeatButton.addEventListener('click', repeat);
-  els.pauseButton.addEventListener('click', togglePause);
-  els.soundToggle.addEventListener('click', toggleSound);
-  els.toggleSettingsButton.addEventListener('click', () => {
-    const isVisible = els.advancedSettings.style.display === 'block';
-    els.advancedSettings.style.display = isVisible ? 'none' : 'block';
-    els.toggleSettingsButton.textContent = isVisible
-      ? `⚙️ Play ${state.difficulty.charAt(0).toUpperCase() + state.difficulty.slice(1)}`
-      : '✖️ Close';
-    els.toggleSettingsButton.setAttribute('aria-expanded', !isVisible);
-  });
-  els.difficultyRadios.forEach(radio => {
-    radio.addEventListener('change', () => {
-      state.difficulty = radio.value;
-      state.blendingTime = difficulties[state.difficulty].baseTime;
-      resetGame();
-      savePreferences();
-    });
-  });
-  els.resetGame.addEventListener('click', () => {
-    resetGame();
     savePreferences();
+  }
+
+  async function spin() {
+    els.spinButton.disabled = true;
+    state.currentWord = getRandomWord();
+    await revealWord(state.currentWord);
+    els.spinButton.disabled = false;
+  }
+
+  async function repeat() {
+    if (!state.currentWord) return;
+    els.repeatButton.disabled = true;
+    await revealWord(state.currentWord, true);
+  }
+
+  async function hint() {
+    if (!state.currentWord) return;
+    await playSound(state.currentWord);
+  }
+
+  els.spinButton.addEventListener('click', spin);
+  els.repeatButton.addEventListener('click', repeat);
+  els.hintButton.addEventListener('click', hint);
+  els.wordTypeSelector.addEventListener('change', () => {
+    state.wordType = els.wordTypeSelector.value;
+    resetGame();
+  });
+  els.vowelSelector.addEventListener('change', () => {
+    state.vowelFilter = els.vowelSelector.value;
+    resetGame();
+  });
+  els.themeSelector.addEventListener('change', () => {
+    state.theme = els.themeSelector.value;
+    document.body.dataset.theme = state.theme;
+    savePreferences();
+  });
+  els.toggleAudioButton.addEventListener('click', () => {
+    state.soundsEnabled = !state.soundsEnabled;
+    els.toggleAudioButton.textContent = state.soundsEnabled ? '🔇 Sounds Off' : '🔊 Sounds On';
+    savePreferences();
+  });
+  els.increaseTime.addEventListener('click', () => {
+    if (state.blendingTime < 7000) {
+      state.blendingTime += 1000;
+      els.blendingTimeDisplay.textContent = state.blendingTime / 1000;
+      savePreferences();
+    }
+  });
+  els.decreaseTime.addEventListener('click', () => {
+    if (state.blendingTime > 1000) {
+      state.blendingTime -= 1000;
+      els.blendingTimeDisplay.textContent = state.blendingTime / 1000;
+      savePreferences();
+    }
+  });
+  els.celebrationModeCheckbox.addEventListener('change', () => {
+    state.celebrationMode = els.celebrationModeCheckbox.checked;
+    savePreferences();
+  });
+  els.toggleSettingsButton.addEventListener('click', (event) => {
+    console.log('Customize button clicked');
+    if (!els.toggleSettingsButton || !els.advancedSettings) {
+      console.error('Settings elements not found');
+      return;
+    }
+    event.preventDefault();
+    const isVisible = els.advancedSettings.style.display === 'block';
+    console.log('Toggling settings visibility. Current display:', isVisible);
+    els.advancedSettings.style.display = isVisible ? 'none' : 'block';
+    els.toggleSettingsButton.textContent = isVisible ? '⚙️ Customize' : 'Hide Settings';
+    els.toggleSettingsButton.setAttribute('aria-expanded', !isVisible);
+    els.advancedSettings.setAttribute('aria-hidden', isVisible);
   });
   els.startTutorial.addEventListener('click', () => {
     els.tutorialModal.close();
     localStorage.setItem('hasSeenTutorial', 'true');
-    spin();
+    if (state.soundsEnabled) playSound('start');
   });
   els.skipTutorial.addEventListener('click', () => {
     els.tutorialModal.close();
     localStorage.setItem('hasSeenTutorial', 'true');
   });
+  els.fullscreenButton.addEventListener('click', () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(console.warn);
+    } else {
+      document.exitFullscreen().catch(console.warn);
+    }
+  });
 
-  // Initialize preferences and progress; show tutorial if not seen
-  loadPreferences();
-  updateProgress();
-  if (!localStorage.getItem('hasSeenTutorial')) els.tutorialModal.showModal();
+  (async () => {
+    await initSpeech();
+    loadPreferences();
+    updateBadges();
+    resetGame();
+    if (!localStorage.getItem('hasSeenTutorial')) els.tutorialModal.showModal();
+  })();
 });
