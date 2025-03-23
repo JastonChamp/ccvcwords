@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;700&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=OpenDyslexic&display=swap">
 </head>
 <body>
   <div class="app-wrapper">
@@ -26,10 +27,16 @@
 
         <div class="game-area">
           <div class="word-display-container">
+            <!-- Removed mascot to reduce clutter -->
             <div class="word-display" id="wordBox" aria-live="polite"></div>
-            <div class="mascot" aria-hidden="true">🦜</div>
+            <div class="color-legend" aria-label="Phonics Color Legend">
+              <span class="legend-item vowel">Vowel</span>
+              <span class="legend-item digraph">Digraph</span>
+              <span class="legend-item long-vowel">Long Vowel</span>
+              <span class="legend-item silent">Silent</span>
+            </div>
           </div>
-          <div class="action-buttons">
+          <div class="action-buttons kid-mode">
             <button id="spinButton" aria-label="Spin for a new word" accesskey="s">
               <span class="icon" aria-hidden="true">🎡</span> Spin
             </button>
@@ -39,6 +46,11 @@
             <button id="hintButton" aria-label="Get a hint" accesskey="h" hidden>
               <span class="icon" aria-hidden="true">💡</span> Hint
             </button>
+          </div>
+          <div class="interactive-input" hidden>
+            <label for="wordInput">Type the word you heard:</label>
+            <input type="text" id="wordInput" aria-label="Type the word">
+            <button id="submitWord" aria-label="Submit typed word">Submit</button>
           </div>
         </div>
 
@@ -55,6 +67,8 @@
         <div id="blendingTimerContainer" role="timer" aria-label="Blending timer">
           <p class="timer-label" aria-live="polite">Blend now! ⏳</p>
           <div id="blendingTimer" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+          <button id="pauseTimer" aria-label="Pause blending timer">⏸️ Pause</button>
+          <button id="skipTimer" aria-label="Skip blending timer">⏭️ Skip</button>
         </div>
 
         <div id="screenReaderAnnounce" class="sr-only" aria-live="assertive"></div>
@@ -106,15 +120,23 @@
           <div class="timer-controls">
             <label for="blendingDelayInput">Blending Time (sec):</label>
             <div class="time-adjust" id="blendingDelayInput">
-              <button id="decreaseBlendingTime" aria-label="Decrease blending time">➖</button>
+              <button id="decreaseBlendingTime" aria-label="Decrease blending time by 0.5 seconds">➖</button>
               <span id="blendingTimeDisplay" aria-live="polite">3</span>
-              <button id="increaseBlendingTime" aria-label="Increase blending time">➕</button>
+              <button id="increaseBlendingTime" aria-label="Increase blending time by 0.5 seconds">➕</button>
             </div>
           </div>
           <div class="settings-section">
             <label>
               <input type="checkbox" id="celebrationMode" aria-label="Enable celebration mode">
               Celebration Mode
+            </label>
+            <label>
+              <input type="checkbox" id="animationToggle" aria-label="Enable animations">
+              Animations On
+            </label>
+            <label>
+              <input type="checkbox" id="dyslexiaFont" aria-label="Use dyslexia-friendly font">
+              Dyslexia-Friendly Font
             </label>
           </div>
           <div class="settings-buttons">
@@ -131,12 +153,35 @@
 
     <div id="confettiContainer" aria-hidden="true"></div>
     <div id="scoreIncrement" class="score-increment" aria-hidden="true"></div>
+
+    <!-- Parental Gate Modal -->
+    <dialog id="parentalGateModal" class="modal">
+      <div class="modal-content">
+        <h2>Parental Gate</h2>
+        <p>Please solve this to access settings: What is 2 + 3?</p>
+        <input type="number" id="parentalGateInput" aria-label="Enter answer">
+        <button id="submitParentalGate" aria-label="Submit answer">Submit</button>
+      </div>
+    </dialog>
+
+    <!-- Interactive Tutorial Modal -->
     <dialog id="tutorialModal" class="modal">
       <div class="modal-content">
         <h2>Welcome to Word Spinner!</h2>
-        <p>Spin to hear letter sounds and blend them into words!</p>
-        <button id="startTutorial" aria-label="Start tutorial">Start</button>
-        <button id="skipTutorial" aria-label="Skip tutorial">Skip</button>
+        <div id="tutorialStep1">
+          <p>Step 1: Click "Spin" to get a new word.</p>
+          <button id="nextStep1" aria-label="Next step">Next</button>
+        </div>
+        <div id="tutorialStep2" hidden>
+          <p>Step 2: Listen to the sounds and blend them aloud.</p>
+          <p>Use the timer to pace yourself, or pause/skip if needed.</p>
+          <button id="nextStep2" aria-label="Next step">Next</button>
+        </div>
+        <div id="tutorialStep3" hidden>
+          <p>Step 3: Type the word you heard, or use "Repeat" and "Hint" for help.</p>
+          <button id="startTutorial" aria-label="Start game">Start</button>
+          <button id="skipTutorial" aria-label="Skip tutorial">Skip</button>
+        </div>
       </div>
     </dialog>
   </div>
