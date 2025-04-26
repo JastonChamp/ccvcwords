@@ -51,501 +51,190 @@ document.addEventListener('DOMContentLoaded', () => {
       o: ['home', 'nose', 'rope', 'note', 'cone', 'hope', 'robe', 'stone'],
       u: ['cube', 'tune', 'mule', 'rude', 'flute', 'cute', 'dune', 'june']
     }
-  };
-/** Game State */
-  const state = {
-    score: 0,
-    revealedWords: 0,
-    totalWords: 0,
-    usedWords: new Set(),
-    currentWord: '',
-    blendingTime: 3000,
-    soundsEnabled: true,
-    wordType: 'cvc',
-    vowelFilter: 'all',
-    theme: 'default',
-    celebrationMode: false,
-    animationsEnabled: true,
-    fontStyle: 'default',
-    badges: new Map(),
-    successStreak: 0, // For adaptive difficulty
-    difficultyLevel: 1 // 1: cvc, 2: ccvc, etc.
-  };
-
-  /** DOM Elements */
-  const els = {
-    spinButton: document.querySelector('#spinButton'),
-    repeatButton: document.querySelector('#repeatButton'),
-    hintButton: document.querySelector('#hintButton'),
-    wordBox: document.querySelector('#wordBox'),
-    scoreValue: document.querySelector('#scoreValue'),
-    scoreIncrement: document.querySelector('#scoreIncrement'),
-    progressText: document.querySelector('#progressText'),
-    progressFill: document.querySelector('#progressFill'),
-    progressBar: document.querySelector('#progressBar'),
-    progressIcon: document.querySelector('#progressIcon'),
-    complimentBox: document.querySelector('#complimentBox'),
-    screenReaderAnnounce: document.querySelector('#screenReaderAnnounce'),
-    blendingTimerContainer: document.querySelector('#blendingTimerContainer'),
-    blendingTimer: document.querySelector('#blendingTimer'),
-    pauseTimer: document.querySelector('#pauseTimer'),
-    skipTimer: document.querySelector('#skipTimer'),
-    wordTypeSelector: document.querySelector('#wordTypeSelector'),
-    vowelSelector: document.querySelector('#vowelSelector'),
-    themeSelector: document.querySelector('#themeSelector'),
-    toggleAudioButton: document.querySelector('#toggleAudioButton'),
-    blendingTimeDisplay: document.querySelector('#blendingTimeDisplay'),
-    increaseTime: document.querySelector('#increaseBlendingTime'),
-    decreaseTime: document.querySelector('#decreaseBlendingTime'),
-    celebrationModeCheckbox: document.querySelector('#celebrationMode'),
-    animationToggle: document.querySelector('#animationToggle'),
-    dyslexiaFont: document.querySelector('#dyslexiaFont'),
-    confettiContainer: document.querySelector('#confettiContainer'),
-    tutorialModal: document.querySelector('#tutorialModal'),
-    startTutorial: document.querySelector('#startTutorial'),
-    skipTutorial: document.querySelector('#skipTutorial'),
-    nextStep1: document.querySelector('#nextStep1'),
-    nextStep2: document.querySelector('#nextStep2'),
-    tutorialStep1: document.querySelector('#tutorialStep1'),
-    tutorialStep2: document.querySelector('#tutorialStep2'),
-    tutorialStep3: document.querySelector('#tutorialStep3'),
-    toggleSettingsButton: document.querySelector('#toggleSettingsButton'),
-    advancedSettings: document.querySelector('#advancedSettings'),
-    badges: document.querySelector('#badges'),
-    fullscreenButton: document.querySelector('#fullscreenButton'),
-    parentalGateModal: document.querySelector('#parentalGateModal'),
-    parentalGateInput: document.querySelector('#parentalGateInput'),
-    submitParentalGate: document.querySelector('#submitParentalGate'),
-    wordInput: document.querySelector('#wordInput'),
-    submitWord: document.querySelector('#submitWord'),
-    interactiveInput: document.querySelector('.interactive-input')
-  };
-
-  /** Preload Audio Assets */
-  const audioCache = new Map();
-  function preloadAudio(sounds) {
-    sounds.forEach(sound => {
-      const audio = new Audio(`${sound}.mp3`);
-      audio.preload = 'auto';
-      audioCache.set(sound, audio);
-    });
+longVowel: {
+    a_e: [
+      'spade','mate','game','afraid',
+      'bake','gave','way','grey',
+      'rake','great','holiday','Gayle',
+      'may','clay','wake','weight',
+      'baked','holidays','played','amazed',
+      'stayed','stay','against','they'
+    ],
+    ea_ee: [
+      'people','need','eagle','funny','meet',
+      'breeze','maybe','breathe','puppy','lazy',
+      'leaf','tree','meat','grumpy','peek',
+      'released','speaking','revealed','happy','valley',
+      'seat','thief','create','believe','seized',
+      'green','three','clean','hungry','gleam'
+    ],
+    igh_ie: [
+      'find','right','flight','skies','sight',
+      'five','try','height','finally','dive',
+      'kind','why','fly','myself','direct',
+      'light','by','flies','wild','directly',
+      'night','my','ride','realise','quite',
+      'live','white','mild','realise','delighted'
+    ],
+    o_e_ow: [
+      'go','Owen','drove','though','both',
+      'so','low','home','hoped','nose',
+      'ago','envelope','propose','floated','only',
+      'Joan','won’t','wrote','don’t','close',
+      'know','show','own','owned','spoke',
+      'road','cove','Rowan','hope','own'
+    ],
+    oo: [
+      'food','soon','bedroom','receive','special',
+      'mood','swoop','move','place','especially',
+      'room','cool','movie','face','office',
+      'suit','truth','soup','decided','distance',
+      'through','true','flew','exciting','receipt',
+      'cockatoo','kangaroo','grew','chew','blew'
+    ]
   }
+};
 
-  const soundsToPreload = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'long_a', 'long_e', 'long_i', 'long_o', 'long_u', 'start'];
-  preloadAudio(soundsToPreload);
+// —————————————— Patterns & State ——————————————
+const vowelPatterns = ['igh','ea','ee','ey','ow','oa','ie','ou','ue'];
+const state = {
+  usedWords: new Set(),
+  totalWords: 0,
+  currentWord: null,
+  score: 0,
+  blendingTime: 3000,
+  wordType: 'longVowel'
+};
 
-  /** Speech Synthesis Initialization */
-  let voice = null;
-  async function initSpeech() {
-    return new Promise(resolve => {
-      const checkVoices = () => {
-        const voices = speechSynthesis.getVoices();
-        if (voices.length > 0) {
-          voice = voices.find(v => v.lang.startsWith('en') && v.name.toLowerCase().includes('female')) || voices[0];
-          resolve();
-        } else {
-          speechSynthesis.onvoiceschanged = checkVoices;
-        }
-      };
-      checkVoices();
-    });
-  }
+// —————————————— DOM Refs ——————————————
+const els = {
+  spin:    document.getElementById('spinButton'),
+  repeat:  document.getElementById('repeatButton'),
+  wordBox: document.getElementById('wordBox'),
+  stars:   [...document.querySelectorAll('.star')],
+  timer:   document.getElementById('balloonTimer'),
+  toggle:  document.getElementById('toggleSettingsButton'),
+  settings:document.getElementById('advancedSettings'),
+  wordTypeSelector: document.getElementById('wordTypeSelector'),
+  blendingTimeInput:document.getElementById('blendingTimeInput')
+};
 
-  /** Speak a Word */
-  function speakWord(text) {
-    if (!voice || !state.soundsEnabled || speechSynthesis.speaking) return Promise.resolve();
-    return new Promise(resolve => {
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.voice = voice;
-      utterance.rate = 0.9;
-      utterance.pitch = 1.2;
-      utterance.onend = resolve;
-      utterance.onerror = () => resolve();
-    });
-  }
+// —————————————— Utility Functions ——————————————
+const delay = ms => new Promise(r=>setTimeout(r,ms));
 
-  /** Play Sound Effect */
-  function playSound(sound) {
-    if (!state.soundsEnabled) return Promise.resolve();
-    return new Promise(resolve => {
-      const audio = audioCache.get(sound) || new Audio(`${sound}.mp3`);
-      audio.onended = () => resolve();
-      audio.onerror = () => {
-        console.error(`Audio failed for ${sound}.mp3`);
-        resolve();
-      };
-      audio.play().catch(e => {
-        console.error(`Audio playback error for ${sound}.mp3:`, e);
-        resolve();
-      });
-    });
-  }
-
-  /** Utility Functions */
-  const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
-  const announce = text => {
-    els.screenReaderAnnounce.textContent = text;
-    setTimeout(() => els.screenReaderAnnounce.textContent = '', 1000);
-  };
-
-  /** Update Score */
-  function updateScore(points = 10) {
-    state.score += points;
-    els.scoreValue.textContent = state.score;
-    els.scoreIncrement.textContent = `+${points}`;
-    els.scoreIncrement.classList.add('show');
-    setTimeout(() => els.scoreIncrement.classList.remove('show'), 800);
-  }
-
-  /** Update Progress */
-  function updateProgress() {
-    state.revealedWords = state.usedWords.size;
-    const percent = (state.revealedWords / state.totalWords) * 100 || 0;
-    els.progressText.textContent = `${state.revealedWords} / ${state.totalWords} Words`;
-    els.progressFill.style.width = `${percent}%`;
-    els.progressBar.setAttribute('aria-valuenow', Math.round(percent));
-    if (state.revealedWords % 10 === 0 && state.revealedWords > 0) {
-      els.progressIcon.classList.add('star-animate');
-      setTimeout(() => els.progressIcon.classList.remove('star-animate'), 1000);
-      earnBadge(state.wordType);
+// Parse into units, detect multi-letter vowel clusters & tip
+function parseWord(word) {
+  const units = [];
+  let i = 0;
+  while (i < word.length) {
+    // check 3-letter patterns first
+    const tri = word.slice(i,i+3).toLowerCase();
+    if (vowelPatterns.includes(tri)) {
+      units.push({ text: tri, tip: tri[0], isVowel:true, isLongVowel:true });
+      i += 3;
+      continue;
     }
-  }
-
-  /** Show Compliment */
-  function showCompliment() {
-    const compliment = ['Great Job!', 'Awesome!', 'You’re a Star!', 'Well Done!', 'Fantastic!'][Math.floor(Math.random() * 5)];
-    els.complimentBox.textContent = compliment;
-    els.complimentBox.classList.add('show');
-    if (state.soundsEnabled) speakWord(compliment);
-    if (state.animationsEnabled) {
-      state.celebrationMode ? launchFireworks() : launchConfetti();
+    // then 2-letter
+    const duo = word.slice(i,i+2).toLowerCase();
+    if (vowelPatterns.includes(duo)) {
+      units.push({ text: duo, tip: duo[0], isVowel:true, isLongVowel:true });
+      i += 2;
+      continue;
     }
-    setTimeout(() => els.complimentBox.classList.remove('show'), 2000);
+    // single letter
+    const letter = word[i];
+    units.push({ text: letter, isVowel:/[aeiou]/i.test(letter) });
+    i++;
   }
+  return units;
+}
 
-  /** Launch Confetti (Reduced Intensity) */
-  function launchConfetti() {
-    for (let i = 0; i < 10; i++) { // Reduced from 20
-      const confetti = document.createElement('div');
-      confetti.className = 'confetti';
-      confetti.style.left = `${Math.random() * 100}vw`;
-      confetti.style.background = `hsl(${Math.random() * 360}, 100%, 50%)`;
-      els.confettiContainer.appendChild(confetti);
-      setTimeout(() => confetti.remove(), 1500); // Shortened duration
-    }
+// Pick a random word from the selected group
+function getAvailableWords() {
+  if (state.wordType === 'longVowel') {
+    // flatten all subgroups
+    return Object.values(wordGroups.longVowel).flat();
+  } else {
+    return Object.values(wordGroups[state.wordType]).flat();
   }
+}
 
-  /** Launch Fireworks (Reduced Intensity) */
-  function launchFireworks() {
-    for (let i = 0; i < 8; i++) { // Reduced from 15
-      const firework = document.createElement('div');
-      firework.className = 'confetti star';
-      firework.style.left = `${Math.random() * 100}vw`;
-      firework.style.top = `${Math.random() * 50}vh`;
-      firework.style.background = `hsl(${Math.random() * 360}, 100%, 50%)`;
-      els.confettiContainer.appendChild(firework);
-      setTimeout(() => firework.remove(), 1000); // Shortened duration
-    }
+function getRandomWord() {
+  const pool = getAvailableWords().filter(w=>!state.usedWords.has(w));
+  if (!pool.length) state.usedWords.clear();
+  const word = pool[Math.floor(Math.random()*pool.length)];
+  state.usedWords.add(word);
+  return word;
+}
+
+// Animate star meter
+function updateStars() {
+  const idx = state.usedWords.size - 1;
+  if (idx < els.stars.length) {
+    els.stars[idx].classList.add('filled');
   }
+}
 
-  /** Parse Word into Units */
-  function parseWord(word) {
-    const units = [];
-    let i = 0;
-    while (i < word.length) {
-      const letter = word[i].toLowerCase();
-      units.push({ text: letter, isVowel: /[aeiou]/.test(letter) });
-      i++;
-    }
-    return units;
+// Animate balloon timer
+function startTimer() {
+  els.timer.style.animation = 'none';
+  void els.timer.offsetWidth;
+  els.timer.style.animation = `deflate ${state.blendingTime}ms linear forwards`;
+}
+
+// Reveal and speak the word
+async function reveal(word, isRepeat=false) {
+  els.wordBox.innerHTML = '';
+  const units = parseWord(word);
+  units.forEach((u,i)=>{
+    const span = document.createElement('span');
+    span.textContent = u.text;
+    span.classList.add('letter');
+    if (u.tip) span.dataset.tip = u.tip;
+    span.style.animationDelay = `${i*0.4}s`;
+    els.wordBox.appendChild(span);
+  });
+
+  startTimer();
+  await delay(state.blendingTime);
+
+  if (!isRepeat) {
+    updateStars();
+    if (state.usedWords.size === getAvailableWords().length) resetGame();
   }
+}
 
-  /** Save Preferences */
-  function savePreferences() {
-    localStorage.setItem('wordSpinnerPrefs', JSON.stringify({
-      ...state,
-      usedWords: Array.from(state.usedWords),
-      badges: Object.fromEntries(state.badges)
-    }));
-  }
+// Reset for a fresh session
+function resetGame() {
+  state.usedWords.clear();
+  els.stars.forEach(s => s.classList.remove('filled'));
+}
 
-  /** Load Preferences */
-  function loadPreferences() {
-    const prefs = JSON.parse(localStorage.getItem('wordSpinnerPrefs')) || {};
-    Object.assign(state, {
-      wordType: prefs.wordType || 'cvc',
-      vowelFilter: prefs.vowelFilter || 'all',
-      theme: prefs.theme || 'default',
-      blendingTime: prefs.blendingTime || 3000,
-      soundsEnabled: prefs.soundsEnabled ?? true,
-      celebrationMode: prefs.celebrationMode || false,
-      animationsEnabled: prefs.animationsEnabled ?? true,
-      fontStyle: prefs.fontStyle || 'default',
-      badges: new Map(Object.entries(prefs.badges || {})),
-      usedWords: new Set(prefs.usedWords || []),
-      successStreak: prefs.successStreak || 0,
-      difficultyLevel: prefs.difficultyLevel || 1
-    });
-    document.body.dataset.theme = state.theme;
-    document.body.dataset.font = state.fontStyle;
-    els.wordTypeSelector.value = state.wordType;
-    els.vowelSelector.value = state.vowelFilter;
-    els.themeSelector.value = state.theme;
-    els.blendingTimeDisplay.textContent = state.blendingTime / 1000;
-    els.toggleAudioButton.textContent = state.soundsEnabled ? '🔇 Sounds Off' : '🔊 Sounds On';
-    els.celebrationModeCheckbox.checked = state.celebrationMode;
-    els.animationToggle.checked = state.animationsEnabled;
-    els.dyslexiaFont.checked = state.fontStyle === 'dyslexia';
-  }
-
-  /** Earn a Badge */
-  function earnBadge(wordType) {
-    if (!state.badges.has(wordType)) {
-      state.badges.set(wordType, true);
-      if (state.soundsEnabled) speakWord(`Congratulations! You earned a badge!`);
-      if (state.animationsEnabled) launchConfetti();
-      savePreferences();
-    }
-  }
-
-  /** Adaptive Difficulty */
-  function adjustDifficulty() {
-    if (state.successStreak >= 5 && state.difficultyLevel < 2) {
-      state.difficultyLevel++;
-      state.wordType = 'ccvc'; // Progress to harder word types
-      els.wordTypeSelector.value = state.wordType;
-      announce('Great job! Moving to harder words.');
-    } else if (state.successStreak <= -3 && state.difficultyLevel > 1) {
-      state.difficultyLevel--;
-      state.wordType = 'cvc'; // Regress to easier words
-      els.wordTypeSelector.value = state.wordType;
-      announce('Let’s try some easier words.');
-    }
-  }
-
-  /** Reveal Word with Sounds and Visuals */
-  let isTimerPaused = false;
-  async function revealWord(word, isRepeat = false) {
-    els.wordBox.innerHTML = '';
-    const units = parseWord(word);
-    units.forEach((unit, i) => {
-      const span = document.createElement('span');
-      span.textContent = unit.text;
-      span.classList.add('letter');
-      if (unit.isVowel) span.classList.add('vowel');
-      span.style.animationDelay = `${i * 0.4}s`;
-      els.wordBox.appendChild(span);
-    });
-
-    for (const unit of units) {
-      await delay(400);
-      await playSound(unit.text);
-    }
-
-    els.blendingTimerContainer.style.display = 'block';
-    els.blendingTimer.style.transition = `width ${state.blendingTime / 1000}s linear`;
-    els.blendingTimer.style.width = '100%';
-    requestAnimationFrame(() => els.blendingTimer.style.width = '0%');
-    announce('Blend the letters aloud!');
-    
-    let elapsed = 0;
-    while (elapsed < state.blendingTime) {
-      if (isTimerPaused) {
-        await delay(100);
-        continue;
-      }
-      await delay(100);
-      elapsed += 100;
-    }
-    els.blendingTimerContainer.style.display = 'none';
-
-    if (state.soundsEnabled) await speakWord(word);
-    announce(`The word is: ${word}`);
-    if (!isRepeat) {
-      state.usedWords.add(word);
-      els.interactiveInput.hidden = false;
-    }
-    els.hintButton.hidden = false;
-    els.repeatButton.disabled = false;
-  }
-
-  /** Get Available Words */
-  function getAvailableWords() {
-    const group = wordGroups[state.wordType];
-    if (state.vowelFilter === 'all') return Object.values(group).flat();
-    return group[state.vowelFilter] || [];
-  }
-
-  /** Get Random Word */
-  function getRandomWord() {
-    const words = getAvailableWords().filter(w => !state.usedWords.has(w));
-    if (!words.length) {
-      state.usedWords.clear();
-      return getRandomWord();
-    }
-    return words[Math.floor(Math.random() * words.length)];
-  }
-
-  /** Reset Game */
-  function resetGame() {
-    state.usedWords.clear();
-    state.revealedWords = 0;
-    state.score = 0;
-    state.currentWord = '';
-    els.scoreValue.textContent = '0';
-    els.repeatButton.disabled = true;
-    els.hintButton.hidden = true;
-    state.totalWords = getAvailableWords().length;
-    updateProgress();
-    savePreferences();
-  }
-
-  /** Spin to Reveal a New Word */
-  async function spin() {
-    els.spinButton.disabled = true;
-    els.interactiveInput.hidden = true;
-    els.wordInput.value = '';
-    state.currentWord = getRandomWord();
-    await revealWord(state.currentWord);
-    els.spinButton.disabled = false;
-  }
-
-  /** Repeat Current Word */
-  async function repeat() {
-    if (!state.currentWord) return;
-    els.repeatButton.disabled = true;
-    await revealWord(state.currentWord, true);
-  }
-
-  /** Play Hint Sound */
-  async function hint() {
-    if (!state.currentWord) return;
-    await playSound(state.currentWord);
-  }
-
-  /** Interactive Typing */
-  function submitWord() {
-    const userInput = els.wordInput.value.trim().toLowerCase();
-    if (userInput === state.currentWord) {
-      state.successStreak++;
-      showCompliment();
-      updateScore();
-      updateProgress();
-      adjustDifficulty();
-      if (state.usedWords.size === state.totalWords) resetGame();
-      els.interactiveInput.hidden = true;
-    } else {
-      state.successStreak--;
-      announce('Try again! Use Repeat or Hint for help.');
-      adjustDifficulty();
-    }
-  }
-
-  /** Event Listeners */
-  els.spinButton.addEventListener('click', spin);
-  els.repeatButton.addEventListener('click', repeat);
-  els.hintButton.addEventListener('click', hint);
-  els.submitWord.addEventListener('click', submitWord);
-  els.wordTypeSelector.addEventListener('change', () => {
-    state.wordType = els.wordTypeSelector.value;
-    resetGame();
-  });
-  els.vowelSelector.addEventListener('change', () => {
-    state.vowelFilter = els.vowelSelector.value;
-    resetGame();
-  });
-  els.themeSelector.addEventListener('change', () => {
-    state.theme = els.themeSelector.value;
-    document.body.dataset.theme = state.theme;
-    savePreferences();
-  });
-  els.toggleAudioButton.addEventListener('click', () => {
-    state.soundsEnabled = !state.soundsEnabled;
-    els.toggleAudioButton.textContent = state.soundsEnabled ? '🔇 Sounds Off' : '🔊 Sounds On';
-    savePreferences();
-  });
-  els.increaseTime.addEventListener('click', () => {
-    if (state.blendingTime < 7000) {
-      state.blendingTime += 500; // Finer adjustment
-      els.blendingTimeDisplay.textContent = state.blendingTime / 1000;
-      savePreferences();
-    }
-  });
-  els.decreaseTime.addEventListener('click', () => {
-    if (state.blendingTime > 1000) {
-      state.blendingTime -= 500; // Finer adjustment
-      els.blendingTimeDisplay.textContent = state.blendingTime / 1000;
-      savePreferences();
-    }
-  });
-  els.celebrationModeCheckbox.addEventListener('change', () => {
-    state.celebrationMode = els.celebrationModeCheckbox.checked;
-    savePreferences();
-  });
-  els.animationToggle.addEventListener('change', () => {
-    state.animationsEnabled = els.animationToggle.checked;
-    savePreferences();
-  });
-  els.dyslexiaFont.addEventListener('change', () => {
-    state.fontStyle = els.dyslexiaFont.checked ? 'dyslexia' : 'default';
-    document.body.dataset.font = state.fontStyle;
-    savePreferences();
-  });
-  els.pauseTimer.addEventListener('click', () => {
-    isTimerPaused = !isTimerPaused;
-    els.pauseTimer.textContent = isTimerPaused ? '▶️ Resume' : '⏸️ Pause';
-  });
-  els.skipTimer.addEventListener('click', () => {
-    isTimerPaused = false;
-    els.blendingTimerContainer.style.display = 'none';
-  });
-  els.toggleSettingsButton.addEventListener('click', (event) => {
-    event.preventDefault();
-    els.parentalGateModal.showModal();
-  });
-  els.submitParentalGate.addEventListener('click', () => {
-    const answer = parseInt(els.parentalGateInput.value, 10);
-    if (answer === 5) { // 2 + 3 = 5
-      els.parentalGateModal.close();
-      const isVisible = els.advancedSettings.style.display === 'block';
-      els.advancedSettings.style.display = isVisible ? 'none' : 'block';
-      els.toggleSettingsButton.textContent = isVisible ? '⚙️ Customize' : 'Hide Settings';
-      els.toggleSettingsButton.setAttribute('aria-expanded', !isVisible);
-      els.advancedSettings.setAttribute('aria-hidden', isVisible);
-    } else {
-      announce('Incorrect answer. Please try again.');
-    }
-  });
-  els.nextStep1.addEventListener('click', () => {
-    els.tutorialStep1.hidden = true;
-    els.tutorialStep2.hidden = false;
-  });
-  els.nextStep2.addEventListener('click', () => {
-    els.tutorialStep2.hidden = true;
-    els.tutorialStep3.hidden = false;
-  });
-  els.startTutorial.addEventListener('click', () => {
-    els.tutorialModal.close();
-    localStorage.setItem('hasSeenTutorial', 'true');
-    if (state.soundsEnabled) playSound('start');
-  });
-  els.skipTutorial.addEventListener('click', () => {
-    els.tutorialModal.close();
-    localStorage.setItem('hasSeenTutorial', 'true');
-  });
-  els.fullscreenButton.addEventListener('click', () => {
-    if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen().catch(console.warn);
-    } else {
-      document.exitFullscreen().catch(console.warn);
-    }
-  });
-
-  /** Initialization */
-  (async () => {
-    await initSpeech();
-    loadPreferences();
-    resetGame();
-    if (!localStorage.getItem('hasSeenTutorial')) els.tutorialModal.showModal();
-  })();
+// Event handlers
+els.spin.addEventListener('click',async()=>{
+  const w = getRandomWord();
+  state.currentWord = w;
+  els.repeat.disabled = false;
+  await reveal(w);
 });
+els.repeat.addEventListener('click',()=> reveal(state.currentWord, true));
+
+// Toggle teacher settings
+els.toggle.addEventListener('click',()=>{
+  const show = els.toggle.getAttribute('aria-expanded') === 'false';
+  els.toggle.setAttribute('aria-expanded', show);
+  els.settings.hidden = !show;
+});
+
+// Sync settings
+els.wordTypeSelector.addEventListener('change', e=>{
+  state.wordType = e.target.value;
+  resetGame();
+});
+els.blendingTimeInput.addEventListener('change',e=>{
+  state.blendingTime = Number(e.target.value)*1000;
+});
+
+
+// Initial
+resetGame();
